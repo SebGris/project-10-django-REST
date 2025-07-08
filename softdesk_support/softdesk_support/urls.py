@@ -15,8 +15,29 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
+
+@api_view(['GET'])
+def api_root(request, format=None):
+    """
+    Page d'accueil de l'API SoftDesk Support
+    """
+    return Response({
+        'message': 'Bienvenue sur l\'API SoftDesk Support',
+        'description': 'API de gestion des problèmes techniques',
+        'endpoints': {
+            'admin': reverse('admin:index', request=request, format=format),
+            'api_auth': {
+                'login': request.build_absolute_uri('/api-auth/login/'),
+                'logout': request.build_absolute_uri('/api-auth/logout/'),
+            }
+        }
+    })
 
 urlpatterns = [
+    path('', api_root, name='api-root'),
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls'))
 ]
