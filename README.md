@@ -171,6 +171,54 @@ Password (again): SoftDesk2025!
 🔒 Note de sécurité
 ⚠️ Important : Ces mots de passe sont à usage de développement uniquement. En production, utilisez toujours des mots de passe forts et uniques !
 
+## 🧪 Tester l'API
+
+### **Étape 1 : Démarrer le serveur**
+```bash
+poetry run python manage.py runserver
+```
+
+### **Étape 2 : Créer un utilisateur de test**
+Option 1 : Utiliser le superutilisateur créé
+Option 2 : Créer via l'interface admin à http://127.0.0.1:8000/admin/
+
+### **Étape 3 : Tester avec Postman**
+1. **Obtenir un token JWT :**
+   - POST `http://127.0.0.1:8000/api/token/`
+   - Body: `{"username": "admin", "password": "SoftDesk2025!"}`
+
+2. **Ajouter l'authentification :**
+   - Header: `Authorization: Bearer YOUR_TOKEN`
+
+3. **Endpoints disponibles :**
+   - `GET/POST /api/projects/` - Lister/Créer des projets
+   - `GET/PUT/DELETE /api/projects/{id}/` - Détails/Modifier/Supprimer
+   - `POST /api/projects/{id}/add-contributor/` - Ajouter contributeur
+
+### **Étape 4 : Script de test automatique**
+```bash
+# Installer requests si nécessaire
+poetry add requests
+
+# Exécuter le script de test
+poetry run python test_api.py
+```
+
+### **Étape 5 : Interface web**
+Accédez à http://127.0.0.1:8000/api/ pour l'interface Django REST Framework
+
+## 📊 Endpoints de l'API
+
+| Méthode | URL | Description | Auth |
+|---------|-----|-------------|------|
+| POST | `/api/token/` | Obtenir token JWT | Non |
+| GET | `/api/projects/` | Lister projets | Oui |
+| POST | `/api/projects/` | Créer projet | Oui |
+| GET | `/api/projects/{id}/` | Détails projet | Oui |
+| PUT | `/api/projects/{id}/` | Modifier projet | Auteur |
+| DELETE | `/api/projects/{id}/` | Supprimer projet | Auteur |
+| POST | `/api/projects/{id}/add-contributor/` | Ajouter contributeur | Auteur |
+
 ## 📄 Aide
 - [Poetry le gestionnaire de dépendances Python moderne](https://blog.stephane-robert.info/docs/developper/programmation/python/poetry/)
 - [pipx — Install and Run Python Applications in Isolated Environments](https://pipx.pypa.io/stable/)
