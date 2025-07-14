@@ -152,7 +152,13 @@ urlpatterns = [
     ...
 ]
 ```
-
+```bash
+poetry run python manage.py makemigrations
+poetry run python manage.py migrate
+```
+```bash
+poetry run python manage.py createsuperuser
+```
 
 ## 📄 Aide
 - [Poetry le gestionnaire de dépendances Python moderne](https://blog.stephane-robert.info/docs/developper/programmation/python/poetry/)
