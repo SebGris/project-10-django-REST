@@ -10,6 +10,8 @@ class User(AbstractUser):
     """
     age = models.PositiveIntegerField(
         validators=[MinValueValidator(15)],
+        null=True,
+        blank=True,
         help_text="L'utilisateur doit avoir au moins 15 ans (RGPD)"
     )
     can_be_contacted = models.BooleanField(

@@ -156,9 +156,20 @@ urlpatterns = [
 poetry run python manage.py makemigrations
 poetry run python manage.py migrate
 ```
+
+🚀 Commande pour créer le superutilisateur
 ```bash
 poetry run python manage.py createsuperuser
 ```
+
+Puis suivez les instructions :
+Username: admin
+Email address: admin@softdesk.local
+Password: SoftDesk2025!
+Password (again): SoftDesk2025!
+
+🔒 Note de sécurité
+⚠️ Important : Ces mots de passe sont à usage de développement uniquement. En production, utilisez toujours des mots de passe forts et uniques !
 
 ## 📄 Aide
 - [Poetry le gestionnaire de dépendances Python moderne](https://blog.stephane-robert.info/docs/developper/programmation/python/poetry/)

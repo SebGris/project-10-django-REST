@@ -24,13 +24,13 @@ from rest_framework.routers import DefaultRouter
 
 # Create and configure the router
 router = DefaultRouter()
-# Example: router.register(r'projects', ProjectViewSet)
-
+# Les routes des projets sont maintenant dans l'application issues
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/', include('issues.urls')),  # Inclure les URLs de l'application issues
     path('api/', include(router.urls)),
 ]
