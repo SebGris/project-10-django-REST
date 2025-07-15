@@ -6,10 +6,18 @@ from .models import User, Project, Contributor, Issue, Comment
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
     """Administration personnalisée pour le modèle User"""
-    list_display = ('username', 'email', 'age', 'can_be_contacted', 'can_data_be_shared', 'is_staff')
-    list_filter = ('can_be_contacted', 'can_data_be_shared', 'is_staff', 'is_superuser')
+    list_display = ('username', 'email', 'age', 'can_be_contacted', 'can_data_be_shared', 'is_staff', 'created_time')
+    list_filter = ('can_be_contacted', 'can_data_be_shared', 'is_staff', 'is_superuser', 'created_time')
     
     fieldsets = UserAdmin.fieldsets + (
+        ('Informations RGPD', {
+            'fields': ('age', 'can_be_contacted', 'can_data_be_shared', 'created_time')
+        }),
+    )
+    
+    readonly_fields = ('created_time',)
+    
+    add_fieldsets = UserAdmin.add_fieldsets + (
         ('Informations RGPD', {
             'fields': ('age', 'can_be_contacted', 'can_data_be_shared')
         }),
