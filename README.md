@@ -1,4 +1,4 @@
-# 🌐 Projet 10 Django REST
+# 🌐 Projet 10 - Créez une API sécurisée RESTful
 API développée avec Django REST dans le cadre d'un projet de formation OpenClassrooms Développeur d'application Python.
 
 ## Installation du projet en local
@@ -7,15 +7,14 @@ API développée avec Django REST dans le cadre d'un projet de formation OpenCla
 ```bash
 python -m pip install --user pipx
 ```
+
 #### **Étape 2 : Ajouter pipx au PATH**
 ```bash
 python -m pipx ensurepath
 ```
 **Pour que les changements prennent effet, vous devez :**
 
-1. **Fermer cette fenêtre de terminal**
-2. **Ouvrir un nouveau terminal**
-3. **Ou redémarrer VS Code**
+**redémarrer VS Code**
 
 Après cela, vous pourrez utiliser directement `pipx` au lieu de `python -m pipx`.
 
@@ -173,7 +172,18 @@ Password (again): SoftDesk2025!
 ⚠️ Important : Ces mots de passe sont à usage de développement uniquement. En production, utilisez toujours des mots de passe forts et uniques !
 ## Lancement du projet en local
 
-TODO
+#### **Étape ? : Installer toutes les dépendances définies dans pyproject.toml**
+```bash
+poetry install
+```
+#### **Étape ? : Appliquez les migrations initiales**
+```bash
+poetry run python manage.py migrate
+```
+#### **Étape ? : Démarrer le serveur de développement**
+```bash
+poetry run python manage.py runserver
+```
 
 ## 🧪 Tester l'API
 
