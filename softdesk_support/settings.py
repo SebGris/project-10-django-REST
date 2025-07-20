@@ -40,11 +40,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',  # Django REST Framework
     'rest_framework_simplejwt', # JWT Authentication
-    'issues',          # Votre application
+    'users',           # Application pour la gestion des utilisateurs
+    'issues',          # Application pour la gestion des projets
 ]
 
 # Configuration du modèle User personnalisé
-AUTH_USER_MODEL = 'issues.User'
+AUTH_USER_MODEL = 'users.User'
 
 # Configuration JWT
 

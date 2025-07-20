@@ -61,6 +61,10 @@ poetry env activate
 ``` 
 Ensuite, Poetry vous donne le chemin vers le script d'activation de l'environnement virtuel. Cette réponse est normale avec `poetry env activate` - elle vous indique où se trouve le script d'activation.
 
+```bash
+C:\Users\_votre_user_\AppData\Local\pypoetry\Cache\virtualenvs\project-10-django-rest-nlqPrlS_-py3.12\Scripts\activate.bat
+``` 
+
 ### Utilisation de Django
 #### **Étape 1 : Créer un nouveau projet**
 Lançons un projet Django à l'aide de la commande Django admin :
@@ -71,7 +75,7 @@ Pour tester que tout est configuré comme il se doit, lançons le serveur local 
 ```bash
 poetry run python manage.py runserver
 ```
-Tapez Ctrl+C pour arrêter le serveur.
+Tapez Ctrl+c pour arrêter le serveur.
 
 #### **Étape 2 : Créer la base de données du projet**
 Appliquez les migrations initiales :
@@ -88,12 +92,7 @@ cd softdesk_support
 Ajouter votre application dans `settings.py` :
 ```python
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    ...
     'rest_framework',  # Django REST Framework
     'issues',          # Votre application
 ]
@@ -116,12 +115,7 @@ poetry add djangorestframework-simplejwt
 Ajouter JWT dans les applications Django dans `settings.py` :
 ```python
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    ...
     'rest_framework',
     'rest_framework_simplejwt', # JWT Authentication
     'issues',
@@ -157,6 +151,31 @@ poetry run python manage.py makemigrations
 poetry run python manage.py migrate
 ```
 
+## Lancement du projet en local
+
+#### **Étape 1 : Installer toutes les dépendances définies dans pyproject.toml**
+```bash
+poetry install
+```
+
+#### **Étape 2 : Créer et appliquer les migrations (dans le bon ordre)**
+⚠️ **Important** : L'app `users` doit être migrée en premier car elle contient le modèle User personnalisé.
+
+```bash
+# 1. Créer les migrations pour l'app users (modèle User personnalisé)
+poetry run python manage.py makemigrations users
+
+# 2. Créer les migrations pour l'app issues
+poetry run python manage.py makemigrations issues
+
+# 3. Créer toutes les autres migrations
+poetry run python manage.py makemigrations
+
+# 4. Appliquer toutes les migrations
+poetry run python manage.py migrate
+```
+
+#### **Étape 3 : Créer un superutilisateur**
 🚀 Commande pour créer le superutilisateur
 ```bash
 poetry run python manage.py createsuperuser
@@ -170,20 +189,30 @@ Password (again): SoftDesk2025!
 
 🔒 Note de sécurité
 ⚠️ Important : Ces mots de passe sont à usage de développement uniquement. En production, utilisez toujours des mots de passe forts et uniques !
-## Lancement du projet en local
 
-#### **Étape ? : Installer toutes les dépendances définies dans pyproject.toml**
-```bash
-poetry install
-```
-#### **Étape ? : Appliquez les migrations initiales**
-```bash
-poetry run python manage.py migrate
-```
-#### **Étape ? : Démarrer le serveur de développement**
+#### **Étape 4 : Démarrer le serveur de développement**
 ```bash
 poetry run python manage.py runserver
 ```
+
+## 🚨 Résolution des problèmes de migration
+
+Si vous rencontrez l'erreur `InconsistentMigrationHistory`, suivez ces étapes :
+
+1. **Supprimer la base de données** (⚠️ perte de données) :
+```bash
+del db.sqlite3
+```
+
+2. **Supprimer tous les fichiers de migration** :
+```bash
+del issues\migrations\*.py
+del users\migrations\*.py
+```
+
+3. **Recréer les fichiers __init__.py** dans les dossiers migrations
+
+4. **Recréer les migrations dans le bon ordre** (voir Étape 2 ci-dessus)
 
 ## 🧪 Tester l'API
 
@@ -205,11 +234,44 @@ Option 2 : Créer via l'interface admin à http://127.0.0.1:8000/admin/
    - Header: `Authorization: Bearer YOUR_TOKEN`
 
 3. **Endpoints disponibles :**
+   
+   **🧑‍💼 API Utilisateurs :**
+   - `POST /api/users/` - Inscription (sans auth)
+   - `GET /api/users/` - Liste des utilisateurs
+   - `GET /api/users/{id}/` - Détails d'un utilisateur
+   - `GET/PUT/PATCH /api/users/profile/` - Profil personnel
+   
+   **📋 API Projets :**
    - `GET/POST /api/projects/` - Lister/Créer des projets
    - `GET/PUT/DELETE /api/projects/{id}/` - Détails/Modifier/Supprimer
    - `POST /api/projects/{id}/add-contributor/` - Ajouter contributeur
 
-### **Étape 4 : Script de test automatique**
+### **Étape 4 : Guide de test détaillé**
+
+🧪 **Trois méthodes pour tester l'API :**
+
+**Option A : Script automatique (Recommandé)**
+```bash
+# Installer requests si nécessaire
+pip install requests
+
+# Lancer le script de test complet
+python test_api_complete.py
+```
+
+**Option B : Collection Postman**
+1. Importer `SoftDesk_API_Postman_Collection.json` dans Postman
+2. Configurer l'environnement avec `base_url: http://127.0.0.1:8000`
+3. Exécuter les requêtes dans l'ordre
+
+**Option C : Interface DRF**
+Accédez à `http://127.0.0.1:8000/api/` pour une interface graphique
+
+📋 **Guides détaillés :**
+- `API_TESTING_COMPLETE_GUIDE.md` - Guide complet étape par étape
+- `USERS_API_TESTING.md` - Focus sur les endpoints utilisateurs
+
+### **Étape 5 : Script de test automatique**
 ```bash
 # Installer requests si nécessaire
 poetry add requests
@@ -218,11 +280,22 @@ poetry add requests
 poetry run python test_api.py
 ```
 
-### **Étape 5 : Interface web**
+### **Étape 6 : Interface web**
 Accédez à http://127.0.0.1:8000/api/ pour l'interface Django REST Framework
 
 ## 📊 Endpoints de l'API
 
+### 🧑‍💼 API Utilisateurs
+| Méthode | URL | Description | Auth |
+|---------|-----|-------------|------|
+| POST | `/api/users/` | Inscription utilisateur | Non |
+| GET | `/api/users/` | Lister utilisateurs | Oui |
+| GET | `/api/users/{id}/` | Détails utilisateur | Oui |
+| GET | `/api/users/profile/` | Profil personnel | Oui |
+| PUT/PATCH | `/api/users/profile/` | Modifier profil | Oui |
+| DELETE | `/api/users/{id}/` | Supprimer compte | Oui |
+
+### 📋 API Projets
 | Méthode | URL | Description | Auth |
 |---------|-----|-------------|------|
 | POST | `/api/token/` | Obtenir token JWT | Non |
