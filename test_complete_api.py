@@ -2,7 +2,6 @@
 Script de test complet pour valider toutes les URLs de l'API SoftDesk
 """
 import requests
-import json
 import time
 
 class CompleteTester:

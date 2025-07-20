@@ -2,7 +2,7 @@
 Test spécifique pour la validation RGPD via l'API
 """
 import requests
-import json
+import time
 
 class RGPDAPITester:
     def __init__(self):
@@ -14,10 +14,11 @@ class RGPDAPITester:
         print("🔒 Test API : Inscription sans âge")
         print("-" * 40)
         
+        timestamp = int(time.time())
         url = f"{self.base_url}/api/users/"
         data = {
-            "username": "user_no_age_api",
-            "email": "test@example.com",
+            "username": f"user_no_age_api_{timestamp}",
+            "email": f"test_{timestamp}@example.com",
             "password": "testpassword123",
             "password_confirm": "testpassword123",
             "can_be_contacted": True,
@@ -50,10 +51,11 @@ class RGPDAPITester:
         print("\n🔒 Test API : Inscription âge < 15 ans")
         print("-" * 40)
         
+        timestamp = int(time.time())
         url = f"{self.base_url}/api/users/"
         data = {
-            "username": "user_14_api",
-            "email": "young@example.com",
+            "username": f"user_14_api_{timestamp}",
+            "email": f"young_{timestamp}@example.com",
             "password": "testpassword123",
             "password_confirm": "testpassword123",
             "age": 14,
@@ -88,10 +90,11 @@ class RGPDAPITester:
         print("\n🔒 Test API : Inscription âge valide")
         print("-" * 40)
         
+        timestamp = int(time.time())
         url = f"{self.base_url}/api/users/"
         data = {
-            "username": "user_valid_api",
-            "email": "valid@example.com",
+            "username": f"user_valid_api_{timestamp}",
+            "email": f"valid_{timestamp}@example.com",
             "password": "testpassword123",
             "password_confirm": "testpassword123",
             "age": 20,
@@ -140,7 +143,7 @@ class RGPDAPITester:
                 print("❌ Serveur Django non accessible")
                 print("💡 Lancez: poetry run python manage.py runserver")
                 return
-        except:
+        except Exception:
             print("❌ Serveur Django non accessible")
             print("💡 Lancez: poetry run python manage.py runserver")
             return

@@ -2,7 +2,6 @@
 Script de test pour l'API SoftDesk Support
 """
 import requests
-import json
 
 # Configuration
 BASE_URL = "http://127.0.0.1:8000"
