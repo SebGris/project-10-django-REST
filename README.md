@@ -218,28 +218,32 @@ Ce test vérifie que :
 poetry run python test_issue_comment_models.py
 ```
 
-Ce test vérifie que :
-- ✅ Les modèles Issue et Comment sont correctement définis
-- ✅ Les relations entre Project, Issue et Comment fonctionnent
-- ✅ Les permissions et contraintes sont respectées
-- 📝 Les IDs UUID pour les commentaires fonctionnent
-
-### Test de l'API Issue et Comment
+### Test complet de l'API complète
 ```bash
-# Tester les endpoints API pour Issue et Comment
-poetry run python test_issue_comment_api.py
+# Tester tous les endpoints (users, projects, issues, comments)
+poetry run python test_etape4_complete.py
 ```
 
 Ce test vérifie que :
-- ✅ CRUD complet pour les Issues (Create, Read, Update, Delete)
-- ✅ CRUD complet pour les Comments
-- ✅ Permissions appropriées (contributeurs uniquement)
-- ✅ Gestion des erreurs et validations
+- ✅ Configuration Django valide
+- ✅ Migrations appliquées correctement  
+- ✅ Tous les modèles fonctionnent (User, Project, Contributor, Issue, Comment)
+- ✅ Endpoints API accessibles et fonctionnels
 
 #### **Étape 4 : Démarrer le serveur de développement**
 ```bash
 poetry run python manage.py runserver
 ```
+
+## 🏗️ Architecture simplifiée
+
+✅ **URLs centralisées** : Tous les endpoints sont définis dans un seul fichier `softdesk_support/urls.py` pour une meilleure lisibilité et maintenance.
+
+✅ **ViewSets organisés** : 
+- `UserViewSet` dans `users/views.py`
+- `ProjectViewSet`, `ContributorViewSet`, `IssueViewSet`, `CommentViewSet` dans `issues/views.py`
+
+✅ **Routeur unique** : Django REST Framework router gère automatiquement tous les endpoints CRUD.
 
 ## 🚨 Résolution des problèmes de migration
 
