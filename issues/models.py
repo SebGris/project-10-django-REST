@@ -26,6 +26,40 @@ class Project(models.Model):
     )
     created_time = models.DateTimeField(auto_now_add=True)
 
+    def save(self, *args, **kwargs):
+        """
+        Surcharge de save pour créer automatiquement l'auteur comme contributeur
+        """
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+        
+        # Si c'est un nouveau projet, ajouter l'auteur comme contributeur
+        if is_new:
+            self.add_author_as_contributor()
+    
+    def add_author_as_contributor(self):
+        """
+        Ajoute l'auteur du projet comme contributeur automatiquement
+        """
+        Contributor.objects.get_or_create(
+            user=self.author,
+            project=self,
+            defaults={'created_time': self.created_time}
+        )
+    
+    def get_all_contributors(self):
+        """
+        Retourne tous les contributeurs incluant l'auteur
+        """
+        return self.contributors.all()
+    
+    def is_author_or_contributor(self, user):
+        """
+        Vérifie si un utilisateur est auteur ou contributeur du projet
+        """
+        return (self.author == user or 
+                self.contributors.filter(user=user).exists())
+
     def __str__(self):
         return self.name
 

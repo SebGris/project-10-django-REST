@@ -2,13 +2,12 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from .models import Project, Contributor, Issue, Comment, User
+from django.db import models
+from .models import Project, Contributor, User
 from .serializers import (
     ProjectSerializer, 
     ProjectCreateUpdateSerializer,
-    ContributorSerializer, 
-    IssueSerializer, 
-    CommentSerializer
+    ContributorSerializer
 )
 
 
@@ -20,10 +19,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
-        """Retourner seulement les projets où l'utilisateur est contributeur"""
+        """Retourner seulement les projets où l'utilisateur est contributeur ou auteur"""
         user = self.request.user
-        # Récupérer les projets où l'utilisateur est contributeur
-        return Project.objects.filter(contributors__user=user).distinct()
+        # Récupérer les projets où l'utilisateur est contributeur OU auteur
+        return Project.objects.filter(
+            models.Q(contributors__user=user) | models.Q(author=user)
+        ).distinct()
     
     def get_serializer_class(self):
         """Utiliser un serializer différent pour la création/modification"""
@@ -32,12 +33,10 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return ProjectSerializer
     
     def perform_create(self, serializer):
-        """Créer un projet et ajouter l'auteur comme contributeur"""
+        """Créer un projet - l'auteur sera automatiquement ajouté comme contributeur"""
         user = self.request.user
-        project = serializer.save(author=user)
-        
-        # Ajouter l'auteur comme contributeur automatiquement
-        Contributor.objects.create(user=user, project=project)
+        serializer.save(author=user)
+        # L'auteur est automatiquement ajouté comme contributeur via Project.save()
     
     def perform_update(self, serializer):
         """Vérifier que seul l'auteur peut modifier le projet"""
