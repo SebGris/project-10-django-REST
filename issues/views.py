@@ -41,13 +41,13 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def perform_update(self, serializer):
         """Vérifier que seul l'auteur peut modifier le projet"""
         project = self.get_object()
-        if project.author != self.request.user:
+        if not project.can_user_modify(self.request.user):
             raise permissions.PermissionDenied("Seul l'auteur peut modifier ce projet.")
         serializer.save()
     
     def perform_destroy(self, instance):
         """Vérifier que seul l'auteur peut supprimer le projet"""
-        if instance.author != self.request.user:
+        if not instance.can_user_modify(self.request.user):
             raise permissions.PermissionDenied("Seul l'auteur peut supprimer ce projet.")
         instance.delete()
     
@@ -57,7 +57,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         project = self.get_object()
         
         # Vérifier que l'utilisateur est l'auteur du projet
-        if project.author != request.user:
+        if not project.can_user_modify(request.user):
             return Response(
                 {"error": "Seul l'auteur peut ajouter des contributeurs"},
                 status=status.HTTP_403_FORBIDDEN
@@ -79,7 +79,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
             )
         
         # Vérifier si l'utilisateur est déjà contributeur
-        if Contributor.objects.filter(user=user_to_add, project=project).exists():
+        if project.is_user_contributor(user_to_add):
             return Response(
                 {"error": "Cet utilisateur est déjà contributeur du projet"},
                 status=status.HTTP_400_BAD_REQUEST
@@ -97,7 +97,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         project = self.get_object()
         
         # Vérifier que l'utilisateur est l'auteur du projet
-        if project.author != request.user:
+        if not project.can_user_modify(request.user):
             return Response(
                 {"error": "Seul l'auteur peut supprimer des contributeurs"},
                 status=status.HTTP_403_FORBIDDEN

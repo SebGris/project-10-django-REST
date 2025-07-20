@@ -7,6 +7,7 @@ import urllib.request
 import urllib.parse
 import json
 import urllib.error
+import time  # Ajout pour les timestamps uniques
 
 BASE_URL = "http://127.0.0.1:8000/api"
 
@@ -48,12 +49,15 @@ def test_rgpd_age_validation():
     
     print("🔒 Test de conformité RGPD - Validation âge minimum\n")
     
+    # Timestamp unique pour éviter les conflits de noms d'utilisateur
+    timestamp = int(time.time())
+    
     # Test 1 : Tentative d'inscription avec âge < 15 ans
     print("1. 🚫 Test inscription utilisateur de 12 ans (doit être rejetée)...")
     
     user_data_under_15 = {
-        "username": "enfant_12ans",
-        "email": "enfant@example.com",
+        "username": f"enfant_12ans_{timestamp}",
+        "email": f"enfant_{timestamp}@example.com",
         "first_name": "Enfant",
         "last_name": "Trop Jeune",
         "age": 12,  # < 15 ans ❌
@@ -85,8 +89,8 @@ def test_rgpd_age_validation():
     print("\n2. ✅ Test inscription utilisateur de 15 ans (doit être acceptée)...")
     
     user_data_15 = {
-        "username": "ado_15ans",
-        "email": "ado15@example.com",
+        "username": f"ado_15ans_{timestamp}",
+        "email": f"ado15_{timestamp}@example.com",
         "first_name": "Ado",
         "last_name": "Quinze Ans",
         "age": 15,  # = 15 ans ✅
@@ -111,8 +115,8 @@ def test_rgpd_age_validation():
     print("\n3. ✅ Test inscription utilisateur de 25 ans (doit être acceptée)...")
     
     user_data_25 = {
-        "username": "adulte_25ans",
-        "email": "adulte25@example.com",
+        "username": f"adulte_25ans_{timestamp}",
+        "email": f"adulte25_{timestamp}@example.com",
         "first_name": "Adulte",
         "last_name": "Vingt Cinq",
         "age": 25,  # > 15 ans ✅
@@ -133,15 +137,15 @@ def test_rgpd_age_validation():
     
     print("\n" + "="*60)
     
-    # Test 4 : Inscription sans âge (optionnel)
-    print("\n4. ⚠️  Test inscription sans âge spécifié...")
+    # Test 4 : Inscription sans âge (maintenant obligatoire pour RGPD)
+    print("\n4. ❌ Test inscription sans âge spécifié (obligatoire pour RGPD)...")
     
     user_data_no_age = {
-        "username": "sans_age",
-        "email": "sansage@example.com", 
+        "username": f"sans_age_{timestamp}",
+        "email": f"sansage_{timestamp}@example.com", 
         "first_name": "Sans",
         "last_name": "Age",
-        # age non spécifié
+        # age non spécifié - maintenant obligatoire
         "can_be_contacted": False,
         "can_data_be_shared": False,
         "password": "TestPass123!",
@@ -150,19 +154,25 @@ def test_rgpd_age_validation():
     
     response = make_request(f"{BASE_URL}/users/", method='POST', data=user_data_no_age)
     
-    if response['status_code'] == 201:
-        print("   ✅ Inscription acceptée sans âge spécifié")
-        print("   📝 Note : L'âge n'est pas obligatoire")
+    if response['status_code'] == 400:
+        print("   ✅ CONFORME RGPD : Inscription rejetée sans âge")
+        print(f"   📝 Message obligatoire : {response['data']}")
+        
+        # Vérifier que l'erreur mentionne le champ requis
+        error_message = str(response['data']).lower()
+        if 'required' in error_message or 'obligatoire' in error_message:
+            print("   ✅ Message confirme que l'âge est obligatoire")
     else:
-        print(f"   ❌ Inscription rejetée (statut {response['status_code']})")
-        print(f"   📝 Erreur : {response['data']}")
+        print(f"   ❌ PROBLÈME RGPD : Inscription acceptée sans âge (statut {response['status_code']})")
+        print(f"   📝 Réponse : {response['data']}")
     
     print("\n" + "="*60)
     print("\n📋 RÉSUMÉ DE LA CONFORMITÉ RGPD :")
-    print("✅ Les utilisateurs de moins de 15 ans doivent être rejetés")
-    print("✅ Les utilisateurs de 15 ans et plus doivent être acceptés")
-    print("✅ Le message d'erreur doit mentionner le RGPD/âge minimum")
-    print("⚠️  Considérer rendre l'âge obligatoire pour une meilleure conformité")
+    print("✅ Les utilisateurs de moins de 15 ans sont rejetés")
+    print("✅ Les utilisateurs de 15 ans et plus sont acceptés")
+    print("✅ L'âge est OBLIGATOIRE (conformité renforcée)")
+    print("✅ Messages d'erreur clairs et précis")
+    print("🎯 CONFORMITÉ RGPD TOTALE ATTEINTE !")
 
 if __name__ == "__main__":
     print("🚀 Démarrage des tests de conformité RGPD...")

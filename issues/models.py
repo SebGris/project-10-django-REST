@@ -53,12 +53,36 @@ class Project(models.Model):
         """
         return self.contributors.all()
     
+    def get_non_author_contributors(self):
+        """
+        Retourne seulement les contributeurs qui ne sont pas l'auteur
+        """
+        return self.contributors.exclude(user=self.author)
+    
     def is_author_or_contributor(self, user):
         """
         Vérifie si un utilisateur est auteur ou contributeur du projet
         """
         return (self.author == user or 
                 self.contributors.filter(user=user).exists())
+    
+    def can_user_access(self, user):
+        """
+        Vérifie si un utilisateur peut accéder au projet (auteur ou contributeur)
+        """
+        return self.is_author_or_contributor(user)
+    
+    def can_user_modify(self, user):
+        """
+        Vérifie si un utilisateur peut modifier le projet (seul l'auteur)
+        """
+        return self.author == user
+    
+    def is_user_contributor(self, user):
+        """
+        Vérifie si un utilisateur est contributeur de ce projet
+        """
+        return self.contributors.filter(user=user).exists() or user == self.author
 
     def __str__(self):
         return self.name
@@ -80,8 +104,16 @@ class Contributor(models.Model):
             )
         ]  # Un utilisateur ne peut être contributeur qu'une fois par projet, évite les doublons dans la table
 
+    @property
+    def is_author(self):
+        """
+        Vérifie si ce contributeur est aussi l'auteur du projet
+        """
+        return self.user == self.project.author
+
     def __str__(self):
-        return f"{self.user.username} - {self.project.name}"
+        role = " (Auteur)" if self.is_author else ""
+        return f"{self.user.username} - {self.project.name}{role}"
 
 
 class Issue(models.Model):

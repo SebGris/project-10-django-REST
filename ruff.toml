@@ -1,0 +1,10 @@
+[tool.ruff]
+# Configuration pour ignorer certaines règles dans les scripts de test Django
+extend-ignore = [
+    "E402",  # Module level import not at top of file (nécessaire pour Django setup)
+]
+
+# Appliquer uniquement aux fichiers de test
+[tool.ruff.per-file-ignores]
+"test_*.py" = ["E402"]
+"**/test_*.py" = ["E402"]
