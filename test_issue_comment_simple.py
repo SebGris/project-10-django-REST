@@ -54,7 +54,7 @@ def test_issue_comment_models():
             status="To Do",
             project=project,
             author=author,
-            assignee=author
+            assigned_to=author
         )
         print(f"   SUCCES - Issue creee (ID: {issue.id})")
         
@@ -70,7 +70,7 @@ def test_issue_comment_models():
         # 5. Verification des relations
         print("\n5. Verification des relations...")
         print(f"   - Issue appartient au projet: {issue.project.name}")
-        print(f"   - Issue assignee a: {issue.assignee.username}")
+        print(f"   - Issue assignee a: {issue.assigned_to.username}")
         print(f"   - Commentaire lie a l'issue: {comment.issue.name}")
         print(f"   - Auteur du commentaire: {comment.author.username}")
         

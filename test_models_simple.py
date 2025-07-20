@@ -63,17 +63,17 @@ def test_models():
         print("\n4. Ajout d'un contributeur...")
         contrib = Contributor.objects.create(
             user=contributor,
-            project=project,
-            role="contributor"
+            project=project
         )
-        print(f"   SUCCES - Contributeur ajoute (Role: {contrib.role})")
+        print(f"   SUCCES - Contributeur ajoute (Utilisateur: {contrib.user.username})")
         
-        # 5. Liste des contributeurs
+        # 5. Verification des contributeurs
         print("\n5. Verification des contributeurs...")
         contributors = Contributor.objects.filter(project=project)
         print(f"   - Nombre de contributeurs: {contributors.count()}")
         for c in contributors:
-            print(f"   - {c.user.username} ({c.role})")
+            role_info = " (Auteur)" if c.is_author else " (Contributeur)"
+            print(f"   - {c.user.username}{role_info}")
         
         # 6. Nettoyage
         print("\n6. Nettoyage des donnees de test...")
