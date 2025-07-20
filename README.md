@@ -176,16 +176,23 @@ poetry run python manage.py migrate
 ```
 
 #### **Étape 3 : Créer un superutilisateur**
-🚀 Commande pour créer le superutilisateur
+🚀 **Méthode recommandée** : Utiliser notre script personnalisé qui gère tous les champs obligatoires
+```bash
+poetry run python create_superuser.py
+```
+
+🔄 **Méthode alternative** : Commande Django standard (peut causer des erreurs avec les champs obligatoires)
 ```bash
 poetry run python manage.py createsuperuser
 ```
 
-Puis suivez les instructions :
-Username: admin
-Email address: admin@softdesk.local
-Password: SoftDesk2025!
-Password (again): SoftDesk2025!
+⚠️ **Note importante** : Si vous utilisez la commande standard et obtenez l'erreur `This field cannot be null`, utilisez le script personnalisé à la place.
+
+✅ **Informations de connexion par défaut** :
+- Username: `admin`
+- Email: `admin@softdesk.local`  
+- Password: `SoftDesk2025!`
+- Âge: 30 ans (conforme RGPD)
 
 🔒 Note de sécurité
 ⚠️ Important : Ces mots de passe sont à usage de développement uniquement. En production, utilisez toujours des mots de passe forts et uniques !
