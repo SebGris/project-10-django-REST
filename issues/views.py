@@ -147,46 +147,98 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
 class ContributorViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    ViewSet en lecture seule pour les contributeurs
+    ViewSet pour les contributeurs - support des routes imbriquées
+    Accessible via /api/projects/{project_id}/contributors/
     """
     serializer_class = ContributorSerializer
     permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
-        """Retourner seulement les contributeurs des projets accessibles"""
-        user = self.request.user
-        return Contributor.objects.filter(
-            project__contributors__user=user
-        ).distinct()
+        """Retourner les contributeurs du projet spécifié dans l'URL"""
+        # Récupérer l'ID du projet depuis l'URL imbriquée
+        project_id = self.kwargs.get('project_pk')
+        
+        if project_id:
+            # Route imbriquée: /projects/{project_id}/contributors/
+            try:
+                project = Project.objects.get(id=project_id)
+                # Vérifier que l'utilisateur peut accéder à ce projet
+                if not project.is_user_contributor(self.request.user):
+                    return Contributor.objects.none()
+                return project.contributors.all()
+            except Project.DoesNotExist:
+                return Contributor.objects.none()
+        else:
+            # Route directe: /contributors/ (tous les contributeurs accessibles)
+            user = self.request.user
+            return Contributor.objects.filter(
+                project__contributors__user=user
+            ).distinct()
 
 
 class IssueViewSet(viewsets.ModelViewSet):
     """
     ViewSet pour la gestion des issues (problèmes/tâches)
+    Support des routes imbriquées: /api/projects/{project_id}/issues/
     """
     serializer_class = IssueSerializer
     permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
-        """Retourner seulement les issues des projets où l'utilisateur est contributeur"""
+        """Retourner les issues selon le contexte (imbriqué ou global)"""
         user = self.request.user
-        return Issue.objects.filter(
-            models.Q(project__contributors__user=user) | models.Q(project__author=user)
-        ).distinct()
+        project_id = self.kwargs.get('project_pk')
+        
+        if project_id:
+            # Route imbriquée: /projects/{project_id}/issues/
+            try:
+                project = Project.objects.get(id=project_id)
+                # Vérifier que l'utilisateur peut accéder à ce projet
+                if not project.is_user_contributor(user):
+                    return Issue.objects.none()
+                return project.issues.all()
+            except Project.DoesNotExist:
+                return Issue.objects.none()
+        else:
+            # Route directe: /issues/ (toutes les issues accessibles)
+            return Issue.objects.filter(
+                models.Q(project__contributors__user=user) | models.Q(project__author=user)
+            ).distinct()
     
+    def create(self, request, *args, **kwargs):
+        """Créer une issue - gérer les routes imbriquées"""
+        # Si on est dans une route imbriquée, ajouter le project_id aux données
+        project_id = self.kwargs.get('project_pk')
+        if project_id:
+            # Route imbriquée: ajouter le project aux données avant validation
+            request.data['project'] = project_id
+        
+        return super().create(request, *args, **kwargs)
+
     def perform_create(self, serializer):
-        """Créer une issue - vérifier que l'utilisateur peut créer dans ce projet"""
-        project_id = self.request.data.get('project')
-        if not project_id:
-            raise permissions.PermissionDenied("Le projet est requis.")
+        """Créer une issue - support des routes imbriquées"""
+        user = self.request.user
+        project_id = self.kwargs.get('project_pk')
+        
+        if project_id:
+            # Route imbriquée: le projet est défini par l'URL
+            try:
+                project = Project.objects.get(id=project_id)
+            except Project.DoesNotExist:
+                raise permissions.PermissionDenied("Projet non trouvé.")
+        else:
+            # Route directe: le projet doit être fourni dans les données
+            project_id = self.request.data.get('project')
+            if not project_id:
+                raise permissions.PermissionDenied("Le projet est requis.")
             
-        try:
-            project = Project.objects.get(id=project_id)
-        except Project.DoesNotExist:
-            raise permissions.PermissionDenied("Projet non trouvé.")
+            try:
+                project = Project.objects.get(id=project_id)
+            except Project.DoesNotExist:
+                raise permissions.PermissionDenied("Projet non trouvé.")
         
         # Vérifier que l'utilisateur est contributeur du projet
-        if not project.is_user_contributor(self.request.user):
+        if not project.is_user_contributor(user):
             raise permissions.PermissionDenied("Vous devez être contributeur du projet pour créer une issue.")
         
         # Vérifier assigned_to si fourni
@@ -199,7 +251,8 @@ class IssueViewSet(viewsets.ModelViewSet):
             except User.DoesNotExist:
                 raise permissions.PermissionDenied("Utilisateur assigné non trouvé.")
         
-        serializer.save(author=self.request.user)
+        # Sauvegarder avec l'auteur et le projet
+        serializer.save(author=user, project=project)
     
     def perform_update(self, serializer):
         """Vérifier que l'utilisateur peut modifier cette issue"""
@@ -236,34 +289,78 @@ class IssueViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     """
     ViewSet pour la gestion des commentaires
+    Support des routes imbriquées: /api/projects/{project_id}/issues/{issue_id}/comments/
     """
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
-        """Retourner seulement les commentaires des issues accessibles"""
+        """Retourner les commentaires selon le contexte (imbriqué ou global)"""
         user = self.request.user
-        return Comment.objects.filter(
-            models.Q(issue__project__contributors__user=user) | 
-            models.Q(issue__project__author=user)
-        ).distinct()
+        issue_id = self.kwargs.get('issue_pk')
+        project_id = self.kwargs.get('project_pk')
+        
+        if issue_id and project_id:
+            # Route imbriquée: /projects/{project_id}/issues/{issue_id}/comments/
+            try:
+                project = Project.objects.get(id=project_id)
+                issue = Issue.objects.get(id=issue_id, project=project)
+                
+                # Vérifier que l'utilisateur peut accéder à ce projet
+                if not project.is_user_contributor(user):
+                    return Comment.objects.none()
+                
+                return issue.comments.all()
+            except (Project.DoesNotExist, Issue.DoesNotExist):
+                return Comment.objects.none()
+        else:
+            # Route directe: /comments/ (tous les commentaires accessibles)
+            return Comment.objects.filter(
+                models.Q(issue__project__contributors__user=user) | 
+                models.Q(issue__project__author=user)
+            ).distinct()
+    
+    def create(self, request, *args, **kwargs):
+        """Créer un commentaire - gérer les routes imbriquées"""
+        # Si on est dans une route imbriquée, ajouter l'issue_id aux données
+        issue_id = self.kwargs.get('issue_pk')
+        if issue_id:
+            # Route imbriquée: ajouter l'issue aux données avant validation
+            request.data['issue'] = issue_id
+        
+        return super().create(request, *args, **kwargs)
     
     def perform_create(self, serializer):
-        """Créer un commentaire - vérifier que l'utilisateur peut commenter"""
-        issue_id = self.request.data.get('issue')
-        if not issue_id:
-            raise permissions.PermissionDenied("L'issue est requise.")
-            
-        try:
-            issue = Issue.objects.get(id=issue_id)
-        except Issue.DoesNotExist:
-            raise permissions.PermissionDenied("Issue non trouvée.")
+        """Créer un commentaire - support des routes imbriquées"""
+        user = self.request.user
+        issue_id = self.kwargs.get('issue_pk')
+        project_id = self.kwargs.get('project_pk')
+        
+        if issue_id and project_id:
+            # Route imbriquée: l'issue est définie par l'URL
+            try:
+                project = Project.objects.get(id=project_id)
+                issue = Issue.objects.get(id=issue_id, project=project)
+            except (Project.DoesNotExist, Issue.DoesNotExist):
+                raise permissions.PermissionDenied("Issue ou projet non trouvé.")
+        else:
+            # Route directe: l'issue doit être fournie dans les données
+            issue_id = self.request.data.get('issue')
+            if not issue_id:
+                raise permissions.PermissionDenied("L'issue est requise.")
+                
+            try:
+                issue = Issue.objects.get(id=issue_id)
+                project = issue.project
+            except Issue.DoesNotExist:
+                raise permissions.PermissionDenied("Issue non trouvée.")
         
         # Vérifier que l'utilisateur est contributeur du projet
-        if not issue.project.is_user_contributor(self.request.user):
+        if not project.is_user_contributor(user):
             raise permissions.PermissionDenied("Vous devez être contributeur du projet pour commenter.")
         
-        serializer.save(author=self.request.user)
+        # Sauvegarder avec l'auteur et l'issue
+        serializer.save(author=user, issue=issue)
     
     def perform_update(self, serializer):
         """Vérifier que l'utilisateur peut modifier ce commentaire"""
