@@ -60,8 +60,14 @@ class APITester:
         
         if response.status_code == 201:
             project = response.json()
-            print(f"Projet créé: {project['name']} (ID: {project['id']})")
-            return project['id']
+            # Récupérer l'ID du projet
+            project_id = project.get('id')
+            if project_id:
+                print(f"Projet créé: {project['name']} (ID: {project_id})")
+            else:
+                print(f"Projet créé: {project['name']} (pas d'ID retourné)")
+                print(f"Réponse: {project}")  # Debug si nécessaire
+            return project_id
         else:
             print(f"Erreur: {response.text}")
             return None

@@ -46,8 +46,9 @@ class CompleteTester:
         url = f"{self.base_url}/api/users/"
         data = {
             "username": f"testuser_{int(time.time())}",
-            "email": "test@example.com",
+            "email": f"test_{int(time.time())}@example.com",
             "password": "testpassword123",
+            "password_confirm": "testpassword123",
             "age": 25,
             "can_be_contacted": True,
             "can_data_be_shared": False
@@ -122,7 +123,7 @@ class CompleteTester:
             if response.status_code == 201:
                 project = response.json()
                 self.created_project_id = project.get('id')
-                self.log(f"Projet créé: {project.get('name')}")
+                self.log(f"Projet créé: {project.get('name')} (ID: {self.created_project_id})")
             else:
                 self.log(f"Erreur création projet: {response.status_code} - {response.text}", False)
                 return False
@@ -140,6 +141,8 @@ class CompleteTester:
                     self.log(f"Erreur détails projet: {response.status_code}", False)
             except Exception as e:
                 self.log(f"Erreur détails projet: {e}", False)
+        else:
+            self.log("Aucun ID de projet récupéré", False)
         
         return True
     
@@ -149,8 +152,10 @@ class CompleteTester:
         print("-" * 30)
         
         if not self.created_project_id:
-            self.log("Aucun projet disponible pour tester les contributeurs", False)
+            self.log(f"Aucun projet disponible pour tester les contributeurs (ID: {self.created_project_id})", False)
             return False
+        
+        self.log(f"Test des contributeurs pour le projet ID: {self.created_project_id}")
         
         # 1. Lister les contributeurs du projet
         try:
@@ -165,11 +170,13 @@ class CompleteTester:
         
         # 2. Tenter d'ajouter un contributeur (nécessite un autre utilisateur)
         if self.created_user_id:
+            self.log(f"Tentative d'ajout du contributeur ID: {self.created_user_id}")
             try:
                 # Récupérer le username du nouvel utilisateur
                 user_response = requests.get(f"{self.base_url}/api/users/{self.created_user_id}/", headers=self.headers)
                 if user_response.status_code == 200:
                     username = user_response.json().get('username')
+                    self.log(f"Username récupéré: {username}")
                     
                     add_data = {"username": username}
                     response = requests.post(
@@ -181,8 +188,12 @@ class CompleteTester:
                         self.log(f"Contributeur {username} ajouté avec succès")
                     else:
                         self.log(f"Erreur ajout contributeur: {response.status_code} - {response.text}", False)
+                else:
+                    self.log(f"Impossible de récupérer l'utilisateur ID {self.created_user_id}: {user_response.status_code}", False)
             except Exception as e:
                 self.log(f"Erreur ajout contributeur: {e}", False)
+        else:
+            self.log("Aucun utilisateur créé pour tester l'ajout de contributeur", False)
         
         return True
     
