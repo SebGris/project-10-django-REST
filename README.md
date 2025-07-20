@@ -212,6 +212,30 @@ Ce test vérifie que :
 - ✅ Les utilisateurs de 15 ans et plus sont acceptés  
 - 📝 Les messages d'erreur sont appropriés
 
+### Test des modèles Issue et Comment
+```bash
+# Tester les modèles Issue et Comment
+poetry run python test_issue_comment_models.py
+```
+
+Ce test vérifie que :
+- ✅ Les modèles Issue et Comment sont correctement définis
+- ✅ Les relations entre Project, Issue et Comment fonctionnent
+- ✅ Les permissions et contraintes sont respectées
+- 📝 Les IDs UUID pour les commentaires fonctionnent
+
+### Test de l'API Issue et Comment
+```bash
+# Tester les endpoints API pour Issue et Comment
+poetry run python test_issue_comment_api.py
+```
+
+Ce test vérifie que :
+- ✅ CRUD complet pour les Issues (Create, Read, Update, Delete)
+- ✅ CRUD complet pour les Comments
+- ✅ Permissions appropriées (contributeurs uniquement)
+- ✅ Gestion des erreurs et validations
+
 #### **Étape 4 : Démarrer le serveur de développement**
 ```bash
 poetry run python manage.py runserver
@@ -292,6 +316,7 @@ Accédez à `http://127.0.0.1:8000/api/` pour une interface graphique
 📋 **Guides détaillés :**
 - `API_TESTING_COMPLETE_GUIDE.md` - Guide complet étape par étape
 - `USERS_API_TESTING.md` - Focus sur les endpoints utilisateurs
+- `ISSUE_COMMENT_API_GUIDE.md` - Guide rapide pour tester Issues et Comments
 
 ### **Étape 5 : Script de test automatique**
 ```bash
@@ -327,6 +352,24 @@ Accédez à http://127.0.0.1:8000/api/ pour l'interface Django REST Framework
 | PUT | `/api/projects/{id}/` | Modifier projet | Auteur |
 | DELETE | `/api/projects/{id}/` | Supprimer projet | Auteur |
 | POST | `/api/projects/{id}/add-contributor/` | Ajouter contributeur | Auteur |
+
+### 🐛 API Issues
+| Méthode | URL | Description | Auth |
+|---------|-----|-------------|------|
+| GET | `/api/issues/` | Lister issues | Oui |
+| POST | `/api/issues/` | Créer issue | Contributeur |
+| GET | `/api/issues/{id}/` | Détails issue | Contributeur |
+| PUT | `/api/issues/{id}/` | Modifier issue | Auteur/Propriétaire |
+| DELETE | `/api/issues/{id}/` | Supprimer issue | Auteur/Propriétaire |
+
+### 💬 API Commentaires
+| Méthode | URL | Description | Auth |
+|---------|-----|-------------|------|
+| GET | `/api/comments/` | Lister commentaires | Oui |
+| POST | `/api/comments/` | Créer commentaire | Contributeur |
+| GET | `/api/comments/{id}/` | Détails commentaire | Contributeur |
+| PUT | `/api/comments/{id}/` | Modifier commentaire | Auteur |
+| DELETE | `/api/comments/{id}/` | Supprimer commentaire | Auteur/Propriétaire |
 
 ## 📄 Aide
 - [Poetry le gestionnaire de dépendances Python moderne](https://blog.stephane-robert.info/docs/developper/programmation/python/poetry/)

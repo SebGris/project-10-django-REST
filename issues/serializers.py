@@ -59,12 +59,38 @@ class IssueSerializer(serializers.ModelSerializer):
     """Serializer pour le modèle Issue"""
     author = UserSerializer(read_only=True)
     assigned_to = UserSerializer(read_only=True)
+    assigned_to_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
     
     class Meta:
         model = Issue
         fields = ['id', 'name', 'description', 'priority', 'tag', 'status', 
-                 'project', 'author', 'assigned_to', 'created_time']
+                 'project', 'author', 'assigned_to', 'assigned_to_id', 'created_time']
         read_only_fields = ['id', 'author', 'created_time']
+    
+    def validate_assigned_to_id(self, value):
+        """Valider que l'utilisateur assigné existe et est contributeur du projet"""
+        if value is not None:
+            try:
+                user = User.objects.get(id=value)
+                # La validation du projet sera faite dans la vue
+                return value
+            except User.DoesNotExist:
+                raise serializers.ValidationError("Utilisateur non trouvé.")
+        return value
+    
+    def update(self, instance, validated_data):
+        """Mettre à jour une issue en gérant assigned_to_id"""
+        assigned_to_id = validated_data.pop('assigned_to_id', None)
+        if assigned_to_id is not None:
+            if assigned_to_id == 0:  # Désassigner
+                instance.assigned_to = None
+            else:
+                try:
+                    instance.assigned_to = User.objects.get(id=assigned_to_id)
+                except User.DoesNotExist:
+                    raise serializers.ValidationError("Utilisateur assigné non trouvé.")
+        
+        return super().update(instance, validated_data)
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -75,3 +101,9 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ['id', 'description', 'issue', 'author', 'created_time']
         read_only_fields = ['id', 'author', 'created_time']
+    
+    def validate_issue(self, value):
+        """Valider que l'issue existe"""
+        if not Issue.objects.filter(id=value.id).exists():
+            raise serializers.ValidationError("Issue non trouvée.")
+        return value
