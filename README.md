@@ -190,6 +190,21 @@ Password (again): SoftDesk2025!
 🔒 Note de sécurité
 ⚠️ Important : Ces mots de passe sont à usage de développement uniquement. En production, utilisez toujours des mots de passe forts et uniques !
 
+## 🔐 Conformité RGPD
+
+⚠️ **Validation d'âge obligatoire** : Conformément au RGPD, les utilisateurs de moins de 15 ans ne peuvent pas s'inscrire sur la plateforme.
+
+### Test de la conformité RGPD
+```bash
+# Tester la validation d'âge
+poetry run python test_rgpd_compliance.py
+```
+
+Ce test vérifie que :
+- ❌ Les utilisateurs de moins de 15 ans sont rejetés
+- ✅ Les utilisateurs de 15 ans et plus sont acceptés  
+- 📝 Les messages d'erreur sont appropriés
+
 #### **Étape 4 : Démarrer le serveur de développement**
 ```bash
 poetry run python manage.py runserver

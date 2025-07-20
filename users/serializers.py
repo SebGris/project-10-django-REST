@@ -71,8 +71,17 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
                  'password', 'password_confirm']
     
     def validate(self, data):
+        # Validation des mots de passe
         if data['password'] != data['password_confirm']:
             raise serializers.ValidationError("Les mots de passe ne correspondent pas.")
+        
+        # Validation RGPD : âge minimum de 15 ans
+        age = data.get('age')
+        if age is not None and age < 15:
+            raise serializers.ValidationError({
+                'age': "Conformément au RGPD, l'inscription n'est autorisée qu'aux personnes âgées d'au moins 15 ans."
+            })
+        
         return data
     
     def create(self, validated_data):

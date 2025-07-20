@@ -220,6 +220,47 @@
               "path": ["users", "{{user_id}}", ""]
             }
           }
+        },
+        {
+          "name": "Test RGPD - Inscription <15 ans (doit échouer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Inscription refusée pour moins de 15 ans', () => {",
+                  "    pm.expect(pm.response.code).to.equal(400);",
+                  "});",
+                  "",
+                  "pm.test('Message d\\'erreur mentionne l\\'âge', () => {",
+                  "    const response = pm.response.text();",
+                  "    pm.expect(response.toLowerCase()).to.include('âge');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"enfant_{{$timestamp}}\",\n    \"email\": \"enfant@example.com\",\n    \"first_name\": \"Enfant\",\n    \"last_name\": \"Mineur\",\n    \"age\": 12,\n    \"can_be_contacted\": true,\n    \"can_data_be_shared\": false,\n    \"password\": \"TestPass123!\",\n    \"password_confirm\": \"TestPass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{api_url}}/users/",
+              "host": ["{{api_url}}"],
+              "path": ["users", ""]
+            }
+          }
         }
       ]
     },

@@ -78,6 +78,20 @@ Content-Type: application/json
 
 **Statut attendu:** `201 Created`
 
+**🔐 VALIDATION RGPD :**
+⚠️ **Important** : Les utilisateurs de moins de 15 ans ne peuvent pas s'inscrire (conformité RGPD).
+
+**Test d'âge invalide (doit retourner 400):**
+```json
+{
+    "username": "enfant",
+    "email": "enfant@example.com", 
+    "age": 12,
+    "password": "TestPass123!",
+    "password_confirm": "TestPass123!"
+}
+```
+
 ### 3.2 📖 Lister tous les utilisateurs (AUTHENTIFIÉ)
 **GET** `http://127.0.0.1:8000/api/users/`
 
