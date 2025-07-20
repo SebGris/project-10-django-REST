@@ -23,9 +23,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Retourner seulement les projets où l'utilisateur est contributeur ou auteur"""
         user = self.request.user
-        # Récupérer les projets où l'utilisateur est contributeur OU auteur
+        # GREEN CODE: Optimiser les requêtes avec select_related et prefetch_related
+        # pour éviter les requêtes N+1
         return Project.objects.filter(
             models.Q(contributors__user=user) | models.Q(author=user)
+        ).select_related('author').prefetch_related(
+            'contributors__user'  # Précharger les utilisateurs des contributeurs
         ).distinct()
     
     def get_serializer_class(self):
@@ -165,15 +168,17 @@ class ContributorViewSet(viewsets.ReadOnlyModelViewSet):
                 # Vérifier que l'utilisateur peut accéder à ce projet
                 if not project.is_user_contributor(self.request.user):
                     return Contributor.objects.none()
-                return project.contributors.all()
+                # GREEN CODE: Précharger les utilisateurs pour éviter N+1
+                return project.contributors.select_related('user').all()
             except Project.DoesNotExist:
                 return Contributor.objects.none()
         else:
             # Route directe: /contributors/ (tous les contributeurs accessibles)
             user = self.request.user
+            # GREEN CODE: Optimiser avec select_related pour éviter N+1
             return Contributor.objects.filter(
                 project__contributors__user=user
-            ).distinct()
+            ).select_related('user', 'project').distinct()
 
 
 class IssueViewSet(viewsets.ModelViewSet):
@@ -196,14 +201,16 @@ class IssueViewSet(viewsets.ModelViewSet):
                 # Vérifier que l'utilisateur peut accéder à ce projet
                 if not project.is_user_contributor(user):
                     return Issue.objects.none()
-                return project.issues.all()
+                # GREEN CODE: Précharger les relations pour éviter N+1
+                return project.issues.select_related('author', 'assigned_to', 'project').all()
             except Project.DoesNotExist:
                 return Issue.objects.none()
         else:
             # Route directe: /issues/ (toutes les issues accessibles)
+            # GREEN CODE: Optimiser avec select_related pour éviter N+1
             return Issue.objects.filter(
                 models.Q(project__contributors__user=user) | models.Q(project__author=user)
-            ).distinct()
+            ).select_related('author', 'assigned_to', 'project').distinct()
     
     def create(self, request, *args, **kwargs):
         """Créer une issue - gérer les routes imbriquées"""
@@ -310,15 +317,17 @@ class CommentViewSet(viewsets.ModelViewSet):
                 if not project.is_user_contributor(user):
                     return Comment.objects.none()
                 
-                return issue.comments.all()
+                # GREEN CODE: Précharger les relations pour éviter N+1
+                return issue.comments.select_related('author', 'issue__project').all()
             except (Project.DoesNotExist, Issue.DoesNotExist):
                 return Comment.objects.none()
         else:
             # Route directe: /comments/ (tous les commentaires accessibles)
+            # GREEN CODE: Optimiser avec select_related pour éviter N+1
             return Comment.objects.filter(
                 models.Q(issue__project__contributors__user=user) | 
                 models.Q(issue__project__author=user)
-            ).distinct()
+            ).select_related('author', 'issue__project').distinct()
     
     def create(self, request, *args, **kwargs):
         """Créer un commentaire - gérer les routes imbriquées"""

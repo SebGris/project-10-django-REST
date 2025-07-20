@@ -59,8 +59,23 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    # GREEN CODE: Configuration de pagination optimisée
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 100,
+    'PAGE_SIZE': 20,  # Taille de page optimisée pour les performances
+    # GREEN CODE: Limitation du taux de requêtes pour éviter la surcharge serveur
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/hour',  # 100 requêtes par heure pour les anonymes
+        'user': '1000/hour'  # 1000 requêtes par heure pour les utilisateurs connectés
+    },
+    # GREEN CODE: Optimisation des renderers
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        # Supprimer BrowsableAPIRenderer en production pour économiser les ressources
+    ],
 }
 
 MIDDLEWARE = [
