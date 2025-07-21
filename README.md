@@ -196,6 +196,12 @@ poetry run python manage.py migrate
 
 # Tests
 poetry run python run_tests_universal.py
+
+# Linting et formatage avec Ruff
+poetry run ruff check .           # Vérifier le code
+poetry run ruff check . --fix     # Corriger automatiquement
+poetry run ruff format .          # Formater le code
+poetry run ruff check . --output-format=full  # Format détaillé
 ```
 
 ## 📄 Ressources
