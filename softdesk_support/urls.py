@@ -31,10 +31,6 @@ projects_router.register(r'issues', IssueViewSet, basename='project-issues')
 issues_router = routers.NestedDefaultRouter(projects_router, r'issues', lookup='issue')
 issues_router.register(r'comments', CommentViewSet, basename='issue-comments')
 
-# Routeur pour les issues globales (optionnel, pour accès direct)
-router.register(r'issues', IssueViewSet, basename='issue')
-router.register(r'comments', CommentViewSet, basename='comment')
-
 urlpatterns = [
     # Interface d'administration Django
     path('admin/', admin.site.urls),
