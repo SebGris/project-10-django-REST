@@ -17,14 +17,14 @@ project-10-django-REST/
 │   ├── serializers.py             # Sérialisation API utilisateurs
 │   ├── views.py                   # ViewSets pour endpoints utilisateurs
 │   ├── admin.py                   # Interface admin Django
-│   └── urls.py                    # Routes de l'app users
+│   └──  # (pas de urls.py, routes gérées dans softdesk_support/urls.py)
 │
 ├── 📁 issues/                     # App Django - Gestion projets/issues
 │   ├── models.py                  # Modèles Project, Issue, Comment
 │   ├── serializers.py             # Sérialisation pour tous les modèles
 │   ├── views.py                   # ViewSets avec routes imbriquées
 │   ├── admin.py                   # Interface admin complète
-│   └── urls.py                    # Routes avec drf-nested-routers
+│   └──  # (pas de urls.py, routes gérées dans softdesk_support/urls.py)
 │
 ├── 📁 softdesk_support/          # Projet Django principal
 │   ├── settings.py                # Configuration Django + DRF + JWT
@@ -54,14 +54,14 @@ project-10-django-REST/
 │       └── demo_n_plus_1.py
 │
 └── 📁 docs/                      # 📚 Documentation organisée
-    ├── GREEN_CODE_OPTIMIZATIONS.md
+    ├── ARCHITECTURE.md
+    ├── API_GUIDE.md
+    ├── GREEN_CODE_GUIDE.md
+    ├── INDEX.md
+    ├── ISSUE_COMMENT_API_GUIDE.md
     ├── N_PLUS_1_EXPLAINED.md
-    ├── 📁 guides/
-    │   ├── API_TESTING_COMPLETE_GUIDE.md
-    │   ├── USERS_API_TESTING.md
-    │   ├── ISSUE_COMMENT_API_GUIDE.md
-    │   ├── TESTING_GUIDE.md
-    │   └── CURL_TESTS.md
+    ├── SECURITY_GUIDE.md
+    ├── TESTING_GUIDE.md
     └── 📁 postman/
         ├── SoftDesk_API_Collection.json
         └── SoftDesk_Environment.json
