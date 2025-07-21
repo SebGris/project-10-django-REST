@@ -2,8 +2,15 @@
 Script de test de performance pour valider les optimisations Green Code
 """
 import os
+import sys
 import django
 import time
+from pathlib import Path
+
+# Ajouter le répertoire parent au chemin Python
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+
 from django.db import connection, reset_queries
 from django.test.utils import override_settings
 
