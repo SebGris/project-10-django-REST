@@ -1,4 +1,4 @@
-# 🧪 Guide Complet des Tests - SoftDesk API
+# 🧪 Tests SoftDesk - Guide Complet d'Assurance Qualité
 
 ## 📋 Vue d'ensemble
 

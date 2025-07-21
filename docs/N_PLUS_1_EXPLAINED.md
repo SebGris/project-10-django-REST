@@ -1,4 +1,4 @@
-# 🚨 Requêtes N+1 - Explication complète
+# ⚡ Performance SoftDesk - Guide d'Optimisation des Requêtes N+1
 
 ## 🤔 Qu'est-ce que le problème N+1 ?
 

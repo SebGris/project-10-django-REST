@@ -1,4 +1,4 @@
-# 🧪 Guide de test rapide - Issues et Comments
+# 🎯 API SoftDesk - Guide de Test Issues et Commentaires
 
 ## 📋 Prérequis
 - Serveur Django démarré : `poetry run python manage.py runserver`

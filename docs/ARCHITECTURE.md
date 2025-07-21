@@ -1,4 +1,4 @@
-# 🏗️ Architecture du Projet SoftDesk
+# 🏗️ Architecture SoftDesk - Guide de Structure du Projet
 
 ## 📁 Structure générale du projet
 

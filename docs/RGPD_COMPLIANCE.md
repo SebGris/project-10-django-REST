@@ -1,4 +1,4 @@
-# 🔒 Guide RGPD - Conformité et Protection des Données
+# 🔒 RGPD SoftDesk - Guide de Conformité et Protection des Données
 
 ## 📋 Vue d'ensemble
 

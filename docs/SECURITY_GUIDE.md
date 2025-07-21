@@ -1,4 +1,4 @@
-# 🛡️ Guide de Sécurité - SoftDesk API
+# 🛡️ Sécurité SoftDesk - Guide de Protection et Authentification
 
 ## 🔒 Vue d'ensemble de la sécurité
 

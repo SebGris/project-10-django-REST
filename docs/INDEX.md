@@ -1,4 +1,4 @@
-# 📚 Documentation SoftDesk API
+# 📚 Documentation SoftDesk - Index Général
 
 ## 🎯 Vue d'ensemble
 
@@ -8,20 +8,26 @@ Cette documentation complète couvre tous les aspects du projet SoftDesk, de l'i
 
 ### 🚀 Démarrage rapide
 - **[README.md](../README.md)** - Installation et lancement en local
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Architecture du projet et structure du code
+- **[Architecture SoftDesk](ARCHITECTURE.md)** - Structure du projet et organisation du code
 
 ### 🔧 Développement
-- **[API_GUIDE.md](API_GUIDE.md)** - Guide complet d'utilisation de l'API
-- **[TESTING_GUIDE.md](TESTING_GUIDE.md)** - Tests et validation du code
-- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - Résolution des problèmes courants
+- **[API SoftDesk](API_GUIDE.md)** - Référence complète de l'API REST
+- **[Tests SoftDesk](TESTING_GUIDE.md)** - Guide d'assurance qualité et validation
+- **[Dépannage SoftDesk](TROUBLESHOOTING.md)** - Résolution des problèmes courants
 
 ### 🛡️ Sécurité et conformité
-- **[SECURITY_GUIDE.md](SECURITY_GUIDE.md)** - Sécurité et authentification
-- **[RGPD_COMPLIANCE.md](RGPD_COMPLIANCE.md)** - Conformité RGPD et protection des données
+- **[Sécurité SoftDesk](SECURITY_GUIDE.md)** - Protection et authentification
+- **[RGPD SoftDesk](RGPD_COMPLIANCE.md)** - Conformité et protection des données
 
 ### 🌱 Performance et éco-conception
-- **[GREEN_CODE_GUIDE.md](GREEN_CODE_GUIDE.md)** - Optimisations Green Code
-- **[N_PLUS_1_EXPLAINED.md](N_PLUS_1_EXPLAINED.md)** - Résolution du problème N+1
+- **[Green Code SoftDesk](GREEN_CODE_GUIDE.md)** - Éco-conception et optimisations
+- **[Performance SoftDesk](N_PLUS_1_EXPLAINED.md)** - Optimisation des requêtes N+1
+- **[Routes SoftDesk](NESTED_ROUTER_GUIDE.md)** - Guide des URL imbriquées
+
+### 🧪 Tests spécialisés
+- **[Tests API Complète](API_TESTING_COMPLETE_GUIDE.md)** - Validation API complète
+- **[Tests API Utilisateurs](USERS_API_TESTING.md)** - Validation API utilisateurs
+- **[Tests Issues/Commentaires](ISSUE_COMMENT_API_GUIDE.md)** - Tests spécifiques modules
 
 ## 🎯 Navigation par objectif
 

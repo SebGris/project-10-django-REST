@@ -1,4 +1,4 @@
-# 🚨 Guide de Dépannage - SoftDesk API
+# � Dépannage SoftDesk - Guide de Résolution des Problèmes
 
 ## 🔍 Problèmes courants et solutions
 
