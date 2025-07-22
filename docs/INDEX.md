@@ -13,6 +13,7 @@ Cette documentation complète couvre tous les aspects du projet SoftDesk, de l'i
 
 ### 🔧 Développement
 - **[API SoftDesk](API_GUIDE.md)** - Référence complète de l'API REST
+- **[DefaultRouter Guide](DEFAULTROUTER_GUIDE.md)** - Comprendre le routage automatique DRF
 - **[Tests SoftDesk](TESTING_GUIDE.md)** - Guide d'assurance qualité et validation
 - **[Dépannage SoftDesk](TROUBLESHOOTING.md)** - Résolution des problèmes courants
 
@@ -65,6 +66,7 @@ Cette documentation complète couvre tous les aspects du projet SoftDesk, de l'i
 | Document | Description | Niveau |
 |----------|-------------|---------|
 | [DJANGO_GUIDE.md](DJANGO_GUIDE.md) | Guide complet Django et MVT | Débutant |
+| [DEFAULTROUTER_GUIDE.md](DEFAULTROUTER_GUIDE.md) | Routage automatique et URLs DRF | Intermédiaire |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Structure du projet, design patterns | Intermédiaire |
 | [N_PLUS_1_EXPLAINED.md](N_PLUS_1_EXPLAINED.md) | Optimisations de requêtes SQL | Avancé |
 | [TESTING_GUIDE.md](TESTING_GUIDE.md) | Tests unitaires et d'intégration | Tous niveaux |
