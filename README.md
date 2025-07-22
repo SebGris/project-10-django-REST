@@ -170,6 +170,7 @@ poetry run python diagnose_project.py
 - 🌱 **[Green Code](docs/GREEN_CODE_OPTIMIZATIONS.md)** - Optimisations éco-responsables
 - 📖 **[API Guide](docs/API_GUIDE.md)** - Documentation complète des endpoints
 - 🔒 **[RGPD](docs/RGPD_COMPLIANCE.md)** - Conformité et protection des données
+- 📚 **[ModelViewSet Guide](docs/MODELVIEWSET_GUIDE.md)** - Guide complet des ViewSets DRF
 
 ## 🛠️ Développement
 
