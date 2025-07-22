@@ -8,6 +8,7 @@ Cette documentation complète couvre tous les aspects du projet SoftDesk, de l'i
 
 ### 🚀 Démarrage rapide
 - **[README.md](../README.md)** - Installation et lancement en local
+- **[Django Guide](DJANGO_GUIDE.md)** - Comprendre Django et son architecture
 - **[Architecture SoftDesk](ARCHITECTURE.md)** - Structure du projet et organisation du code
 
 ### 🔧 Développement
@@ -21,6 +22,7 @@ Cette documentation complète couvre tous les aspects du projet SoftDesk, de l'i
 
 ### 🌱 Performance et éco-conception
 - **[Green Code SoftDesk](GREEN_CODE_GUIDE.md)** - Éco-conception et optimisations
+- **[Rapport Green Code](GREEN_CODE_COMPLIANCE_REPORT.md)** - Rapport de conformité et métriques
 - **[Performance SoftDesk](N_PLUS_1_EXPLAINED.md)** - Optimisation des requêtes N+1
 - **[Routes SoftDesk](NESTED_ROUTER_GUIDE.md)** - Guide des URL imbriquées
 
@@ -33,12 +35,13 @@ Cette documentation complète couvre tous les aspects du projet SoftDesk, de l'i
 
 ### Je veux lancer le projet en local
 1. **[README.md](../README.md)** → Installation et premier démarrage
-2. **[TESTING_GUIDE.md](TESTING_GUIDE.md)** → Valider que tout fonctionne
-3. **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** → En cas de problème
+2. **[DJANGO_GUIDE.md](DJANGO_GUIDE.md)** → Comprendre les concepts Django
+3. **[TESTING_GUIDE.md](TESTING_GUIDE.md)** → Valider que tout fonctionne
+4. **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** → En cas de problème
 
 ### Je veux utiliser l'API
 1. **[API_GUIDE.md](API_GUIDE.md)** → Documentation complète des endpoints
-2. **[guides/postman/](guides/postman/)** → Collections Postman prêtes à l'emploi
+2. **[postman/POSTMAN_GUIDE.md](postman/POSTMAN_GUIDE.md)** → Guide Postman et collections
 3. **[SECURITY_GUIDE.md](SECURITY_GUIDE.md)** → Authentification et tokens
 
 ### Je veux comprendre l'architecture
@@ -61,6 +64,7 @@ Cette documentation complète couvre tous les aspects du projet SoftDesk, de l'i
 ### 🔧 Technique
 | Document | Description | Niveau |
 |----------|-------------|---------|
+| [DJANGO_GUIDE.md](DJANGO_GUIDE.md) | Guide complet Django et MVT | Débutant |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Structure du projet, design patterns | Intermédiaire |
 | [N_PLUS_1_EXPLAINED.md](N_PLUS_1_EXPLAINED.md) | Optimisations de requêtes SQL | Avancé |
 | [TESTING_GUIDE.md](TESTING_GUIDE.md) | Tests unitaires et d'intégration | Tous niveaux |
@@ -69,7 +73,7 @@ Cette documentation complète couvre tous les aspects du projet SoftDesk, de l'i
 | Document | Description | Niveau |
 |----------|-------------|---------|
 | [API_GUIDE.md](API_GUIDE.md) | Documentation complète de l'API | Tous niveaux |
-| [guides/postman/](guides/postman/) | Collections et environnements Postman | Débutant |
+| [postman/POSTMAN_GUIDE.md](postman/POSTMAN_GUIDE.md) | Guide Postman et collections | Débutant |
 
 ### 🛡️ Sécurité
 | Document | Description | Niveau |
@@ -81,6 +85,7 @@ Cette documentation complète couvre tous les aspects du projet SoftDesk, de l'i
 | Document | Description | Niveau |
 |----------|-------------|---------|
 | [GREEN_CODE_GUIDE.md](GREEN_CODE_GUIDE.md) | Éco-conception et optimisations | Avancé |
+| [GREEN_CODE_COMPLIANCE_REPORT.md](GREEN_CODE_COMPLIANCE_REPORT.md) | Rapport de conformité et métriques | Intermédiaire |
 
 ### 🔧 Maintenance
 | Document | Description | Niveau |
@@ -91,9 +96,10 @@ Cette documentation complète couvre tous les aspects du projet SoftDesk, de l'i
 
 ### Niveau Débutant
 1. **Commencer ici :** [README.md](../README.md)
-2. **Tester l'API :** [API_GUIDE.md](API_GUIDE.md) (sections de base)
-3. **Utiliser Postman :** [guides/postman/](guides/postman/)
-4. **En cas de problème :** [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+2. **Comprendre Django :** [DJANGO_GUIDE.md](DJANGO_GUIDE.md)
+3. **Tester l'API :** [API_GUIDE.md](API_GUIDE.md) (sections de base)
+4. **Utiliser Postman :** [postman/POSTMAN_GUIDE.md](postman/POSTMAN_GUIDE.md)
+5. **En cas de problème :** [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
 
 ### Niveau Intermédiaire
 1. **Architecture :** [ARCHITECTURE.md](ARCHITECTURE.md)
