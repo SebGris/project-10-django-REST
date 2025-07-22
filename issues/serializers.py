@@ -19,7 +19,7 @@ class ContributorSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Contributor
-        fields = ['id', 'user', 'created_time']
+        fields = ['user', 'created_time']
         read_only_fields = ['id', 'created_time']
 
 

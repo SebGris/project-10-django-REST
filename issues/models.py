@@ -30,7 +30,7 @@ class Project(models.Model):
         """
         Surcharge de save pour créer automatiquement l'auteur comme contributeur
         """
-        is_new = self.pk is None
+        is_new = self.pk is None # TODOU double check if this is a new project
         super().save(*args, **kwargs)
         
         # Si c'est un nouveau projet, ajouter l'auteur comme contributeur
@@ -102,7 +102,7 @@ class Contributor(models.Model):
                 fields=['user', 'project'], 
                 name='unique_user_project_contributor'
             )
-        ]  # Un utilisateur ne peut être contributeur qu'une fois par projet, évite les doublons dans la table
+        ]  # TODOUn utilisateur ne peut être contributeur qu'une fois par projet, évite les doublons dans la table
 
     @property
     def is_author(self):

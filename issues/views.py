@@ -44,17 +44,17 @@ class ProjectViewSet(viewsets.ModelViewSet):
         serializer.save(author=user)
         # L'auteur est automatiquement ajouté comme contributeur via Project.save()
     
-    def create(self, request, *args, **kwargs):
-        """Créer un projet et retourner la réponse complète avec l'ID"""
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+    # def create(self, request, *args, **kwargs):
+    #     """Créer un projet et retourner la réponse complète avec l'ID"""
+    #     serializer = self.get_serializer(data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+    #     self.perform_create(serializer)
         
-        # Retourner la réponse avec le ProjectSerializer complet (avec ID)
-        instance = serializer.instance
-        response_serializer = ProjectSerializer(instance, context={'request': request})
-        headers = self.get_success_headers(response_serializer.data)
-        return Response(response_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    #     # Retourner la réponse avec le ProjectSerializer complet (avec ID)
+    #     instance = serializer.instance
+    #     response_serializer = ProjectSerializer(instance, context={'request': request})
+    #     headers = self.get_success_headers(response_serializer.data)
+    #     return Response(response_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
     def perform_update(self, serializer):
         """Vérifier que seul l'auteur peut modifier le projet"""
