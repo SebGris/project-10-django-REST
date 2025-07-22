@@ -82,14 +82,19 @@ class ProjectViewSet(viewsets.ModelViewSet):
             )
         
         username = request.data.get('username')
-        if not username:
+        user_id = request.data.get('user_id')
+        
+        if not username and not user_id:
             return Response(
-                {"error": "Le nom d'utilisateur est requis"},
+                {"error": "Le nom d'utilisateur ou l'ID utilisateur est requis"},
                 status=status.HTTP_400_BAD_REQUEST
             )
         
         try:
-            user_to_add = User.objects.get(username=username)
+            if username:
+                user_to_add = User.objects.get(username=username)
+            else:
+                user_to_add = User.objects.get(id=user_id)
         except User.DoesNotExist:
             return Response(
                 {"error": "Utilisateur non trouvé"},

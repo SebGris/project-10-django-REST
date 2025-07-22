@@ -102,15 +102,22 @@ poetry run python run_tests_universal.py
 
 ## 📋 Endpoints principaux
 
-| Endpoint | Méthode | Description | Auth |
-|----------|---------|-------------|------|
-| `/api/token/` | POST | Obtenir token JWT | Non |
-| `/api/users/` | POST | Inscription | Non |
-| `/api/users/` | GET | Liste utilisateurs | Oui |
-| `/api/projects/` | GET/POST | Projets | Oui |
-| `/api/projects/{id}/` | GET/PUT/DELETE | Détails projet | Oui |
-| `/api/issues/` | GET/POST | Issues | Oui |
-| `/api/comments/` | GET/POST | Commentaires | Oui |
+| Endpoint | Méthode | Description | Auth | Body Format |
+|----------|---------|-------------|------|-------------|
+| `/api/token/` | POST | Obtenir token JWT | Non | `{"username": "user", "password": "pass"}` |
+| `/api/users/` | POST | Inscription | Non | `{"username": "user", "email": "...", "password": "..."}` |
+| `/api/users/` | GET | Liste utilisateurs | Oui | - |
+| `/api/projects/` | GET/POST | Projets | Oui | `{"name": "...", "description": "...", "type": "back-end"}` |
+| `/api/projects/{id}/` | GET/PUT/DELETE | Détails projet | Oui | - |
+| `/api/projects/{id}/add-contributor/` | POST | Ajouter contributeur | Oui | `{"username": "user"}` ou `{"user_id": 1}` |
+| `/api/issues/` | GET/POST | Issues | Oui | `{"name": "...", "description": "...", "tag": "BUG", "assigned_to_id": 1}` |
+| `/api/comments/` | GET/POST | Commentaires | Oui | `{"description": "..."}` |
+
+### Valeurs autorisées pour les champs :
+- **Project.type** : `"back-end"`, `"front-end"`, `"iOS"`, `"Android"`
+- **Issue.priority** : `"LOW"`, `"MEDIUM"`, `"HIGH"`
+- **Issue.tag** : `"BUG"`, `"FEATURE"`, `"TASK"`
+- **Issue.status** : `"To Do"`, `"In Progress"`, `"Finished"`
 
 ## 🔐 Authentification JWT
 
