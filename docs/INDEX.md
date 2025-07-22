@@ -14,6 +14,7 @@ Cette documentation complète couvre tous les aspects du projet SoftDesk, de l'i
 ### 🔧 Développement
 - **[API SoftDesk](API_GUIDE.md)** - Référence complète de l'API REST
 - **[DefaultRouter Guide](DEFAULTROUTER_GUIDE.md)** - Comprendre le routage automatique DRF
+- **[Raw Strings Guide](RAW_STRINGS_GUIDE.md)** - Comprendre les chaînes brutes Python (r'')
 - **[Tests SoftDesk](TESTING_GUIDE.md)** - Guide d'assurance qualité et validation
 - **[Dépannage SoftDesk](TROUBLESHOOTING.md)** - Résolution des problèmes courants
 
@@ -66,6 +67,7 @@ Cette documentation complète couvre tous les aspects du projet SoftDesk, de l'i
 | Document | Description | Niveau |
 |----------|-------------|---------|
 | [DJANGO_GUIDE.md](DJANGO_GUIDE.md) | Guide complet Django et MVT | Débutant |
+| [RAW_STRINGS_GUIDE.md](RAW_STRINGS_GUIDE.md) | Chaînes brutes Python et conventions | Débutant |
 | [DEFAULTROUTER_GUIDE.md](DEFAULTROUTER_GUIDE.md) | Routage automatique et URLs DRF | Intermédiaire |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Structure du projet, design patterns | Intermédiaire |
 | [N_PLUS_1_EXPLAINED.md](N_PLUS_1_EXPLAINED.md) | Optimisations de requêtes SQL | Avancé |
@@ -99,9 +101,10 @@ Cette documentation complète couvre tous les aspects du projet SoftDesk, de l'i
 ### Niveau Débutant
 1. **Commencer ici :** [README.md](../README.md)
 2. **Comprendre Django :** [DJANGO_GUIDE.md](DJANGO_GUIDE.md)
-3. **Tester l'API :** [API_GUIDE.md](API_GUIDE.md) (sections de base)
-4. **Utiliser Postman :** [postman/POSTMAN_GUIDE.md](postman/POSTMAN_GUIDE.md)
-5. **En cas de problème :** [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+3. **Syntaxe Python :** [RAW_STRINGS_GUIDE.md](RAW_STRINGS_GUIDE.md)
+4. **Tester l'API :** [API_GUIDE.md](API_GUIDE.md) (sections de base)
+5. **Utiliser Postman :** [postman/POSTMAN_GUIDE.md](postman/POSTMAN_GUIDE.md)
+6. **En cas de problème :** [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
 
 ### Niveau Intermédiaire
 1. **Architecture :** [ARCHITECTURE.md](ARCHITECTURE.md)
