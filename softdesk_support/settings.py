@@ -74,6 +74,7 @@ REST_FRAMEWORK = {
     # GREEN CODE: Optimisation des renderers
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',  # Interface de navigation DRF
         # Supprimer BrowsableAPIRenderer en production pour économiser les ressources
     ],
 }
