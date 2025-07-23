@@ -12,6 +12,14 @@ from .serializers import (
     IssueSerializer,
     CommentSerializer
 )
+from .permissions import (
+    IsProjectAuthorOrReadOnly,
+    IsIssueAuthorOrProjectAuthor,
+    IsCommentAuthorOrProjectAuthor,
+    IsProjectContributor,
+    CanModifyAssignedUser,
+    IsContributorViewAccess
+)
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -19,7 +27,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     ViewSet pour la gestion des projets
     """
     serializer_class = ProjectSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsProjectAuthorOrReadOnly]
     
     def get_queryset(self):
         """Retourner seulement les projets où l'utilisateur est contributeur ou auteur"""
@@ -44,42 +52,14 @@ class ProjectViewSet(viewsets.ModelViewSet):
         serializer.save(author=user)
         # L'auteur est automatiquement ajouté comme contributeur via Project.save()
     
-    # def create(self, request, *args, **kwargs):
-    #     """Créer un projet et retourner la réponse complète avec l'ID"""
-    #     serializer = self.get_serializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     self.perform_create(serializer)
-        
-    #     # Retourner la réponse avec le ProjectSerializer complet (avec ID)
-    #     instance = serializer.instance
-    #     response_serializer = ProjectSerializer(instance, context={'request': request})
-    #     headers = self.get_success_headers(response_serializer.data)
-    #     return Response(response_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-    
-    def perform_update(self, serializer):
-        """Vérifier que seul l'auteur peut modifier le projet"""
-        project = self.get_object()
-        if not project.can_user_modify(self.request.user):
-            raise permissions.PermissionDenied("Seul l'auteur peut modifier ce projet.")
-        serializer.save()
-    
-    def perform_destroy(self, instance):
-        """Vérifier que seul l'auteur peut supprimer le projet"""
-        if not instance.can_user_modify(self.request.user):
-            raise permissions.PermissionDenied("Seul l'auteur peut supprimer ce projet.")
-        instance.delete()
+    # ✅ perform_update et perform_destroy supprimées - gérées par IsProjectAuthorOrReadOnly
     
     @action(detail=True, methods=['post'], url_path='add-contributor')
     def add_contributor(self, request, pk=None):
         """Ajouter un contributeur au projet"""
         project = self.get_object()
         
-        # Vérifier que l'utilisateur est l'auteur du projet
-        if not project.can_user_modify(request.user):
-            return Response(
-                {"error": "Seul l'auteur peut ajouter des contributeurs"},
-                status=status.HTTP_403_FORBIDDEN
-            )
+        # ✅ Plus de vérification manuelle ! IsProjectAuthorOrReadOnly s'en charge via @action
         
         username = request.data.get('username')
         user_id = request.data.get('user_id')
@@ -119,12 +99,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         """Supprimer un contributeur du projet"""
         project = self.get_object()
         
-        # Vérifier que l'utilisateur est l'auteur du projet
-        if not project.can_user_modify(request.user):
-            return Response(
-                {"error": "Seul l'auteur peut supprimer des contributeurs"},
-                status=status.HTTP_403_FORBIDDEN
-            )
+        # ✅ Plus de vérification manuelle ! IsProjectAuthorOrReadOnly s'en charge
         
         # Ne pas permettre de supprimer l'auteur
         user_to_remove = get_object_or_404(User, id=user_id)
@@ -160,7 +135,7 @@ class ContributorViewSet(viewsets.ReadOnlyModelViewSet):
     Accessible via /api/projects/{project_id}/contributors/
     """
     serializer_class = ContributorSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsContributorViewAccess]
     
     def get_queryset(self):
         """Retourner les contributeurs du projet spécifié dans l'URL"""
@@ -171,9 +146,7 @@ class ContributorViewSet(viewsets.ReadOnlyModelViewSet):
             # Route imbriquée: /projects/{project_id}/contributors/
             try:
                 project = Project.objects.get(id=project_id)
-                # Vérifier que l'utilisateur peut accéder à ce projet
-                if not project.is_user_contributor(self.request.user):
-                    return Contributor.objects.none()
+                # ✅ Plus de vérification manuelle ! IsContributorViewAccess s'en charge
                 # GREEN CODE: Précharger les utilisateurs pour éviter N+1
                 return project.contributors.select_related('user').all()
             except Project.DoesNotExist:
@@ -193,7 +166,12 @@ class IssueViewSet(viewsets.ModelViewSet):
     Support des routes imbriquées: /api/projects/{project_id}/issues/
     """
     serializer_class = IssueSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [
+        permissions.IsAuthenticated, 
+        IsProjectContributor, 
+        IsIssueAuthorOrProjectAuthor,
+        CanModifyAssignedUser
+    ]
     
     def get_queryset(self):
         """Retourner les issues selon le contexte (imbriqué ou global)"""
@@ -204,9 +182,7 @@ class IssueViewSet(viewsets.ModelViewSet):
             # Route imbriquée: /projects/{project_id}/issues/
             try:
                 project = Project.objects.get(id=project_id)
-                # Vérifier que l'utilisateur peut accéder à ce projet
-                if not project.is_user_contributor(user):
-                    return Issue.objects.none()
+                # ✅ Plus de vérification manuelle ! IsProjectContributor s'en charge
                 # GREEN CODE: Précharger les relations pour éviter N+1
                 return project.issues.select_related('author', 'assigned_to', 'project').all()
             except Project.DoesNotExist:
@@ -230,6 +206,7 @@ class IssueViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         """Créer une issue - support des routes imbriquées"""
+        # ✅ Plus de vérifications de permissions ! Les permission classes s'en chargent
         user = self.request.user
         project_id = self.kwargs.get('project_pk')
         
@@ -250,53 +227,11 @@ class IssueViewSet(viewsets.ModelViewSet):
             except Project.DoesNotExist:
                 raise permissions.PermissionDenied("Projet non trouvé.")
         
-        # Vérifier que l'utilisateur est contributeur du projet
-        if not project.is_user_contributor(user):
-            raise permissions.PermissionDenied("Vous devez être contributeur du projet pour créer une issue.")
-        
-        # Vérifier assigned_to si fourni
-        assigned_to_id = self.request.data.get('assigned_to')
-        if assigned_to_id:
-            try:
-                assigned_user = User.objects.get(id=assigned_to_id)
-                if not project.is_user_contributor(assigned_user):
-                    raise permissions.PermissionDenied("L'utilisateur assigné doit être contributeur du projet.")
-            except User.DoesNotExist:
-                raise permissions.PermissionDenied("Utilisateur assigné non trouvé.")
-        
+        # ✅ Plus de vérifications manuelles ! CanModifyAssignedUser s'en charge
         # Sauvegarder avec l'auteur et le projet
         serializer.save(author=user, project=project)
     
-    def perform_update(self, serializer):
-        """Vérifier que l'utilisateur peut modifier cette issue"""
-        issue = self.get_object()
-        user = self.request.user
-        
-        # Seul l'auteur de l'issue ou l'auteur du projet peut modifier
-        if issue.author != user and issue.project.author != user:
-            raise permissions.PermissionDenied("Seul l'auteur de l'issue ou l'auteur du projet peut la modifier.")
-        
-        # Vérifier assigned_to si fourni
-        assigned_to_id = self.request.data.get('assigned_to')
-        if assigned_to_id:
-            try:
-                assigned_user = User.objects.get(id=assigned_to_id)
-                if not issue.project.is_user_contributor(assigned_user):
-                    raise permissions.PermissionDenied("L'utilisateur assigné doit être contributeur du projet.")
-            except User.DoesNotExist:
-                raise permissions.PermissionDenied("Utilisateur assigné non trouvé.")
-        
-        serializer.save()
-    
-    def perform_destroy(self, instance):
-        """Vérifier que l'utilisateur peut supprimer cette issue"""
-        user = self.request.user
-        
-        # Seul l'auteur de l'issue ou l'auteur du projet peut supprimer
-        if instance.author != user and instance.project.author != user:
-            raise permissions.PermissionDenied("Seul l'auteur de l'issue ou l'auteur du projet peut la supprimer.")
-        
-        instance.delete()
+    # ✅ perform_update et perform_destroy supprimées - gérées par IsIssueAuthorOrProjectAuthor
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -305,7 +240,11 @@ class CommentViewSet(viewsets.ModelViewSet):
     Support des routes imbriquées: /api/projects/{project_id}/issues/{issue_id}/comments/
     """
     serializer_class = CommentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [
+        permissions.IsAuthenticated, 
+        IsProjectContributor, 
+        IsCommentAuthorOrProjectAuthor
+    ]
     
     def get_queryset(self):
         """Retourner les commentaires selon le contexte (imbriqué ou global)"""
@@ -319,9 +258,7 @@ class CommentViewSet(viewsets.ModelViewSet):
                 project = Project.objects.get(id=project_id)
                 issue = Issue.objects.get(id=issue_id, project=project)
                 
-                # Vérifier que l'utilisateur peut accéder à ce projet
-                if not project.is_user_contributor(user):
-                    return Comment.objects.none()
+                # ✅ Plus de vérification manuelle ! IsProjectContributor s'en charge
                 
                 # GREEN CODE: Précharger les relations pour éviter N+1
                 return issue.comments.select_related('author', 'issue__project').all()
@@ -347,6 +284,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         """Créer un commentaire - support des routes imbriquées"""
+        # ✅ Plus de vérifications de permissions ! Les permission classes s'en chargent
         user = self.request.user
         issue_id = self.kwargs.get('issue_pk')
         project_id = self.kwargs.get('project_pk')
@@ -370,30 +308,8 @@ class CommentViewSet(viewsets.ModelViewSet):
             except Issue.DoesNotExist:
                 raise permissions.PermissionDenied("Issue non trouvée.")
         
-        # Vérifier que l'utilisateur est contributeur du projet
-        if not project.is_user_contributor(user):
-            raise permissions.PermissionDenied("Vous devez être contributeur du projet pour commenter.")
-        
+        # ✅ Plus de vérifications manuelles ! IsProjectContributor s'en charge
         # Sauvegarder avec l'auteur et l'issue
         serializer.save(author=user, issue=issue)
     
-    def perform_update(self, serializer):
-        """Vérifier que l'utilisateur peut modifier ce commentaire"""
-        comment = self.get_object()
-        user = self.request.user
-        
-        # Seul l'auteur du commentaire peut le modifier
-        if comment.author != user:
-            raise permissions.PermissionDenied("Seul l'auteur du commentaire peut le modifier.")
-        
-        serializer.save()
-    
-    def perform_destroy(self, instance):
-        """Vérifier que l'utilisateur peut supprimer ce commentaire"""
-        user = self.request.user
-        
-        # Seul l'auteur du commentaire ou l'auteur du projet peut supprimer
-        if instance.author != user and instance.issue.project.author != user:
-            raise permissions.PermissionDenied("Seul l'auteur du commentaire ou l'auteur du projet peut le supprimer.")
-        
-        instance.delete()
+    # ✅ perform_update et perform_destroy supprimées - gérées par IsCommentAuthorOrProjectAuthor
