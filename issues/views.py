@@ -25,6 +25,12 @@ from .permissions import (
 class ProjectViewSet(viewsets.ModelViewSet):
     """
     ViewSet pour la gestion des projets
+    
+    Fonctionnalités :
+    - CRUD complet (Create, Read, Update, Delete)
+    - Actions personnalisées pour gestion des contributeurs
+    - Permissions : seul l'auteur peut modifier/supprimer
+    - Routes : /api/projects/
     """
     serializer_class = ProjectSerializer
     permission_classes = [permissions.IsAuthenticated, IsProjectAuthorOrReadOnly]
@@ -163,7 +169,12 @@ class ContributorViewSet(viewsets.ReadOnlyModelViewSet):
 class IssueViewSet(viewsets.ModelViewSet):
     """
     ViewSet pour la gestion des issues (problèmes/tâches)
-    Support des routes imbriquées: /api/projects/{project_id}/issues/
+    
+    Fonctionnalités :
+    - CRUD complet pour les issues
+    - Support des routes imbriquées : /api/projects/{project_id}/issues/
+    - Permissions : auteur de l'issue OU auteur du projet
+    - Filtrage automatique par contributeur
     """
     serializer_class = IssueSerializer
     permission_classes = [
@@ -237,7 +248,12 @@ class IssueViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     """
     ViewSet pour la gestion des commentaires
-    Support des routes imbriquées: /api/projects/{project_id}/issues/{issue_id}/comments/
+    
+    Fonctionnalités :
+    - CRUD complet pour les commentaires
+    - Support des routes imbriquées : /api/projects/{project_id}/issues/{issue_id}/comments/
+    - Permissions : auteur du commentaire OU auteur du projet
+    - Filtrage automatique par contributeur du projet
     """
     serializer_class = CommentSerializer
     permission_classes = [
