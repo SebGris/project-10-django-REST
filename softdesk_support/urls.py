@@ -14,7 +14,7 @@ from rest_framework_simplejwt.views import (
 
 # Import des ViewSets
 from users.views import UserViewSet
-from issues.views import ProjectViewSet, ContributorViewSet, IssueViewSet, CommentViewSet
+from issues.views import ProjectViewSet, IssueViewSet, CommentViewSet
 
 
 # Routeur principal
@@ -24,7 +24,6 @@ router.register(r'projects', ProjectViewSet, basename='project')
 
 # Routes imbriquées pour les projets
 projects_router = routers.NestedDefaultRouter(router, r'projects', lookup='project')
-projects_router.register(r'contributors', ContributorViewSet, basename='project-contributors')
 projects_router.register(r'issues', IssueViewSet, basename='project-issues')
 
 # Routes imbriquées pour les issues

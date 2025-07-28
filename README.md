@@ -39,7 +39,6 @@ Cette API implémente des pratiques **Green Code** pour réduire son impact envi
 
 ### 1. Installation de Poetry
 
-#### Sur Windows
 ```bash
 # Installer pipx
 python -m pip install --user pipx
@@ -48,11 +47,6 @@ python -m pipx ensurepath
 # Redémarrer le terminal ou VS Code, puis :
 pipx install poetry
 poetry --version
-```
-
-#### Sur macOS/Linux
-```bash
-curl -sSL https://install.python-poetry.org | python3 -
 ```
 
 ### 2. Installation du projet
