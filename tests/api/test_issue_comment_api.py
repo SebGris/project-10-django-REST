@@ -129,7 +129,7 @@ class IssueCommentAPITester:
         }
         
         try:
-            response = requests.post(f"{self.base_url}/api/issues/", json=issue_data, headers=self.headers)
+            response = requests.post(f"{self.base_url}/api/projects/{self.test_project_id}/issues/", json=issue_data, headers=self.headers)
             if response.status_code == 201:
                 issue_response = response.json()
                 self.test_issue_id = issue_response.get('id')
@@ -143,7 +143,7 @@ class IssueCommentAPITester:
         
         # 2. Lire les issues
         try:
-            response = requests.get(f"{self.base_url}/api/issues/", headers=self.headers)
+            response = requests.get(f"{self.base_url}/api/projects/{self.test_project_id}/issues/", headers=self.headers)
             if response.status_code == 200:
                 issues = response.json()
                 self.log(f"Issues listées ({len(issues.get('results', issues))} trouvées)")
@@ -154,7 +154,7 @@ class IssueCommentAPITester:
         
         # 3. Lire une issue spécifique
         try:
-            response = requests.get(f"{self.base_url}/api/issues/{self.test_issue_id}/", headers=self.headers)
+            response = requests.get(f"{self.base_url}/api/projects/{self.test_project_id}/issues/{self.test_issue_id}/", headers=self.headers)
             if response.status_code == 200:
                 issue = response.json()
                 self.log(f"Issue détaillée récupérée: {issue.get('name')}")
@@ -171,7 +171,7 @@ class IssueCommentAPITester:
         }
         
         try:
-            response = requests.patch(f"{self.base_url}/api/issues/{self.test_issue_id}/", json=update_data, headers=self.headers)
+            response = requests.patch(f"{self.base_url}/api/projects/{self.test_project_id}/issues/{self.test_issue_id}/", json=update_data, headers=self.headers)
             if response.status_code == 200:
                 self.log("Issue modifiée avec succès")
             else:
@@ -197,7 +197,7 @@ class IssueCommentAPITester:
         }
         
         try:
-            response = requests.post(f"{self.base_url}/api/comments/", json=comment_data, headers=self.headers)
+            response = requests.post(f"{self.base_url}/api/projects/{self.test_project_id}/issues/{self.test_issue_id}/comments/", json=comment_data, headers=self.headers)
             if response.status_code == 201:
                 comment_response = response.json()
                 self.test_comment_id = comment_response.get('id')
@@ -211,7 +211,7 @@ class IssueCommentAPITester:
         
         # 2. Lire les commentaires
         try:
-            response = requests.get(f"{self.base_url}/api/comments/", headers=self.headers)
+            response = requests.get(f"{self.base_url}/api/projects/{self.test_project_id}/issues/{self.test_issue_id}/comments/", headers=self.headers)
             if response.status_code == 200:
                 comments = response.json()
                 self.log(f"Commentaires listés ({len(comments.get('results', comments))} trouvés)")
@@ -222,7 +222,7 @@ class IssueCommentAPITester:
         
         # 3. Lire un commentaire spécifique
         try:
-            response = requests.get(f"{self.base_url}/api/comments/{self.test_comment_id}/", headers=self.headers)
+            response = requests.get(f"{self.base_url}/api/projects/{self.test_project_id}/issues/{self.test_issue_id}/comments/{self.test_comment_id}/", headers=self.headers)
             if response.status_code == 200:
                 comment = response.json()
                 self.log(f"Commentaire détaillé récupéré")
@@ -237,7 +237,7 @@ class IssueCommentAPITester:
         }
         
         try:
-            response = requests.patch(f"{self.base_url}/api/comments/{self.test_comment_id}/", json=update_data, headers=self.headers)
+            response = requests.patch(f"{self.base_url}/api/projects/{self.test_project_id}/issues/{self.test_issue_id}/comments/{self.test_comment_id}/", json=update_data, headers=self.headers)
             if response.status_code == 200:
                 self.log("Commentaire modifié avec succès")
             else:
@@ -283,7 +283,7 @@ class IssueCommentAPITester:
                     # Essayer de modifier l'issue créée par l'autre utilisateur
                     update_data = {"name": "Tentative de modification non autorisée"}
                     
-                    response = requests.patch(f"{self.base_url}/api/issues/{self.test_issue_id}/", 
+                    response = requests.patch(f"{self.base_url}/api/projects/{self.test_project_id}/issues/{self.test_issue_id}/", 
                                             json=update_data, headers=new_headers)
                     
                     if response.status_code == 404:
@@ -310,7 +310,7 @@ class IssueCommentAPITester:
         # Supprimer le commentaire
         if self.test_comment_id:
             try:
-                response = requests.delete(f"{self.base_url}/api/comments/{self.test_comment_id}/", headers=self.headers)
+                response = requests.delete(f"{self.base_url}/api/projects/{self.test_project_id}/issues/{self.test_issue_id}/comments/{self.test_comment_id}/", headers=self.headers)
                 if response.status_code == 204:
                     self.log("Commentaire de test supprimé")
                 else:
@@ -321,7 +321,7 @@ class IssueCommentAPITester:
         # Supprimer l'issue
         if self.test_issue_id:
             try:
-                response = requests.delete(f"{self.base_url}/api/issues/{self.test_issue_id}/", headers=self.headers)
+                response = requests.delete(f"{self.base_url}/api/projects/{self.test_project_id}/issues/{self.test_issue_id}/", headers=self.headers)
                 if response.status_code == 204:
                     self.log("Issue de test supprimée")
                 else:

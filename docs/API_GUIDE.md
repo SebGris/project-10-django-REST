@@ -209,23 +209,23 @@ curl -X POST http://127.0.0.1:8000/api/projects/1/add-contributor/ \
 
 ## 🐛 API Issues
 
-### Lister les issues
+### Lister les issues d'un projet
 
-**Endpoint :** `GET /api/issues/`
+**Endpoint :** `GET /api/projects/{project_id}/issues/`
 **Auth :** Requis
 
 ```bash
 curl -H "Authorization: Bearer YOUR_TOKEN" \
-  http://127.0.0.1:8000/api/issues/
+  http://127.0.0.1:8000/api/projects/1/issues/
 ```
 
 ### Créer une issue
 
-**Endpoint :** `POST /api/issues/`
+**Endpoint :** `POST /api/projects/{project_id}/issues/`
 **Auth :** Requis (contributeur du projet)
 
 ```bash
-curl -X POST http://127.0.0.1:8000/api/issues/ \
+curl -X POST http://127.0.0.1:8000/api/projects/1/issues/ \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -233,7 +233,6 @@ curl -X POST http://127.0.0.1:8000/api/issues/ \
     "description": "Description détaillée du bug",
     "tag": "bug",
     "priority": "high",
-    "project": 1,
     "assigned_to": 2
   }'
 ```
@@ -291,28 +290,27 @@ curl -X DELETE http://127.0.0.1:8000/api/issues/1/ \
 
 ## 💬 API Commentaires
 
-### Lister les commentaires
+### Lister les commentaires d'une issue
 
-**Endpoint :** `GET /api/comments/`
+**Endpoint :** `GET /api/projects/{project_id}/issues/{issue_id}/comments/`
 **Auth :** Requis
 
 ```bash
 curl -H "Authorization: Bearer YOUR_TOKEN" \
-  http://127.0.0.1:8000/api/comments/
+  http://127.0.0.1:8000/api/projects/1/issues/1/comments/
 ```
 
 ### Créer un commentaire
 
-**Endpoint :** `POST /api/comments/`
+**Endpoint :** `POST /api/projects/{project_id}/issues/{issue_id}/comments/`
 **Auth :** Requis (contributeur du projet)
 
 ```bash
-curl -X POST http://127.0.0.1:8000/api/comments/ \
+curl -X POST http://127.0.0.1:8000/api/projects/1/issues/1/comments/ \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "description": "Commentaire détaillé sur cette issue",
-    "issue": 1
+    "description": "Commentaire détaillé sur cette issue"
   }'
 ```
 

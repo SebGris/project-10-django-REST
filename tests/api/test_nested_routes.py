@@ -193,14 +193,13 @@ class NestedRoutesAPITester:
         print(f"\n🔄 Comparaison routes directes vs imbriquées")
         print("-" * 50)
         
-        # Test 1: Issues via route directe
+        # Test 1: Issues via route directe (doit renvoyer 404)
         try:
             response = requests.get(f"{self.base_url}/api/issues/", headers=self.headers)
-            if response.status_code == 200:
-                direct_issues = response.json()
-                print(f"✅ Route directe /api/issues/ - {len(direct_issues)} issues")
+            if response.status_code == 404:
+                print(f"✅ Route directe /api/issues/ non disponible (404)")
             else:
-                print(f"❌ Erreur route directe issues: {response.status_code}")
+                print(f"❌ Route directe /api/issues/ devrait renvoyer 404, reçu: {response.status_code}")
         except Exception as e:
             print(f"❌ Erreur route directe issues: {e}")
         
@@ -216,14 +215,13 @@ class NestedRoutesAPITester:
             except Exception as e:
                 print(f"❌ Erreur route imbriquée issues: {e}")
         
-        # Test 3: Comments via route directe
+        # Test 3: Comments via route directe (doit renvoyer 404)
         try:
             response = requests.get(f"{self.base_url}/api/comments/", headers=self.headers)
-            if response.status_code == 200:
-                direct_comments = response.json()
-                print(f"✅ Route directe /api/comments/ - {len(direct_comments)} commentaires")
+            if response.status_code == 404:
+                print(f"✅ Route directe /api/comments/ non disponible (404)")
             else:
-                print(f"❌ Erreur route directe comments: {response.status_code}")
+                print(f"❌ Route directe /api/comments/ devrait renvoyer 404, reçu: {response.status_code}")
         except Exception as e:
             print(f"❌ Erreur route directe comments: {e}")
     

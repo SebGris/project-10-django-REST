@@ -46,7 +46,7 @@ curl -X POST http://127.0.0.1:8000/api/projects/ \
 
 ## 🐛 3. Créer une issue
 ```bash
-curl -X POST http://127.0.0.1:8000/api/issues/ \
+curl -X POST http://127.0.0.1:8000/api/projects/1/issues/ \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -77,7 +77,7 @@ curl -X POST http://127.0.0.1:8000/api/issues/ \
 
 ## 💬 4. Créer un commentaire
 ```bash
-curl -X POST http://127.0.0.1:8000/api/comments/ \
+curl -X POST http://127.0.0.1:8000/api/projects/1/issues/1/comments/ \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -101,25 +101,25 @@ curl -X POST http://127.0.0.1:8000/api/comments/ \
 
 ### Lister toutes les issues
 ```bash
-curl -X GET http://127.0.0.1:8000/api/issues/ \
+curl -X GET http://127.0.0.1:8000/api/projects/1/issues/ \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
 ### Lister tous les commentaires
 ```bash
-curl -X GET http://127.0.0.1:8000/api/comments/ \
+curl -X GET http://127.0.0.1:8000/api/projects/1/issues/1/comments/ \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
 ### Détails d'une issue spécifique
 ```bash
-curl -X GET http://127.0.0.1:8000/api/issues/1/ \
+curl -X GET http://127.0.0.1:8000/api/projects/1/issues/1/ \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
 ## ✏️ 6. Modifier une issue
 ```bash
-curl -X PATCH http://127.0.0.1:8000/api/issues/1/ \
+curl -X PATCH http://127.0.0.1:8000/api/projects/1/issues/1/ \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{

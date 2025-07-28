@@ -131,8 +131,8 @@ poetry run python run_tests_universal.py
 | `/api/projects/` | GET/POST | Projets | Oui | `{"name": "...", "description": "...", "type": "back-end"}` |
 | `/api/projects/{id}/` | GET/PUT/DELETE | Détails projet | Oui | - |
 | `/api/projects/{id}/add-contributor/` | POST | Ajouter contributeur | Oui | `{"username": "user"}` ou `{"user_id": 1}` |
-| `/api/issues/` | GET/POST | Issues | Oui | `{"name": "...", "description": "...", "tag": "BUG", "assigned_to_id": 1}` |
-| `/api/comments/` | GET/POST | Commentaires | Oui | `{"description": "..."}` |
+| `/api/projects/{project_id}/issues/` | GET/POST | Issues du projet | Oui | `{"name": "...", "description": "...", "tag": "BUG", "assigned_to_id": 1}` |
+| `/api/projects/{project_id}/issues/{issue_id}/comments/` | GET/POST | Commentaires d'une issue | Oui | `{"description": "..."}` |
 
 ### Valeurs autorisées pour les champs :
 - **Project.type** : `"back-end"`, `"front-end"`, `"iOS"`, `"Android"`

@@ -11,8 +11,9 @@
 ### ❌ **Routes plates (DefaultRouter classique)**
 ```python
 /api/projects/          # Tous les projets
-/api/issues/            # TOUTES les issues (de tous projets)
-/api/comments/          # TOUS les commentaires (de toutes issues)
+# Accès imbriqué uniquement (RESTful)
+/api/projects/{project_id}/issues/            # Issues d'un projet
+/api/projects/{project_id}/issues/{issue_id}/comments/   # Commentaires d'une issue
 ```
 **Problème :** Pas de contexte, sécurité complexe à gérer
 

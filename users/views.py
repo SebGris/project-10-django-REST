@@ -68,18 +68,3 @@ class UserViewSet(viewsets.ModelViewSet):
         response_serializer = UserSerializer(user)
         headers = self.get_success_headers(response_serializer.data)
         return Response(response_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-                return Response(serializer.data)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    def create(self, request, *args, **kwargs):
-        """
-        Créer un utilisateur et retourner la réponse complète avec l'ID
-        """
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        
-        # Retourner la réponse avec le UserPublicSerializer (avec ID)
-        response_serializer = UserPublicSerializer(user)
-        headers = self.get_success_headers(response_serializer.data)
-        return Response(response_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
