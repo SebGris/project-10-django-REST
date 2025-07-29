@@ -240,6 +240,7 @@ poetry run ruff check . --output-format=full  # Format détaillé
 - [Poetry Documentation](https://python-poetry.org/docs/)
 - [Django - Saving objects](https://docs.djangoproject.com/en/5.2/ref/models/instances/#saving-objects)
 - [Django - Overriding model methods](https://docs.djangoproject.com/en/5.2/topics/db/models/#overriding-model-methods)
+- [DRF ViewSets](https://www.django-rest-framework.org/api-guide/viewsets/)
 - [DRF Authentication](https://www.django-rest-framework.org/api-guide/authentication/)
 - [DRF Permissions](https://www.django-rest-framework.org/api-guide/permissions/)
 - [SimpleJWT](https://django-rest-framework-simplejwt.readthedocs.io/en/latest/)

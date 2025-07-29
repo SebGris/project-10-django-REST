@@ -4,10 +4,10 @@ from rest_framework.response import Response
 from django.db import models
 from .models import Project, Contributor, Issue, Comment, User
 from .serializers import (
-    ProjectSerializer, 
+    CommentSerializer,
     ContributorSerializer,
     IssueSerializer,
-    CommentSerializer
+    ProjectSerializer
 )
 
 
@@ -144,3 +144,12 @@ class CommentViewSet(viewsets.ModelViewSet):
         if instance.author != user and instance.issue.project.author != user:
             raise permissions.PermissionDenied("Non autorisé")
         instance.delete()
+
+class ContributorViewSet(viewsets.ModelViewSet):
+    """Gestion des contributeurs"""
+    # Comme ModelViewSet étend GenericAPIView,
+    # fournir au moins les attributs queryset et serializer_class.
+    queryset = Contributor.objects.all()
+    serializer_class = ContributorSerializer
+    
+    

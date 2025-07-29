@@ -108,3 +108,12 @@ class CommentSerializer(serializers.ModelSerializer):
         if not Issue.objects.filter(id=value.id).exists():
             raise serializers.ValidationError("Issue non trouvée.")
         return value
+
+class ContributorSerializer(serializers.ModelSerializer):
+    """Serializer pour le modèle Contributor"""
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Contributor
+        fields = ['user', 'created_time']
+        read_only_fields = ['id', 'created_time']
