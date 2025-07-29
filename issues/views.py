@@ -24,11 +24,9 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return ProjectSerializer
     
     def get_queryset(self):
-        """Projets où l'utilisateur est contributeur ou auteur"""
+        """Projets où l'utilisateur est contributeur"""
         user = self.request.user
-        return Project.objects.filter(
-            models.Q(contributors__user=user) | models.Q(author=user)
-        ).distinct()
+        return Project.objects.filter(contributors__user=user)
     
     def perform_create(self, serializer):
         """L'utilisateur devient auteur du projet"""
