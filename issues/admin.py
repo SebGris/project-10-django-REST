@@ -5,7 +5,7 @@ from .models import Project, Contributor, Issue, Comment
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
     """Administration pour les projets"""
-    list_display = ('name', 'type', 'author', 'created_time')
+    list_display = ('id', 'name', 'type', 'author', 'created_time')
     list_filter = ('type', 'created_time')
     search_fields = ('name', 'description')
     readonly_fields = ('created_time',)
@@ -14,7 +14,7 @@ class ProjectAdmin(admin.ModelAdmin):
 @admin.register(Contributor)
 class ContributorAdmin(admin.ModelAdmin):
     """Administration pour les contributeurs"""
-    list_display = ('user', 'project', 'created_time')
+    list_display = ('id', 'user', 'project', 'created_time')
     list_filter = ('created_time',)
     search_fields = ('user__username', 'project__name')
 
@@ -22,7 +22,7 @@ class ContributorAdmin(admin.ModelAdmin):
 @admin.register(Issue)
 class IssueAdmin(admin.ModelAdmin):
     """Administration pour les issues"""
-    list_display = ('name', 'project', 'priority', 'tag', 'status', 'author', 'assigned_to', 'created_time')
+    list_display = ('id', 'name', 'project', 'priority', 'tag', 'status', 'author', 'assigned_to', 'created_time')
     list_filter = ('priority', 'tag', 'status', 'created_time')
     search_fields = ('name', 'description', 'project__name')
     readonly_fields = ('created_time',)

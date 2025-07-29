@@ -7,7 +7,7 @@ class CustomUserAdmin(UserAdmin):
     """
     Administration personnalisée pour le modèle User
     """
-    list_display = ('username', 'email', 'first_name', 'last_name', 'age', 'created_time', 'is_staff')
+    list_display = ('id', 'username', 'email', 'first_name', 'last_name', 'age', 'created_time', 'is_staff')
     list_filter = ('is_staff', 'is_superuser', 'is_active', 'created_time', 'can_be_contacted', 'can_data_be_shared')
     search_fields = ('username', 'first_name', 'last_name', 'email')
     ordering = ('-created_time',)
