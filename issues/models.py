@@ -44,7 +44,6 @@ class Project(models.Model):
         Contributor.objects.get_or_create(
             user=self.author,
             project=self,
-            defaults={'created_time': self.created_time}
         )
     
     def get_all_contributors(self):

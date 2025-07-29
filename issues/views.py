@@ -32,17 +32,17 @@ class ProjectViewSet(viewsets.ModelViewSet):
         """L'utilisateur devient auteur du projet"""
         serializer.save(author=self.request.user)
     
-    def perform_update(self, serializer):
-        """Seul l'auteur peut modifier"""
-        if self.get_object().author != self.request.user:
-            raise permissions.PermissionDenied("Seul l'auteur peut modifier le projet")
-        serializer.save()
+    # def perform_update(self, serializer):
+    #     """Seul l'auteur peut modifier"""
+    #     if self.get_object().author != self.request.user:
+    #         raise permissions.PermissionDenied("Seul l'auteur peut modifier le projet")
+    #     serializer.save()
     
-    def perform_destroy(self, instance):
-        """Seul l'auteur peut supprimer"""
-        if instance.author != self.request.user:
-            raise permissions.PermissionDenied("Seul l'auteur peut supprimer le projet")
-        instance.delete()
+    # def perform_destroy(self, instance):
+    #     """Seul l'auteur peut supprimer"""
+    #     if instance.author != self.request.user:
+    #         raise permissions.PermissionDenied("Seul l'auteur peut supprimer le projet")
+    #     instance.delete()
     
     @action(detail=True, methods=['post'])
     def add_contributor(self, request, pk=None):
@@ -60,19 +60,18 @@ class ProjectViewSet(viewsets.ModelViewSet):
         
         try:
             user_to_add = User.objects.get(id=user_id)
-            if project.is_user_contributor(user_to_add):
-                return Response({"error": "Déjà contributeur"}, 
-                              status=status.HTTP_400_BAD_REQUEST)
-            
-            Contributor.objects.create(user=user_to_add, project=project)
-            return Response({"message": f"Contributeur {user_to_add.username} (ID: {user_id}) ajouté"}, 
-                          status=status.HTTP_201_CREATED)
         except User.DoesNotExist:
             return Response({"error": "Utilisateur non trouvé"}, 
                           status=status.HTTP_404_NOT_FOUND)
         except ValueError:
             return Response({"error": "user_id doit être un nombre entier"}, 
-                          status=status.HTTP_400_BAD_REQUEST)
+                          status=status.HTTP_400_BAD_REQUEST) # inutile car serializer
+        if project.is_user_contributor(user_to_add):
+                return Response({"error": "Déjà contributeur"}, 
+                              status=status.HTTP_400_BAD_REQUEST)    
+        Contributor.objects.create(user=user_to_add, project=project)
+        return Response({"message": f"Contributeur {user_to_add.username} (ID: {user_id}) ajouté"}, 
+                          status=status.HTTP_201_CREATED)
 
 
 class IssueViewSet(viewsets.ModelViewSet):
@@ -83,9 +82,7 @@ class IssueViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Issues des projets accessibles"""
         user = self.request.user
-        return Issue.objects.filter(
-            models.Q(project__contributors__user=user) | models.Q(project__author=user)
-        ).distinct()
+        return Issue.objects.filter(project__contributors__user=user)
     
     def perform_create(self, serializer):
         """Créer une issue"""
