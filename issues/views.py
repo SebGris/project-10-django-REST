@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from django.db import models
 from .models import Project, Contributor, Issue, Comment, User
 from .serializers import (
-    ProjectSerializer, 
+    ProjectSerializer,
+    ProjectListSerializer,
     ContributorSerializer,
     IssueSerializer,
     CommentSerializer
@@ -15,6 +16,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
     """Gestion des projets"""
     serializer_class = ProjectSerializer
     permission_classes = [permissions.IsAuthenticated]
+    
+    def get_serializer_class(self):
+        """Utiliser un serializer simplifié pour la liste"""
+        if self.action == 'list':
+            return ProjectListSerializer
+        return ProjectSerializer
     
     def get_queryset(self):
         """Projets où l'utilisateur est contributeur ou auteur"""
@@ -41,30 +48,33 @@ class ProjectViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=['post'])
     def add_contributor(self, request, pk=None):
-        """Ajouter un contributeur (auteur seulement)"""
+        """Ajouter un contributeur par son ID (auteur seulement)"""
         project = self.get_object()
         
         if project.author != request.user:
             return Response({"error": "Seul l'auteur peut ajouter des contributeurs"}, 
                           status=status.HTTP_403_FORBIDDEN)
         
-        username = request.data.get('username')
-        if not username:
-            return Response({"error": "username requis"}, 
+        user_id = request.data.get('user_id')
+        if not user_id:
+            return Response({"error": "user_id requis"}, 
                           status=status.HTTP_400_BAD_REQUEST)
         
         try:
-            user_to_add = User.objects.get(username=username)
+            user_to_add = User.objects.get(id=user_id)
             if project.is_user_contributor(user_to_add):
                 return Response({"error": "Déjà contributeur"}, 
                               status=status.HTTP_400_BAD_REQUEST)
             
             Contributor.objects.create(user=user_to_add, project=project)
-            return Response({"message": "Contributeur ajouté"}, 
+            return Response({"message": f"Contributeur {user_to_add.username} (ID: {user_id}) ajouté"}, 
                           status=status.HTTP_201_CREATED)
         except User.DoesNotExist:
             return Response({"error": "Utilisateur non trouvé"}, 
                           status=status.HTTP_404_NOT_FOUND)
+        except ValueError:
+            return Response({"error": "user_id doit être un nombre entier"}, 
+                          status=status.HTTP_400_BAD_REQUEST)
 
 
 class IssueViewSet(viewsets.ModelViewSet):

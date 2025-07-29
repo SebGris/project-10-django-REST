@@ -23,6 +23,21 @@ class ContributorSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_time']
 
 
+class ProjectListSerializer(serializers.ModelSerializer):
+    """Serializer simplifié pour la liste des projets"""
+    author_username = serializers.CharField(source='author.username', read_only=True)
+    contributors_count = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Project
+        fields = ['id', 'name', 'type', 'author_username', 'contributors_count', 'created_time']
+        read_only_fields = ['id', 'created_time']
+    
+    def get_contributors_count(self, obj):
+        """Retourne le nombre de contributeurs"""
+        return obj.contributors.count()
+
+
 class ProjectSerializer(serializers.ModelSerializer):
     """Serializer pour le modèle Project"""
     author = UserSerializer(read_only=True)
@@ -65,7 +80,8 @@ class IssueSerializer(serializers.ModelSerializer):
     class Meta:
         model = Issue
         fields = ['id', 'name', 'description', 'priority', 'tag', 'status', 
-                 'project', 'author', 'assigned_to', 'assigned_to_id', 'created_time']
+                 'project', 'author', 'assigned_to', 'assigned_to_id', 'created_time'
+                 ]
         read_only_fields = ['id', 'author', 'created_time']
     
     def validate_assigned_to_id(self, value):
