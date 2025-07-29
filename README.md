@@ -244,7 +244,7 @@ poetry run ruff check . --output-format=full  # Format détaillé
 - [DRF Authentication](https://www.django-rest-framework.org/api-guide/authentication/)
 - [DRF Permissions](https://www.django-rest-framework.org/api-guide/permissions/)
 - [SimpleJWT](https://django-rest-framework-simplejwt.readthedocs.io/en/latest/)
-- [Introduction à JWT (Devoreur2Code)](https://www.devoreur2code.com/fr/blog/introduction-to-jwt)
+- [JWT Authentication in Django](https://code.tutsplus.com/how-to-authenticate-with-jwt-in-django--cms-30460t)
 
 ---
 

@@ -91,3 +91,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
+
+
+class UserSummarySerializer(serializers.ModelSerializer):
+    """Serializer pour afficher un résumé des utilisateurs"""
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'can_be_contacted', 'can_data_be_shared']
+        read_only_fields = ['id', 'username', 'email', 'can_be_contacted', 'can_data_be_shared']

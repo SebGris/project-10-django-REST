@@ -4,10 +4,10 @@ from rest_framework.response import Response
 from django.db import models
 from .models import Project, Contributor, Issue, Comment, User
 from .serializers import (
-    CommentSerializer,
+    ProjectSerializer, 
     ContributorSerializer,
     IssueSerializer,
-    ProjectSerializer
+    CommentSerializer
 )
 
 
@@ -146,10 +146,32 @@ class CommentViewSet(viewsets.ModelViewSet):
         instance.delete()
 
 class ContributorViewSet(viewsets.ModelViewSet):
-    """Gestion des contributeurs"""
-    # Comme ModelViewSet étend GenericAPIView,
-    # fournir au moins les attributs queryset et serializer_class.
-    queryset = Contributor.objects.all()
+    """Gestion des contributeurs d'un projet"""
     serializer_class = ContributorSerializer
+    permission_classes = [permissions.IsAuthenticated]
     
+    def get_queryset(self):
+        """Contributeurs du projet spécifié"""
+        project_id = self.kwargs.get('project_pk')
+        return Contributor.objects.filter(project_id=project_id)
     
+    def perform_create(self, serializer):
+        """Ajouter un contributeur (auteur du projet seulement)"""
+        project_id = self.kwargs.get('project_pk')
+        project = Project.objects.get(id=project_id)
+        
+        if project.author != self.request.user:
+            raise permissions.PermissionDenied("Seul l'auteur peut ajouter des contributeurs")
+        
+        # user_id devrait venir du request.data
+        user_id = self.request.data.get('user_id')
+        if not user_id:
+            raise permissions.PermissionDenied("user_id requis")
+            
+        try:
+            user_to_add = User.objects.get(id=user_id)
+            if project.is_user_contributor(user_to_add):
+                raise permissions.PermissionDenied("Déjà contributeur")
+            serializer.save(project=project, user=user_to_add)
+        except User.DoesNotExist:
+            raise permissions.PermissionDenied("Utilisateur non trouvé")
