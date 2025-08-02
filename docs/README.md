@@ -1,5 +1,21 @@
 # 📚 Documentation SoftDesk API
 
+## 🎯 Fonctionnalités de l'application
+
+SoftDesk est une API REST pour la gestion collaborative de projets avec système de tickets. Voici les principales fonctionnalités :
+
+### 👤 Gestion des utilisateurs
+
+### 📋 Gestion des projets
+
+### 🐛 Création des tâches et des problèmes
+
+### 💬 Création des commentaires pour faciliter la communication
+
+### ℹ️ Informations complémentaires
+
+### 📄 Mise en place de la pagination
+
 ## 📋 Navigation rapide
 
 ### 🚀 Démarrage
