@@ -1,6 +1,6 @@
 # 🚀 Le Problème N+1 Expliqué
 
-[← Retour à la documentation](./README.md) | [Green Code Guide](./GREEN_CODE_GUIDE.md)
+[← Retour à la documentation](../README.md) | [Green Code Guide](../green-code/green-code-guide.md)
 
 ## 📋 Navigation
 - [Qu'est-ce que le problème N+1 ?](#quest-ce-que-le-problème-n1-)
@@ -238,8 +238,8 @@ def test_optimized_queries():
 
 - [Documentation Django QuerySet](https://docs.djangoproject.com/en/stable/ref/models/querysets/)
 - [Django Debug Toolbar](https://django-debug-toolbar.readthedocs.io/)
-- [Green Code Guide](./GREEN_CODE_GUIDE.md)
-- [Architecture SoftDesk](./ARCHITECTURE.md)
+- [Green Code Guide](../green-code/green-code-guide.md)
+- [Architecture SoftDesk](../architecture/architecture.md)
 
 ## 💡 Conclusion
 

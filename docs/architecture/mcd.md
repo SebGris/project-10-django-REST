@@ -8,7 +8,7 @@
 - [Règles métier](#règles-métier-importantes)
 - [Contraintes et validations](#contraintes-et-validations)
 - [Optimisations](#optimisations)
-- [Implémentation Django](../guides/django-guide.md#les-modèles-django-orm)
+- [Implémentation Django](../guides/django/django-guide.md#les-modèles-django-orm)
 
 ## Diagramme des entités et relations
 

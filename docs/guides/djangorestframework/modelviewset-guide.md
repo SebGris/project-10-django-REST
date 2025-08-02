@@ -1,5 +1,7 @@
 # 📚 Guide des ModelViewSet - Django REST Framework
 
+[← Retour à la documentation](../../README.md) | [DefaultRouter Guide](./defaultrouter-guide.md) | [Routes imbriquées](./nested-router-guide.md)
+
 Ce guide explique l'utilisation des `ModelViewSet` dans le projet SoftDesk API, avec des exemples concrets tirés de notre codebase.
 
 ## 🎯 Qu'est-ce qu'un ModelViewSet ?

@@ -1,13 +1,13 @@
 # 🛡️ Sécurité SoftDesk - Guide de Protection et Authentification
 
-[← Retour à la documentation](./README.md)
+[← Retour à la documentation](../README.md)
 
 ## 📋 Navigation rapide
 - [Vue d'ensemble](#vue-densemble-de-la-sécurité)
 - [Authentification JWT](#authentification-jwt)
 - [Permissions](#système-de-permissions-granulaires)
 - [Protection contre les attaques](#protection-contre-les-attaques)
-- [Conformité RGPD](./RGPD_COMPLIANCE.md)
+- [Conformité RGPD](./rgpd-compliance.md)
 - [Tests de sécurité](#tests-de-sécurité)
 
 ## 🔒 Vue d'ensemble de la sécurité

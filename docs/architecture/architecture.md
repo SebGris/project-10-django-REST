@@ -6,9 +6,9 @@
 - [Vue d'ensemble](#vue-densemble)
 - [Structure du projet](#structure-du-projet)
 - [Architecture technique](#architecture-technique)
-- [Modèle de données](./MCD.md)
+- [Modèle de données](./mcd.md)
 - [API REST](#api-rest)
-- [Sécurité](./SECURITY_GUIDE.md)
+- [Sécurité](../security/security-guide.md)
 
 ## 🎯 Vue d'ensemble
 
@@ -82,7 +82,7 @@ project-10-django-REST/
 
 ## 🗄️ Modèle de données
 
-Voir le [Modèle Conceptuel de Données](./MCD.md) pour le détail des entités et relations.
+Voir le [Modèle Conceptuel de Données](./mcd.md) pour le détail des entités et relations.
 
 ### Entités principales
 
@@ -121,7 +121,7 @@ def add_contributor(self, request, pk=None):
 
 ## 🔒 Sécurité et permissions
 
-Voir le [Guide de sécurité](./SECURITY_GUIDE.md) pour les détails.
+Voir le [Guide de sécurité](../security/security-guide.md) pour les détails.
 
 ### Niveaux de sécurité
 
@@ -140,7 +140,7 @@ Voir le [Guide de sécurité](./SECURITY_GUIDE.md) pour les détails.
 
 ## 🌱 Optimisations Green Code
 
-Voir le [Guide Green Code](./GREEN_CODE_GUIDE.md) pour les détails.
+Voir le [Guide Green Code](../green-code/green-code-guide.md) pour les détails.
 
 ### Optimisations implémentées
 
@@ -151,7 +151,7 @@ Voir le [Guide Green Code](./GREEN_CODE_GUIDE.md) pour les détails.
 
 ## 🧪 Tests et qualité
 
-Voir le [Guide de tests](./TESTING_GUIDE.md) pour les détails.
+Voir le [Guide de tests](../tests/testing-guide.md) pour les détails.
 
 ### Stratégie de tests
 
@@ -215,8 +215,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
 ## 📚 Documentation associée
 
-- [Guide Django](./DJANGO_GUIDE.md) - Comprendre Django
-- [API Guide](./API_GUIDE.md) - Documentation API
-- [MCD](./MCD.md) - Modèle de données
-- [Security](./SECURITY_GUIDE.md) - Sécurité
-- [Green Code](./GREEN_CODE_GUIDE.md) - Performance
+- [Guide Django](../guides/django/django-guide.md) - Comprendre Django
+- [API Guide](../api/api-guide.md) - Documentation API
+- [MCD](./mcd.md) - Modèle de données
+- [Security](../security/security-guide.md) - Sécurité
+- [Green Code](../green-code/green-code-guide.md) - Performance

@@ -11,7 +11,7 @@
 - [Endpoints issues](#issues)
 - [Endpoints commentaires](#commentaires)
 - [Codes de statut HTTP](#codes-de-statut-http)
-- [Tests avec Postman](./postman/POSTMAN_GUIDE.md)
+- [Tests avec Postman](../postman/postman-guide.md)
 
 ## 🎯 Vue d'ensemble
 

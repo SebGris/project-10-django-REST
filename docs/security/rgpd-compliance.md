@@ -1,6 +1,6 @@
 # 🔒 RGPD SoftDesk - Guide de Conformité et Protection des Données
 
-[← Retour à la documentation](./README.md)
+[← Retour à la documentation](../README.md)
 
 ## 📋 Navigation rapide
 - [Vue d'ensemble](#vue-densemble)
@@ -8,7 +8,7 @@
 - [Mesures de sécurité](#mesures-de-sécurité)
 - [API RGPD](#api-rgpd)
 - [Tests de conformité](#tests-de-conformité)
-- [Guide de sécurité](./SECURITY_GUIDE.md)
+- [Guide de sécurité](./security-guide.md)
 
 ## 📋 Vue d'ensemble
 

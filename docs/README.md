@@ -4,7 +4,7 @@
 
 ### 🚀 Démarrage
 - [Installation et configuration](../README.md)
-- [Guide Django](./guides/django-guide.md)
+- [Guide Django](./guides/django/django-guide.md)
 - [Architecture du projet](./architecture/architecture.md)
 
 ### 📖 Guides API
@@ -14,16 +14,21 @@
 - [Guide Issues/Comments](./api/issue-comment-api-guide.md)
 
 ### 🔧 Concepts techniques
-- [ModelViewSet DRF](./guides/modelviewset-guide.md)
-- [DefaultRouter expliqué](./guides/defaultrouter-guide.md)
-- [Raw strings Python (r'')](./guides/raw-strings-guide.md)
-- [Routes imbriquées](./guides/nested-router-guide.md)
-- [Problème N+1 expliqué](./performance/n-plus-1-explained.md)
-- [Get_or_create et defaults](./developpement/get-or-create-defaults.md)
+
+#### Django
+- [Guide Django complet](./guides/django/django-guide.md)
+- [Raw strings Python (r'')](./guides/django/raw-strings-guide.md)
+- [Get_or_create et defaults](./guides/django/get-or-create-defaults.md)
+
+#### Django REST Framework
+- [ModelViewSet DRF](./guides/djangorestframework/modelviewset-guide.md)
+- [DefaultRouter expliqué](./guides/djangorestframework/defaultrouter-guide.md)
+- [Routes imbriquées](./guides/djangorestframework/nested-router-guide.md)
 
 ### 🌱 Green Code & Performance
-- [Guide Green Code](./performance/green-code-guide.md)
-- [Rapport de conformité Green Code](./performance/green-code-compliance-report.md)
+- [Guide Green Code](./green-code/green-code-guide.md)
+- [Rapport de conformité Green Code](./green-code/green-code-compliance-report.md)
+- [Problème N+1 expliqué](./performance/n-plus-1-explained.md)
 
 ### 🔒 Sécurité & Conformité
 - [Guide de sécurité](./security/security-guide.md)
@@ -63,11 +68,17 @@ docs/
 │   ├── architecture.md
 │   └── mcd.md
 ├── guides/                        # Guides techniques
-│   ├── defaultrouter-guide.md
-│   ├── django-guide.md
-│   ├── modelviewset-guide.md
-│   ├── nested-router-guide.md
-│   └── raw-strings-guide.md
+│   ├── README.md                  # Index des guides
+│   ├── django/                    # Guides Django purs
+│   │   ├── README.md
+│   │   ├── django-guide.md
+│   │   ├── raw-strings-guide.md
+│   │   └── get-or-create-defaults.md
+│   └── djangorestframework/       # Guides DRF
+│       ├── README.md
+│       ├── defaultrouter-guide.md
+│       ├── modelviewset-guide.md
+│       └── nested-router-guide.md
 ├── performance/                   # Performance et Green Code
 │   ├── green-code-guide.md
 │   ├── green-code-compliance-report.md
@@ -79,12 +90,9 @@ docs/
 │   └── testing-guide.md
 ├── support/                       # Support et dépannage
 │   ├── troubleshooting.md
-│   └── migration-instructions.md  # Instructions de migration
-├── postman/                       # Collections Postman
-│   └── postman-guide.md
-└── developpement/                 # Guides de développement
-    ├── README.md
-    └── get-or-create-defaults.md
+│   └── migration-instructions.md
+└── postman/                       # Collections Postman
+    └── postman-guide.md
 ```
 
 ## 📝 Conventions de documentation

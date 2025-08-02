@@ -1,13 +1,13 @@
 # 🐛 Guide API Issues & Comments
 
-[← Retour à la documentation](./README.md) | [API Guide](./API_GUIDE.md) | [Architecture](./ARCHITECTURE.md)
+[← Retour à la documentation](./README.md) | [API Guide](./api-guide.md) | [Architecture](../architecture/architecture.md)
 
 ## 📋 Navigation rapide
 - [Vue d'ensemble](#vue-densemble)
 - [Endpoints Issues](#endpoints-issues)
 - [Endpoints Comments](#endpoints-comments)
 - [Relations et permissions](#relations-et-permissions)
-- [Tests avec Postman](./postman/POSTMAN_GUIDE.md)
+- [Tests avec Postman](../postman/postman-guide.md)
 
 ## 🎯 Vue d'ensemble
 

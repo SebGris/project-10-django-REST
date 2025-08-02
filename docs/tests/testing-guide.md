@@ -1,12 +1,12 @@
 # 🧪 Tests SoftDesk - Guide Complet d'Assurance Qualité
 
-[← Retour à la documentation](./README.md)
+[← Retour à la documentation](../README.md)
 
 ## 📋 Navigation rapide
 - [Exécution rapide](#exécution-rapide)
 - [Structure des tests](#structure-des-tests)
 - [Types de tests](#types-de-tests)
-- [Guide de dépannage](./TROUBLESHOOTING.md#erreur-dencodage-unicode)
+- [Guide de dépannage](../support/troubleshooting.md#erreur-dencodage-unicode)
 
 ## 🚀 Exécution rapide
 

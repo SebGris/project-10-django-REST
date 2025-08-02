@@ -2,26 +2,22 @@
 
 [← Retour à la documentation](../README.md)
 
-## 📋 Vue d'ensemble
+## 📋 Redirection
 
-Cette section couvre les différentes stratégies de test pour l'API SoftDesk, incluant les tests unitaires, d'intégration et les collections Postman.
+> **Documentation déplacée** : La documentation complète des tests se trouve maintenant dans le [README.md du dossier tests](../../tests/README.md).
 
-## 📚 Contenu
+Ce fichier a été fusionné avec le README.md du dossier tests pour éviter la duplication d'information et maintenir une source unique de vérité concernant les tests.
 
-### 1. [Tests unitaires](./tests-unitaires.md)
-- Tests des modèles
-- Tests des serializers
-- Tests des permissions
+Veuillez consulter le [README.md du dossier tests](../../tests/README.md) pour accéder à la documentation complète des tests, incluant :
 
-### 2. [Tests d'intégration](./tests-integration.md)
-- Tests des ViewSets
-- Tests des endpoints
-- Tests du workflow complet
-
-### 3. [Collection Postman](./postman-collection.md)
-- Import de la collection
-- Variables d'environnement
-- Scénarios de test
+- Structure des tests
+- Exécution des tests
+- Documentation des tests
+- Métriques et couverture
+- Configuration
+- Outils utilisés
+- Bonnes pratiques
+- Checklist de test
 
 ## 🚀 Lancer les tests
 

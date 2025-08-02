@@ -1,13 +1,13 @@
 # 🛣️ DefaultRouter Django REST Framework - Guide Complet
 
-[← Retour à la documentation](./README.md) | [Django Guide](./DJANGO_GUIDE.md) | [API Guide](./API_GUIDE.md)
+[← Retour à la documentation](./README.md) | [Django Guide](../django/django-guide.md) | [API Guide](../../api/api-guide.md)
 
 ## 📋 Navigation
 - [Qu'est-ce que DefaultRouter ?](#quest-ce-que-defaultrouter-)
 - [Configuration dans SoftDesk](#configuration-dans-softdesk)
 - [Routes générées automatiquement](#routes-générées-automatiquement)
-- [Routes imbriquées](./NESTED_ROUTER_GUIDE.md)
-- [Raw strings expliquées](./RAW_STRINGS_GUIDE.md)
+- [Routes imbriquées](./nested-router-guide.md)
+- [Raw strings expliquées](../django/raw-strings-guide.md)
 
 ## 🎯 Qu'est-ce que DefaultRouter ?
 

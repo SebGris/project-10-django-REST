@@ -1,5 +1,7 @@
 # 🌱 Rapport Green Code - SoftDesk API
 
+[← Retour à la documentation](../README.md) | [Guide Green Code](./green-code-guide.md)
+
 ## 📊 Résumé Exécutif
 
 **✅ STATUT : GREEN CODE COMPLIANT (100%)**

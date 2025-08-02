@@ -1,6 +1,6 @@
 # 🔧 Dépannage SoftDesk - Guide de Résolution des Problèmes
 
-[← Retour à la documentation](./README.md)
+[← Retour à la documentation](../README.md)
 
 ## 📋 Table des matières
 - [Problèmes d'installation](#problèmes-dinstallation)

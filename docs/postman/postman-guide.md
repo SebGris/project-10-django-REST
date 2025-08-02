@@ -1,6 +1,6 @@
 # 📮 Guide Postman - Collection SoftDesk API
 
-[← Retour à la documentation](../README.md) | [API Guide](../API_GUIDE.md) | [Tests API](../API_TESTING_COMPLETE_GUIDE.md)
+[← Retour à la documentation](../README.md) | [API Guide](../api/api-guide.md) | [Tests API](../api/api-testing-complete-guide.md)
 
 ## 📋 Navigation
 - [Installation](#installation)
@@ -18,14 +18,22 @@
 
 1. Ouvrir Postman
 2. Cliquer sur **Import** (bouton en haut à gauche)
-3. Sélectionner le fichier : `docs/postman/SoftDesk_API.postman_collection.json`
+3. Sélectionner le fichier : `docs/postman/softdesk-api-collection.json`
 4. La collection **SoftDesk API** apparaît dans le panneau gauche
+
+### Import de l'environnement
+
+1. Cliquer à nouveau sur **Import**
+2. Sélectionner le fichier : `docs/postman/softdesk-environment.json`
+3. L'environnement **SoftDesk Local** est maintenant disponible
 
 ## ⚙️ Configuration
 
 ### Variables d'environnement
 
-Créer un environnement **SoftDesk Local** :
+Sélectionner l'environnement **SoftDesk Local** dans le menu déroulant en haut à droite de l'interface Postman.
+
+Les variables suivantes sont déjà configurées dans l'environnement importé :
 
 | Variable | Valeur | Description |
 |----------|--------|-------------|

@@ -1,6 +1,6 @@
 # 🔄 Django get_or_create() et defaults - Guide Complet
 
-[← Retour aux guides de développement](./README.md) | [Django Guide](../DJANGO_GUIDE.md)
+[← Retour aux guides Django](./README.md) | [Django Guide](./django-guide.md)
 
 ## 📋 Navigation
 - [Concept de base](#concept-de-base)
@@ -144,5 +144,5 @@ if is_new:
 ## 🔗 Ressources
 
 - [Documentation Django officielle](https://docs.djangoproject.com/en/stable/ref/models/querysets/#get-or-create)
-- [Guide des QuerySets](./querysets-optimisation.md)
-- [Retour au sommaire](../README.md)
+- [Guide Django](./django-guide.md)
+- [Retour au sommaire](../../README.md)

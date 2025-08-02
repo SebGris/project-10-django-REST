@@ -13,15 +13,15 @@ Cette section documente l'architecture technique de l'API SoftDesk, les choix de
 - Architecture Django REST
 - Conventions de nommage
 
-### 2. [Modèles de données](./modeles-donnees.md)
+### 2. [Modèles de données](./mcd.md)
 - Diagramme ERD
 - Relations entre modèles
 - Contraintes et validations
 
-### 3. [Flux d'authentification](./authentification-jwt.md)
-- JWT (JSON Web Tokens)
-- Flux de connexion/déconnexion
-- Gestion des tokens
+### 3. [Architecture générale](./architecture.md)
+- Flux d'authentification JWT
+- Patterns architecturaux
+- Principes de conception
 
 ## 🔑 Principes architecturaux
 

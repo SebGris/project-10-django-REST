@@ -1,6 +1,6 @@
 # 🧪 Tests API Complète - Guide de Validation
 
-[← Retour à la documentation](./README.md) | [Guide API](./API_GUIDE.md) | [Guide de tests](./TESTING_GUIDE.md)
+[← Retour à la documentation](./README.md) | [Guide API](./api-guide.md) | [Guide de tests](../tests/testing-guide.md)
 
 ## 📋 Navigation rapide
 - [Vue d'ensemble](#vue-densemble)
@@ -8,7 +8,7 @@
 - [Tests d'authentification](#tests-dauthentification)
 - [Tests des endpoints](#tests-des-endpoints)
 - [Tests de performance](#tests-de-performance)
-- [Collection Postman](./postman/POSTMAN_GUIDE.md)
+- [Collection Postman](../postman/postman-guide.md)
 
 ## 🎯 Vue d'ensemble
 

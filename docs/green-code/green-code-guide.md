@@ -1,12 +1,12 @@
 # 🌱 Green Code SoftDesk - Guide d'Éco-conception et Performance
 
-[← Retour à la documentation](./README.md)
+[← Retour à la documentation](../README.md)
 
 ## Navigation rapide
 - [Philosophie Green Code](#philosophie-green-code)
 - [Optimisations de performance](#optimisations-de-performance)
-- [Problème N+1 expliqué](./N_PLUS_1_EXPLAINED.md)
-- [Rapport de conformité](./GREEN_CODE_COMPLIANCE_REPORT.md)
+- [Problème N+1 expliqué](../performance/n-plus-1-explained.md)
+- [Rapport de conformité](./green-code-compliance-report.md)
 
 ## 🌍 Philosophie Green Code
 

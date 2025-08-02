@@ -1,6 +1,6 @@
 # 🅡 Raw Strings (r'') en Python - Guide Complet
 
-[← Retour à la documentation](./README.md) | [Django Guide](./DJANGO_GUIDE.md) | [DefaultRouter Guide](./DEFAULTROUTER_GUIDE.md)
+[← Retour à la documentation](./README.md) | [Django Guide](./django-guide.md) | [DefaultRouter Guide](../djangorestframework/defaultrouter-guide.md)
 
 ## 📋 Navigation rapide
 - [Qu'est-ce qu'une Raw String ?](#quest-ce-quune-raw-string-)
