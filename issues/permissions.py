@@ -46,8 +46,6 @@ class IsAuthorOrProjectAuthor(permissions.BasePermission):
             return obj.author == request.user or obj.issue.project.author == request.user
         
         return False
-        # Permissions d'écriture pour l'auteur du commentaire OU l'auteur du projet
-        return obj.author == user or obj.issue.project.author == user
 
 
 class IsProjectContributor(permissions.BasePermission):
@@ -113,12 +111,3 @@ class IsContributorViewAccess(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return obj.project.is_user_contributor(request.user)
         return False
-        if hasattr(obj, 'project'):
-            project = obj.project
-        elif hasattr(obj, 'issue'):
-            project = obj.issue.project
-        else:
-            project = obj
-        
-        # Vérifier que l'utilisateur est contributeur du projet
-        return project.contributors.filter(user=request.user).exists()
