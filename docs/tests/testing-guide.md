@@ -1,12 +1,12 @@
 # 🧪 Tests SoftDesk - Guide Complet d'Assurance Qualité
 
-## 📋 Vue d'ensemble
+[← Retour à la documentation](./README.md)
 
-Le projet SoftDesk dispose d'une suite complète de tests automatisés couvrant tous les aspects de l'application :
-- **Tests des modèles** : Validation de la logique métier
-- **Tests des API** : Endpoints REST et authentification
-- **Tests RGPD** : Conformité réglementaire
-- **Tests de performance** : Optimisations Green Code
+## 📋 Navigation rapide
+- [Exécution rapide](#exécution-rapide)
+- [Structure des tests](#structure-des-tests)
+- [Types de tests](#types-de-tests)
+- [Guide de dépannage](./TROUBLESHOOTING.md#erreur-dencodage-unicode)
 
 ## 🚀 Exécution rapide
 

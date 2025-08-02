@@ -1,6 +1,15 @@
-# 🛣️ DefaultRouter - Guide Complet
+# 🛣️ DefaultRouter Django REST Framework - Guide Complet
 
-## 🎯 **Qu'est-ce que DefaultRouter ?**
+[← Retour à la documentation](./README.md) | [Django Guide](./DJANGO_GUIDE.md) | [API Guide](./API_GUIDE.md)
+
+## 📋 Navigation
+- [Qu'est-ce que DefaultRouter ?](#quest-ce-que-defaultrouter-)
+- [Configuration dans SoftDesk](#configuration-dans-softdesk)
+- [Routes générées automatiquement](#routes-générées-automatiquement)
+- [Routes imbriquées](./NESTED_ROUTER_GUIDE.md)
+- [Raw strings expliquées](./RAW_STRINGS_GUIDE.md)
+
+## 🎯 Qu'est-ce que DefaultRouter ?
 
 Le `DefaultRouter` est le **routeur automatique** de Django REST Framework qui génère automatiquement toutes les URLs REST pour vos ViewSets. C'est l'un des composants les plus puissants de DRF qui vous fait gagner énormément de temps !
 

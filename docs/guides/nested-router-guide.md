@@ -1,5 +1,14 @@
 # � Routes SoftDesk - Guide des URL Imbriquées (NestedDefaultRouter)
 
+[← Retour à la documentation](./README.md) | [DefaultRouter Guide](./DEFAULTROUTER_GUIDE.md) | [Architecture](./ARCHITECTURE.md)
+
+## 📋 Navigation
+- [Vue d'ensemble](#vue-densemble)
+- [Configuration des routes](#configuration-des-routes)
+- [ViewSets imbriqués](#viewsets-imbriqués)
+- [Permissions et sécurité](#permissions-et-sécurité)
+- [Tests des routes](./API_TESTING_COMPLETE_GUIDE.md)
+
 ## 🎯 **Qu'est-ce que NestedDefaultRouter ?**
 
 `NestedDefaultRouter` permet de créer des **routes imbriquées** (nested routes) qui respectent l'architecture REST hiérarchique.

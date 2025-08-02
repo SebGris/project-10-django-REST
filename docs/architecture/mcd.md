@@ -1,4 +1,12 @@
-# Modèle Conceptuel de Données (MCD) - Application Issues Tracker
+# 📊 Modèle Conceptuel de Données (MCD) - Application Issues Tracker
+
+[← Retour à la documentation](../README.md) | [Architecture](./architecture.md)
+
+## 📋 Navigation
+- [Diagramme des entités](#diagramme-des-entités-et-relations)
+- [Description des relations](#description-des-relations)
+- [Règles métier](#règles-métier-importantes)
+- [Implémentation Django](../guides/django-guide.md#les-modèles-django-orm)
 
 ## Diagramme des entités et relations
 
@@ -105,7 +113,17 @@ erDiagram
 ## Règles métier importantes
 
 1. **Création de projet** : Quand un utilisateur crée un projet, il devient automatiquement contributeur
-2. **Unicité contributeur** : Un utilisateur ne peut être contributeur qu'une seule fois par projet
-3. **Accès au projet** : Seuls l'auteur et les contributeurs peuvent accéder au projet
-4. **Modification du projet** : Seul l'auteur peut modifier le projet
-5. **Assignation d'issue** : Une issue peut être assignée uniquement à un contributeur du projet
+2. **Unicité contributeur** : Un utilisateur ne peut pas être contributeur plusieurs fois au même projet
+3. **Suppression de projet** : La suppression d'un projet supprime également toutes les issues et commentaires associés
+4. **Gestion des issues** :
+   - Une issue doit avoir un titre, une description, et être liée à un projet
+   - Une issue peut être assignée à un utilisateur ou être laissée non assignée
+   - Les issues peuvent être triées par priorité, statut, et date de création
+5. **Commentaires** : Chaque commentaire doit être lié à une issue et à un auteur
+
+## Notes techniques
+
+- Utilisation de UUID pour les identifiants de commentaires pour éviter les collisions
+- Les mots de passe doivent être stockés de manière sécurisée (hashage)
+- Mise en place de validations au niveau de l'application et de la base de données pour garantir l'intégrité des données
+- Prévoir des index sur les colonnes fréquemment utilisées dans les requêtes (ex: user_id, project_id, issue_id)

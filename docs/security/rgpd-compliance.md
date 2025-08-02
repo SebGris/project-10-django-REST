@@ -1,5 +1,15 @@
 # 🔒 RGPD SoftDesk - Guide de Conformité et Protection des Données
 
+[← Retour à la documentation](./README.md)
+
+## 📋 Navigation rapide
+- [Vue d'ensemble](#vue-densemble)
+- [Conformité implémentée](#conformité-rgpd-implémentée)
+- [Mesures de sécurité](#mesures-de-sécurité)
+- [API RGPD](#api-rgpd)
+- [Tests de conformité](#tests-de-conformité)
+- [Guide de sécurité](./SECURITY_GUIDE.md)
+
 ## 📋 Vue d'ensemble
 
 Le projet SoftDesk intègre une conformité complète au Règlement Général sur la Protection des Données (RGPD). Cette documentation détaille toutes les mesures implémentées pour assurer la protection des données personnelles.

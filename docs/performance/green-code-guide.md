@@ -1,5 +1,13 @@
 # 🌱 Green Code SoftDesk - Guide d'Éco-conception et Performance
 
+[← Retour à la documentation](./README.md)
+
+## Navigation rapide
+- [Philosophie Green Code](#philosophie-green-code)
+- [Optimisations de performance](#optimisations-de-performance)
+- [Problème N+1 expliqué](./N_PLUS_1_EXPLAINED.md)
+- [Rapport de conformité](./GREEN_CODE_COMPLIANCE_REPORT.md)
+
 ## 🌍 Philosophie Green Code
 
 Le projet SoftDesk adopte une approche d'éco-conception numérique visant à réduire l'impact environnemental du logiciel tout en maintenant des performances optimales. Cette documentation présente toutes les optimisations implémentées selon les principes du Green Code.

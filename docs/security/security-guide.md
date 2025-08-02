@@ -1,5 +1,15 @@
 # 🛡️ Sécurité SoftDesk - Guide de Protection et Authentification
 
+[← Retour à la documentation](./README.md)
+
+## 📋 Navigation rapide
+- [Vue d'ensemble](#vue-densemble-de-la-sécurité)
+- [Authentification JWT](#authentification-jwt)
+- [Permissions](#système-de-permissions-granulaires)
+- [Protection contre les attaques](#protection-contre-les-attaques)
+- [Conformité RGPD](./RGPD_COMPLIANCE.md)
+- [Tests de sécurité](#tests-de-sécurité)
+
 ## 🔒 Vue d'ensemble de la sécurité
 
 Le projet SoftDesk implémente une architecture de sécurité robuste basée sur les meilleures pratiques Django et Django REST Framework, avec des mesures spécifiques pour la protection des données et la prévention des attaques.

@@ -1,5 +1,14 @@
 # 👥 Tests SoftDesk - Guide de Validation API Utilisateurs
 
+[← Retour à la documentation](./README.md) | [API Guide](./API_GUIDE.md) | [Tests complets](./API_TESTING_COMPLETE_GUIDE.md)
+
+## 📋 Navigation
+- [Prérequis](#prérequis)
+- [Endpoints utilisateurs](#endpoints-utilisateurs)
+- [Tests d'authentification](#tests-dauthentification)
+- [Tests RGPD](#tests-rgpd)
+- [Dépannage](./TROUBLESHOOTING.md)
+
 ## 🚀 Prérequis
 1. Démarrer le serveur Django :
 ```bash

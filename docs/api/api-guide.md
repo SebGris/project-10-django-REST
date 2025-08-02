@@ -1,6 +1,19 @@
-# 📖 API SoftDesk - Guide de Référence Complète
+# 🌐 API SoftDesk - Documentation complète
 
-## 🌐 Vue d'ensemble
+[← Retour à la documentation](./README.md)
+
+## 📋 Navigation rapide
+
+- [Vue d'ensemble](#vue-densemble)
+- [Authentification](#authentification)
+- [Endpoints utilisateurs](#utilisateurs)
+- [Endpoints projets](#projets)
+- [Endpoints issues](#issues)
+- [Endpoints commentaires](#commentaires)
+- [Codes de statut HTTP](#codes-de-statut-http)
+- [Tests avec Postman](./postman/POSTMAN_GUIDE.md)
+
+## 🎯 Vue d'ensemble
 
 L'API SoftDesk est une API REST sécurisée pour la gestion de projets collaboratifs avec système de tickets (issues) et commentaires. Elle intègre une authentification JWT robuste et respecte la conformité RGPD.
 

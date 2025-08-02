@@ -1,41 +1,31 @@
-# � Dépannage SoftDesk - Guide de Résolution des Problèmes
+# 🔧 Dépannage SoftDesk - Guide de Résolution des Problèmes
 
-## 🔍 Problèmes courants et solutions
+[← Retour à la documentation](./README.md)
 
-### 1. ❌ Erreur "No module named 'softdesk_support'"
+## 📋 Table des matières
+- [Problèmes d'installation](#problèmes-dinstallation)
+- [Erreurs d'encodage](#erreur-dencodage-unicode)
+- [Erreurs de migration](#erreurs-de-migration-django)
+- [Problèmes d'authentification](#problèmes-dauthentification)
+- [Erreurs d'API](#erreurs-dapi)
+
+## 🚨 Problèmes d'installation
+
+### 1. ❌ Poetry non installé
 
 **Symptômes :**
 ```
-ModuleNotFoundError: No module named 'softdesk_support'
+poetry : Le terme 'poetry' n'est pas reconnu comme nom d'applet, fonction, fichier de script ou programme exécutable.
 ```
-
-**Causes :**
-- Utilisation de `python` au lieu de `poetry run python`
-- Environnement virtuel Poetry non activé
-- Mauvais répertoire de travail
 
 **Solutions :**
 
 ```bash
-# ✅ CORRECT - Utiliser Poetry
-poetry run python manage.py check
-poetry run python run_all_tests.py
+# Installer Poetry (si non installé)
+curl -sSL https://install.python-poetry.org | python3 -
 
-# ❌ FAUX - Python directement
-python manage.py check
-```
-
-**Vérifications :**
-```bash
-# Vérifier que Poetry fonctionne
-poetry --version
-poetry env info
-
-# Vérifier le répertoire
-ls manage.py  # Doit exister
-
-# Vérifier l'installation des dépendances
-poetry install
+# Ajouter Poetry au PATH
+# Suivre les instructions affichées après l'installation
 ```
 
 ### 2. ❌ Erreur d'encodage Unicode (Windows)

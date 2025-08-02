@@ -1,5 +1,14 @@
 # 🅡 Raw Strings (r'') en Python - Guide Complet
 
+[← Retour à la documentation](./README.md) | [Django Guide](./DJANGO_GUIDE.md) | [DefaultRouter Guide](./DEFAULTROUTER_GUIDE.md)
+
+## 📋 Navigation rapide
+- [Qu'est-ce qu'une Raw String ?](#quest-ce-quune-raw-string-)
+- [Syntaxe et utilisation](#syntaxe-et-utilisation)
+- [Pourquoi dans Django/DRF ?](#pourquoi-utiliser-raw-strings-dans-djangodrf-)
+- [Cas d'usage SoftDesk](#cas-dusage-dans-votre-projet-softdesk)
+- [Bonnes pratiques](#bonnes-pratiques-djangodrf)
+
 ## 🎯 **Qu'est-ce qu'une Raw String ?**
 
 Une **raw string** (chaîne brute) est une chaîne de caractères Python précédée du préfixe `r`. Elle traite tous les caractères littéralement, sans interpréter les séquences d'échappement.

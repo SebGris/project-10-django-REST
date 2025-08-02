@@ -1,142 +1,142 @@
-# 📮 Postman SoftDesk - Guide d'Utilisation Complète
+# 📮 Guide Postman - Collection SoftDesk API
 
-## 🎯 **Vue d'ensemble**
+[← Retour à la documentation](../README.md) | [API Guide](../API_GUIDE.md) | [Tests API](../API_TESTING_COMPLETE_GUIDE.md)
 
-Ce guide vous accompagne pour tester l'API SoftDesk avec **Postman 11.54.6**. La collection fournie contient tous les endpoints avec des tests automatiques et la gestion de l'authentification JWT.
+## 📋 Navigation
+- [Installation](#installation)
+- [Import de la collection](#import-de-la-collection)
+- [Configuration](#configuration)
+- [Tests disponibles](#tests-disponibles)
+- [Variables d'environnement](#variables-denvironnement)
 
-## 📦 **Fichiers Postman fournis**
+## 🚀 Installation
 
-```
-docs/postman/
-├── SoftDesk_API_Collection.json    # 📋 Collection complète des tests
-└── SoftDesk_Environment.json       # 🌍 Variables d'environnement
-```
+1. **Télécharger Postman** : [https://www.postman.com/downloads/](https://www.postman.com/downloads/)
+2. **Créer un compte** (optionnel mais recommandé)
 
-## 🚀 **Installation et Import**
+## 📥 Import de la collection
 
-### **1. Importer la Collection**
+1. Ouvrir Postman
+2. Cliquer sur **Import** (bouton en haut à gauche)
+3. Sélectionner le fichier : `docs/postman/SoftDesk_API.postman_collection.json`
+4. La collection **SoftDesk API** apparaît dans le panneau gauche
 
-1. **Ouvrir Postman 11.54.6**
-2. **Import** → **File** → Sélectionner `SoftDesk_API_Collection.json`
-3. **Import** → **File** → Sélectionner `SoftDesk_Environment.json`
+## ⚙️ Configuration
 
-### **2. Sélectionner l'Environnement**
+### Variables d'environnement
 
-1. **En haut à droite** → Sélectionner `SoftDesk Local`
-2. **Vérifier les variables** :
-   - `base_url` : `http://127.0.0.1:8000`
-   - `api_url` : `{{base_url}}/api`
+Créer un environnement **SoftDesk Local** :
 
-## 🔧 **Préparation du serveur Django**
+| Variable | Valeur | Description |
+|----------|--------|-------------|
+| `base_url` | `http://127.0.0.1:8000` | URL de base de l'API |
+| `username` | `admin` | Nom d'utilisateur |
+| `password` | `SoftDesk2025!` | Mot de passe |
+| `access_token` | *(généré automatiquement)* | Token JWT |
+| `refresh_token` | *(généré automatiquement)* | Refresh token |
 
-### **Avant de commencer les tests :**
+## 🧪 Tests disponibles
 
-```bash
-# 1. Démarrer le serveur
-cd "C:\Users\sebas\Documents\OpenClassrooms\Mes_projets\project-10-django-REST"
-poetry run python manage.py runserver
+### 1. Authentification
+- **Login** : Obtenir les tokens JWT
+- **Refresh Token** : Renouveler l'access token
 
-# 2. Créer le superutilisateur (si pas déjà fait)
-poetry run python create_superuser.py
-```
+### 2. Utilisateurs
+- **Créer un utilisateur** : Inscription
+- **Liste des utilisateurs** : Voir tous les utilisateurs
+- **Profil utilisateur** : Voir/modifier son profil
 
-**Identifiants par défaut :**
-- **Username :** `admin`
-- **Password :** `SoftDesk2025!`
+### 3. Projets
+- **Liste des projets** : Projets où je suis contributeur
+- **Créer un projet** : Nouveau projet
+- **Détails projet** : Voir un projet spécifique
+- **Modifier projet** : Mettre à jour (auteur uniquement)
+- **Supprimer projet** : Effacer (auteur uniquement)
 
-## 📋 **Structure de la Collection**
+### 4. Contributeurs
+- **Liste contributeurs** : Voir les contributeurs d'un projet
+- **Ajouter contributeur** : Inviter un utilisateur
+- **Retirer contributeur** : Enlever un utilisateur
 
-### **🔐 1. Authentication**
-```
-├── Obtenir Token JWT          # POST /api/token/
-└── Rafraîchir Token          # POST /api/token/refresh/
-```
+### 5. Issues
+- **Liste issues** : Issues d'un projet
+- **Créer issue** : Nouvelle issue
+- **Détails issue** : Voir une issue
+- **Modifier issue** : Mettre à jour
+- **Supprimer issue** : Effacer
 
-### **👥 2. Users**
-```
-├── Inscription (Public)           # POST /api/users/
-├── Liste des Utilisateurs         # GET /api/users/
-├── Profil Personnel (GET)          # GET /api/users/profile/
-├── Modifier Profil (PATCH)         # PATCH /api/users/profile/
-├── Détails Utilisateur             # GET /api/users/{id}/
-└── Test RGPD - <15 ans (échec)     # POST /api/users/ (âge < 15)
-```
+### 6. Commentaires
+- **Liste commentaires** : Commentaires d'une issue
+- **Créer commentaire** : Nouveau commentaire
+- **Modifier commentaire** : Éditer
+- **Supprimer commentaire** : Effacer
 
-### **📋 3. Projects**
-```
-├── Créer Projet                    # POST /api/projects/
-├── Liste des Projets               # GET /api/projects/
-├── Détails Projet                  # GET /api/projects/{id}/
-├── Modifier Projet                 # PUT /api/projects/{id}/
-├── Ajouter Contributeur            # POST /api/projects/{id}/add-contributor/
-├── Liste Contributeurs             # GET /api/projects/{id}/contributors/
-└── Supprimer Projet                # DELETE /api/projects/{id}/
-```
+## 🔄 Workflow de test
 
-### **🔒 4. Tests de Permissions**
-```
-├── Accès sans token (401)          # GET /api/projects/ (no auth)
-└── Token invalide (401)            # GET /api/users/profile/ (bad token)
-```
+1. **Authentification**
+   - Exécuter "Login" pour obtenir les tokens
+   - Les tokens sont automatiquement sauvegardés
 
-## 🎯 **Guide d'Exécution Étape par Étape**
+2. **Créer des données**
+   - Créer un utilisateur
+   - Créer un projet
+   - Ajouter des contributeurs
+   - Créer des issues
+   - Ajouter des commentaires
 
-### **Phase 1 : Authentification**
+3. **Tester les permissions**
+   - Essayer de modifier un projet dont vous n'êtes pas l'auteur
+   - Tenter d'accéder à un projet où vous n'êtes pas contributeur
 
-1. **Obtenir Token JWT**
-   - Exécuter la requête
-   - ✅ **Vérification automatique** : Token stocké dans les variables
-   - Variables mises à jour : `access_token`, `refresh_token`
+## 📝 Scripts de test automatiques
 
-### **Phase 2 : Tests Utilisateurs**
+Chaque requête contient des tests automatiques :
 
-2. **Inscription (Public)**
-   - ✅ **Test automatique** : Utilisateur créé
-   - Variable mise à jour : `user_id`
-
-3. **Test RGPD - <15 ans**
-   - ✅ **Doit échouer** avec code 400
-   - ✅ **Test automatique** : Message d'erreur vérifié
-
-4. **Profil Personnel**
-   - ✅ **Authentification automatique** avec token
-
-### **Phase 3 : Tests Projets**
-
-5. **Créer Projet**
-   - ✅ **Test automatique** : Projet créé
-   - Variable mise à jour : `project_id`
-
-6. **Ajouter Contributeur**
-   - Utilise automatiquement `user_id` créé précédemment
-
-7. **Tests CRUD complets**
-   - Liste, détails, modification, suppression
-
-### **Phase 4 : Tests Sécurité**
-
-8. **Accès sans authentification**
-   - ✅ **Doit échouer** avec code 401
-
-9. **Token invalide**
-   - ✅ **Doit échouer** avec code 401
-
-## 🔍 **Variables Automatiques**
-
-### **Variables Globales**
 ```javascript
-{{base_url}}        // http://127.0.0.1:8000
-{{api_url}}         // http://127.0.0.1:8000/api
-{{access_token}}    // Token JWT (auto-rempli)
-{{refresh_token}}   // Token refresh (auto-rempli)
-{{user_id}}         // ID utilisateur créé (auto-rempli)
-{{project_id}}      // ID projet créé (auto-rempli)
+// Exemple de test automatique
+pm.test("Status code is 200", function () {
+    pm.response.to.have.status(200);
+});
+
+pm.test("Response has access token", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData).to.have.property('access');
+    pm.environment.set("access_token", jsonData.access);
+});
 ```
 
-### **Variables Dynamiques Postman**
-```javascript
-{{$timestamp}}      // Timestamp Unix (unique)
-{{$randomInt}}      // Nombre aléatoire
+## 🎯 Collection Runner
+
+Pour exécuter tous les tests :
+
+1. Cliquer sur **Runner** (en bas de Postman)
+2. Sélectionner la collection **SoftDesk API**
+3. Choisir l'environnement **SoftDesk Local**
+4. Cliquer sur **Run SoftDesk API**
+
+## 🔧 Dépannage
+
+### Token expiré
+- Exécuter la requête **Refresh Token**
+- Ou refaire un **Login**
+
+### Erreur 404
+- Vérifier que le serveur Django est lancé
+- Vérifier l'URL de base dans les variables
+
+### Erreur 401
+- Vérifier que le token est bien défini
+- Refaire l'authentification
+
+## 📚 Export des résultats
+
+1. Après les tests, cliquer sur **Export Results**
+2. Choisir le format (JSON, HTML, JUnit)
+3. Partager avec l'équipe
+
+---
+
+*La collection Postman est mise à jour avec chaque nouvelle version de l'API.*
 {{$guid}}           // GUID unique
 ```
 

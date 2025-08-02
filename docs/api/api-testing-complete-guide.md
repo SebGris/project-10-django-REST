@@ -1,4 +1,18 @@
-# 🧪 Tests SoftDesk - Guide de Validation API Complète
+# 🧪 Tests API Complète - Guide de Validation
+
+[← Retour à la documentation](./README.md) | [Guide API](./API_GUIDE.md) | [Guide de tests](./TESTING_GUIDE.md)
+
+## 📋 Navigation rapide
+- [Vue d'ensemble](#vue-densemble)
+- [Installation et configuration](#installation-et-configuration)
+- [Tests d'authentification](#tests-dauthentification)
+- [Tests des endpoints](#tests-des-endpoints)
+- [Tests de performance](#tests-de-performance)
+- [Collection Postman](./postman/POSTMAN_GUIDE.md)
+
+## 🎯 Vue d'ensemble
+
+Cette documentation a pour but de valider l'API complète de SoftDesk à travers une série de tests.
 
 ## 🚀 Étape 1 : Préparation
 

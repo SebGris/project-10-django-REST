@@ -1,4 +1,17 @@
-# 🎯 API SoftDesk - Guide de Test Issues et Commentaires
+# 🐛 Guide API Issues & Comments
+
+[← Retour à la documentation](./README.md) | [API Guide](./API_GUIDE.md) | [Architecture](./ARCHITECTURE.md)
+
+## 📋 Navigation rapide
+- [Vue d'ensemble](#vue-densemble)
+- [Endpoints Issues](#endpoints-issues)
+- [Endpoints Comments](#endpoints-comments)
+- [Relations et permissions](#relations-et-permissions)
+- [Tests avec Postman](./postman/POSTMAN_GUIDE.md)
+
+## 🎯 Vue d'ensemble
+
+Cette documentation a pour but de tester l'API Django REST liée aux issues et commentaires d'un projet.
 
 ## 📋 Prérequis
 - Serveur Django démarré : `poetry run python manage.py runserver`
