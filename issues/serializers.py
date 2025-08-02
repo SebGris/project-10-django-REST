@@ -51,8 +51,8 @@ class ProjectSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         """Créer un projet et ajouter l'auteur comme contributeur"""
         user = self.context['request'].user
-        # Retirer 'author' de validated_data s'il existe pour éviter le conflit
         validated_data.pop('author', None)
+        # La méthode save() du modèle s'occupera d'ajouter l'auteur comme contributeur
         project = Project.objects.create(author=user, **validated_data)
         return project
 

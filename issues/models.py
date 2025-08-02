@@ -30,21 +30,15 @@ class Project(models.Model):
         """
         Surcharge de save pour créer automatiquement l'auteur comme contributeur
         """
-        is_new = self.pk is None
+        is_new = self.pk is None  # True si c'est une création, False si c'est une mise à jour
         super().save(*args, **kwargs)
         
         # Si c'est un nouveau projet, ajouter l'auteur comme contributeur
         if is_new:
-            self.add_author_as_contributor()
-    
-    def add_author_as_contributor(self):
-        """
-        Ajoute l'auteur du projet comme contributeur automatiquement
-        """
-        Contributor.objects.get_or_create(
-            user=self.author,
-            project=self,
-        )
+            Contributor.objects.get_or_create(
+                user=self.author,
+                project=self
+            )
     
     def get_all_contributors(self):
         """
@@ -177,4 +171,5 @@ class Comment(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
+        return f"Comment on {self.issue.name} by {self.author.username}"
         return f"Comment on {self.issue.name} by {self.author.username}"
