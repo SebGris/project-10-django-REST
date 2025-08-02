@@ -1,13 +1,12 @@
 from rest_framework import permissions
 
 
-class IsProjectAuthor(permissions.BasePermission):
+class IsAuthorOrReadOnly(permissions.BasePermission):
     """Seul l'auteur du projet peut modifier/supprimer"""
     
     def has_object_permission(self, request, view, obj):
-        # Lecture pour tous les contributeurs
         if request.method in permissions.SAFE_METHODS:
-            return obj.is_user_contributor(request.user)
+            return True
         # Écriture pour l'auteur seulement
         return obj.author == request.user
 
