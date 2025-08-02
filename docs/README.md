@@ -7,7 +7,7 @@ SoftDesk est une API REST pour la gestion collaborative de projets avec système
 ### 👤 Gestion des utilisateurs
 
 ### 📋 Gestion des projets
-- Un utilisateur peut créer un projet. Il en devient l’auteur et le contributeur.
+- Un utilisateur peut créer un projet. Il en devient l'auteur et le contributeur. [Voir l'implémentation](./projets/creation-projet-implementation.md)
 
 ### 🐛 Création des tâches et des problèmes
 
