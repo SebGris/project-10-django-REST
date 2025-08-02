@@ -1,21 +1,29 @@
+
 # 📚 Documentation SoftDesk API
 
-## 🎯 Fonctionnalités de l'application
+## 🎯 Fonctionnalités principales
 
-SoftDesk est une API REST pour la gestion collaborative de projets avec système de tickets. Voici les principales fonctionnalités :
+SoftDesk est une API REST permettant la gestion collaborative de projets avec un système de tickets. Voici ses principales fonctionnalités :
 
 ### 👤 Gestion des utilisateurs
 
 ### 📋 Gestion des projets
-- Un utilisateur peut créer un projet. Il en devient l'auteur et le contributeur. [Voir l'implémentation](./projets/creation-projet-implementation.md)
+- Création de projets par les utilisateurs (l'auteur devient automatiquement contributeur). [Voir l'implémentation](./projets/creation-projet-implementation.md)
 
-### 🐛 Création des tâches et des problèmes
+### 🐛 Gestion des tâches et problèmes
+Création, modification et suivi des tickets (issues).
 
-### 💬 Création des commentaires pour faciliter la communication
+### 💬 Commentaires
+Ajout de commentaires pour faciliter la communication entre les membres du projet.
 
 ### ℹ️ Informations complémentaires
 
-### 📄 Mise en place de la pagination
+#### Définition des auteurs
+- Chaque ressource (hors utilisateur) possède un auteur.
+- Seul l’auteur peut modifier ou supprimer sa ressource ; les autres utilisateurs ont un accès en lecture seule.
+
+#### 📄 Pagination
+Mise en place de la pagination sur les listes de ressources pour optimiser la navigation.
 
 ## 📋 Navigation rapide
 
@@ -25,7 +33,7 @@ SoftDesk est une API REST pour la gestion collaborative de projets avec système
 - [Architecture du projet](./architecture/architecture.md)
 
 ### 📖 Guides API
-- [Documentation complète API](./api/api-guide.md)
+- [Documentation complète de l’API](./api/api-guide.md)
 - [Guide des tests API](./api/api-testing-complete-guide.md)
 - [Tests API utilisateurs](./api/users-api-testing.md)
 - [Guide Issues/Comments](./api/issue-comment-api-guide.md)
@@ -35,7 +43,7 @@ SoftDesk est une API REST pour la gestion collaborative de projets avec système
 #### Django
 - [Guide Django complet](./guides/django/django-guide.md)
 - [Raw strings Python (r'')](./guides/django/raw-strings-guide.md)
-- [Get_or_create et defaults](./guides/django/get-or-create-defaults.md)
+- [get_or_create et defaults](./guides/django/get-or-create-defaults.md)
 
 #### Django REST Framework
 - [ModelViewSet DRF](./guides/djangorestframework/modelviewset-guide.md)
@@ -63,52 +71,52 @@ SoftDesk est une API REST pour la gestion collaborative de projets avec système
 
 ## 🎯 Par où commencer ?
 
-| Si vous voulez... | Consultez |
-|-------------------|-----------|
-| Installer le projet | [README principal](../README.md) |
+| Objectif                  | Ressource recommandée                          |
+|---------------------------|------------------------------------------------|
+| Installer le projet       | [README principal](../README.md)               |
 | Comprendre l'architecture | [architecture.md](./architecture/architecture.md) |
-| Utiliser l'API | [api-guide.md](./api/api-guide.md) |
-| Tester l'API | [Collection Postman](./postman/postman-guide.md) |
-| Résoudre un problème | [troubleshooting.md](./support/troubleshooting.md) |
+| Utiliser l'API            | [api-guide.md](./api/api-guide.md)             |
+| Tester l'API              | [Collection Postman](./postman/postman-guide.md) |
+| Résoudre un problème      | [troubleshooting.md](./support/troubleshooting.md) |
 
 ## 📁 Organisation des fichiers
 
 ```
 docs/
 ├── README.md                        # Ce fichier (sommaire)
-├── api/                            # Documentation API
+├── api/                             # Documentation API
 │   ├── api-guide.md
 │   ├── api-testing-complete-guide.md
 │   ├── issue-comment-api-guide.md
 │   └── users-api-testing.md
-├── architecture/                   # Architecture et conception
+├── architecture/                    # Architecture et conception
 │   ├── architecture.md
 │   └── mcd.md
-├── guides/                        # Guides techniques
-│   ├── README.md                  # Index des guides
-│   ├── django/                    # Guides Django purs
+├── guides/                          # Guides techniques
+│   ├── README.md                    # Index des guides
+│   ├── django/                      # Guides Django purs
 │   │   ├── README.md
 │   │   ├── django-guide.md
 │   │   ├── raw-strings-guide.md
 │   │   └── get-or-create-defaults.md
-│   └── djangorestframework/       # Guides DRF
+│   └── djangorestframework/         # Guides DRF
 │       ├── README.md
 │       ├── defaultrouter-guide.md
 │       ├── modelviewset-guide.md
 │       └── nested-router-guide.md
-├── performance/                   # Performance et Green Code
+├── performance/                     # Performance et Green Code
 │   ├── green-code-guide.md
 │   ├── green-code-compliance-report.md
 │   └── n-plus-1-explained.md
-├── security/                      # Sécurité et conformité
+├── security/                        # Sécurité et conformité
 │   ├── rgpd-compliance.md
 │   └── security-guide.md
-├── tests/                         # Tests et qualité
+├── tests/                           # Tests et qualité
 │   └── testing-guide.md
-├── support/                       # Support et dépannage
+├── support/                         # Support et dépannage
 │   ├── troubleshooting.md
 │   └── migration-instructions.md
-└── postman/                       # Collections Postman
+└── postman/                         # Collections Postman
     └── postman-guide.md
 ```
 
@@ -117,4 +125,4 @@ docs/
 - **Fichiers en minuscules** : Tous les guides sauf README
 - **Organisation par thème** : Dossiers spécialisés
 - **Emojis** : Navigation visuelle rapide
-- **Tables** : Résumés et références rapides
+- **Tableaux** : Résumés et références rapides
