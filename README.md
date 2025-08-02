@@ -15,21 +15,8 @@
 ## 📚 Documentation complète
 
 ### 🚀 Guides de démarrage
-- **[Installation et configuration](docs/README.md)** - Setup complet avec Poetry
+- **[Installation et configuration](#-installation-et-lancement-rapide)** - Setup complet avec Poetry
 - **[Guide de test avec Postman](docs/postman/postman-guide.md)** - Collection complète d'endpoints
-- **[Tests API avec cURL](docs/api/api-testing-complete-guide.md)** - Commandes de test en ligne de commande
-
-### 🔧 Documentation technique avancée
-- **[Architecture ModelViewSet](docs/guides/djangorestframework/modelviewset-guide.md)** - Pattern ViewSet et bonnes pratiques Django REST
-- **[Green Code et optimisations](docs/green-code/green-code-guide.md)** - Optimisations de performances et impact environnemental
-- **[Résolution du problème N+1](docs/performance/n-plus-1-explained.md)** - Guide détaillé des optimisations de requêtes avec select_related/prefetch_related
-
-### 🌱 Impact Green Code
-Cette API implémente des pratiques **Green Code** pour réduire son impact environnemental :
-- **95% de requêtes SQL en moins** grâce aux optimisations select_related/prefetch_related
-- **89% de consommation électrique économisée** par rapport à une implémentation non optimisée
-- **Support de 10x plus d'utilisateurs** simultanés avec la même infrastructure
-- **8.2 kg CO₂ évités par an** pour 1000 utilisateurs (équivalent à 40 km en voiture)
 
 ## 🚀 Installation et lancement rapide
 
@@ -183,15 +170,13 @@ poetry run python run_tests_universal.py
 poetry run python diagnose_project.py
 ```
 
-## 📚 Documentation complète
+## 📚 Documentation
 
 - 🏗️ **[Architecture du projet](docs/architecture/architecture.md)** - Structure et principes de conception
-- 🧪 **[Guide des tests](docs/tests/README.md)** - Suite de tests et exécution
-- 🚨 **[Dépannage](docs/support/troubleshooting.md)** - Résolution des problèmes
+- 🧪 **[Guide des tests](tests/README.md)** - Suite de tests et exécution
 - 🌱 **[Green Code](docs/green-code/green-code-guide.md)** - Optimisations éco-responsables
 - 📖 **[API Guide](docs/api/api-guide.md)** - Documentation complète des endpoints
 - 🔒 **[RGPD](docs/security/rgpd-compliance.md)** - Conformité et protection des données
-- 📚 **[ModelViewSet Guide](docs/guides/djangorestframework/modelviewset-guide.md)** - Guide complet des ViewSets DRF
 
 ## 🛠️ Développement
 
