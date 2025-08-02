@@ -32,18 +32,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
         """L'utilisateur devient auteur du projet"""
         serializer.save(author=self.request.user)
     
-    # def perform_update(self, serializer):
-    #     """Seul l'auteur peut modifier"""
-    #     if self.get_object().author != self.request.user:
-    #         raise permissions.PermissionDenied("Seul l'auteur peut modifier le projet")
-    #     serializer.save()
-    
-    # def perform_destroy(self, instance):
-    #     """Seul l'auteur peut supprimer"""
-    #     if instance.author != self.request.user:
-    #         raise permissions.PermissionDenied("Seul l'auteur peut supprimer le projet")
-    #     instance.delete()
-    
     @action(detail=True, methods=['post'])
     def add_contributor(self, request, pk=None):
         """Ajouter un contributeur par son ID (auteur seulement)"""
@@ -95,22 +83,6 @@ class IssueViewSet(viewsets.ModelViewSet):
         except Project.DoesNotExist:
             raise permissions.PermissionDenied("Projet non trouvé")
     
-    def perform_update(self, serializer):
-        """Seul l'auteur de l'issue ou du projet peut modifier"""
-        issue = self.get_object()
-        user = self.request.user
-        if issue.author != user and issue.project.author != user:
-            raise permissions.PermissionDenied("Non autorisé")
-        serializer.save()
-    
-    def perform_destroy(self, instance):
-        """Seul l'auteur de l'issue ou du projet peut supprimer"""
-        user = self.request.user
-        if instance.author != user and instance.project.author != user:
-            raise permissions.PermissionDenied("Non autorisé")
-        instance.delete()
-
-
 class CommentViewSet(viewsets.ModelViewSet):
     """Gestion des commentaires"""
     serializer_class = CommentSerializer
@@ -135,21 +107,6 @@ class CommentViewSet(viewsets.ModelViewSet):
         except Issue.DoesNotExist:
             raise permissions.PermissionDenied("Issue non trouvée")
     
-    def perform_update(self, serializer):
-        """Seul l'auteur du commentaire ou du projet peut modifier"""
-        comment = self.get_object()
-        user = self.request.user
-        if comment.author != user and comment.issue.project.author != user:
-            raise permissions.PermissionDenied("Non autorisé")
-        serializer.save()
-    
-    def perform_destroy(self, instance):
-        """Seul l'auteur du commentaire ou du projet peut supprimer"""
-        user = self.request.user
-        if instance.author != user and instance.issue.project.author != user:
-            raise permissions.PermissionDenied("Non autorisé")
-        instance.delete()
-
 class ContributorViewSet(viewsets.ModelViewSet):
     """Gestion des contributeurs d'un projet"""
     serializer_class = ContributorSerializer

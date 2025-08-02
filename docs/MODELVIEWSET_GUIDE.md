@@ -77,25 +77,6 @@ def perform_create(self, serializer):
     # L'auteur est automatiquement ajouté comme contributeur via Project.save()
 ```
 
-#### `perform_update()` - Logique lors de la mise à jour
-```python
-def perform_update(self, serializer):
-    """Vérifier que seul l'auteur peut modifier le projet"""
-    project = self.get_object()
-    if not project.can_user_modify(self.request.user):
-        raise permissions.PermissionDenied("Seul l'auteur peut modifier ce projet.")
-    serializer.save()
-```
-
-#### `perform_destroy()` - Logique lors de la suppression
-```python
-def perform_destroy(self, instance):
-    """Vérifier que seul l'auteur peut supprimer le projet"""
-    if not instance.can_user_modify(self.request.user):
-        raise permissions.PermissionDenied("Seul l'auteur peut supprimer ce projet.")
-    instance.delete()
-```
-
 ### 3. Surcharge complète des actions
 
 Pour un contrôle total, vous pouvez surcharger les méthodes d'action :
