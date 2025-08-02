@@ -10,12 +10,13 @@ from .serializers import (
     IssueSerializer,
     CommentSerializer
 )
+from .permissions import IsProjectAuthor, IsProjectContributor, IsAuthorOrProjectAuthor
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
     """Gestion des projets"""
     serializer_class = ProjectSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsProjectAuthor]
     
     def get_serializer_class(self):
         """Utiliser un serializer simplifié pour la liste"""
@@ -65,7 +66,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
 class IssueViewSet(viewsets.ModelViewSet):
     """Gestion des issues"""
     serializer_class = IssueSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsAuthorOrProjectAuthor]
     
     def get_queryset(self):
         """Issues des projets accessibles"""
@@ -86,7 +87,7 @@ class IssueViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     """Gestion des commentaires"""
     serializer_class = CommentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsAuthorOrProjectAuthor]
     
     def get_queryset(self):
         """Commentaires des projets accessibles"""

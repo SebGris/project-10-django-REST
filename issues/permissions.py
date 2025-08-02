@@ -1,51 +1,51 @@
 from rest_framework import permissions
 
 
-class IsProjectAuthorOrReadOnly(permissions.BasePermission):
-    """
-    Permission pour les projets : seul l'auteur peut modifier/supprimer.
-    Lecture autorisée pour tous les contributeurs.
-    """
+class IsProjectAuthor(permissions.BasePermission):
+    """Seul l'auteur du projet peut modifier/supprimer"""
     
     def has_object_permission(self, request, view, obj):
-        # Vérifier que l'utilisateur est contributeur pour la lecture
+        # Lecture pour tous les contributeurs
         if request.method in permissions.SAFE_METHODS:
             return obj.is_user_contributor(request.user)
-        
-        # Permissions d'écriture seulement pour l'auteur du projet
-        return obj.can_user_modify(request.user)
+        # Écriture pour l'auteur seulement
+        return obj.author == request.user
 
 
-class IsIssueAuthorOrProjectAuthor(permissions.BasePermission):
-    """
-    Permission pour les issues : auteur de l'issue OU auteur du projet peut modifier/supprimer.
-    Lecture autorisée pour tous les contributeurs du projet.
-    """
+class IsProjectContributor(permissions.BasePermission):
+    """Seuls les contributeurs du projet peuvent accéder"""
     
     def has_object_permission(self, request, view, obj):
-        user = request.user
-        
-        # Permissions de lecture pour tous les contributeurs du projet
-        if request.method in permissions.SAFE_METHODS:
-            return obj.project.is_user_contributor(user)
-        
-        # Permissions d'écriture pour l'auteur de l'issue OU l'auteur du projet
-        return obj.author == user or obj.project.author == user
+        # Pour Project
+        if hasattr(obj, 'is_user_contributor'):
+            return obj.is_user_contributor(request.user)
+        # Pour Issue
+        elif hasattr(obj, 'project'):
+            return obj.project.is_user_contributor(request.user)
+        # Pour Comment
+        elif hasattr(obj, 'issue'):
+            return obj.issue.project.is_user_contributor(request.user)
+        return False
 
 
-class IsCommentAuthorOrProjectAuthor(permissions.BasePermission):
-    """
-    Permission pour les commentaires : auteur du commentaire OU auteur du projet peut modifier/supprimer.
-    Lecture autorisée pour tous les contributeurs du projet.
-    """
+class IsAuthorOrProjectAuthor(permissions.BasePermission):
+    """L'auteur de l'objet ou l'auteur du projet peut modifier/supprimer"""
     
     def has_object_permission(self, request, view, obj):
-        user = request.user
-        
-        # Permissions de lecture pour tous les contributeurs du projet
+        # Lecture pour tous les contributeurs
         if request.method in permissions.SAFE_METHODS:
-            return obj.issue.project.is_user_contributor(user)
+            if hasattr(obj, 'project'):
+                return obj.project.is_user_contributor(request.user)
+            elif hasattr(obj, 'issue'):
+                return obj.issue.project.is_user_contributor(request.user)
         
+        # Écriture pour l'auteur de l'objet ou du projet
+        if hasattr(obj, 'project'):
+            return obj.author == request.user or obj.project.author == request.user
+        elif hasattr(obj, 'issue'):
+            return obj.author == request.user or obj.issue.project.author == request.user
+        
+        return False
         # Permissions d'écriture pour l'auteur du commentaire OU l'auteur du projet
         return obj.author == user or obj.issue.project.author == user
 
