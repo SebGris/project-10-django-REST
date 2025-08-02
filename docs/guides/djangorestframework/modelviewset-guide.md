@@ -68,16 +68,80 @@ def get_serializer_class(self):
 
 ### 2. Hooks d'action (perform_*)
 
-Ces méthodes sont appelées automatiquement et permettent d'ajouter de la logique métier :
+Les méthodes "perform_*" sont des hooks spéciaux qui permettent de personnaliser le comportement des opérations CRUD sans réécrire entièrement les méthodes d'action principales. Elles sont appelées automatiquement à des moments précis du traitement.
+
+#### Principaux hooks d'action
+
+| Méthode | Appelée par | Description |
+|---------|-------------|-------------|
+| `perform_create(serializer)` | `create()` | Après validation mais avant sauvegarde lors de la création |
+| `perform_update(serializer)` | `update()` / `partial_update()` | Après validation mais avant sauvegarde lors de la mise à jour |
+| `perform_destroy(instance)` | `destroy()` | Avant la suppression effective d'un objet |
+
+#### Avantages des hooks perform_*
+
+- Simplifient l'ajout de logique métier sans dupliquer le code de traitement HTTP
+- Permettent d'injecter des données non fournies par l'utilisateur (auteur, dates, etc.)
+- Facilitent les validations supplémentaires ou actions secondaires
+- Suivent le principe de responsabilité unique
 
 #### `perform_create()` - Logique lors de la création
 ```python
 def perform_create(self, serializer):
-    """Créer un projet - l'auteur sera automatiquement ajouté comme contributeur"""
-    user = self.request.user
-    serializer.save(author=user)
+    """L'utilisateur devient auteur du projet"""
+    serializer.save(author=self.request.user)
     # L'auteur est automatiquement ajouté comme contributeur via Project.save()
 ```
+
+#### `perform_update()` - Exemple
+```python
+def perform_update(self, serializer):
+    """Ajouter une date de modification et journaliser la mise à jour"""
+    # Ajouter des données supplémentaires
+    serializer.save(modified_by=self.request.user)
+    
+    # Effectuer des actions secondaires
+    instance = serializer.instance
+    Log.objects.create(
+        action="update",
+        model="Project",
+        object_id=instance.id,
+        user=self.request.user
+    )
+```
+
+#### `perform_destroy()` - Exemple
+```python
+def perform_destroy(self, instance):
+    """Vérifications avant suppression"""
+    if instance.issues.exists():
+        # Au lieu de supprimer, marquer comme archivé
+        instance.is_active = False
+        instance.save()
+    else:
+        # Suppression normale
+        instance.delete()
+```
+
+#### Documentation officielle
+
+Pour plus d'informations, consultez la [documentation officielle sur les méthodes perform_*](https://www.django-rest-framework.org/api-guide/generic-views/#save-and-deletion-hooks) dans la section "Save and deletion hooks" de l'API Guide de Django REST Framework.
+
+#### Comparaison avec la surcharge de méthodes en C#
+
+Pour les développeurs familiers avec C#, les hooks perform_* présentent des similitudes avec la surcharge de méthodes, mais avec quelques différences importantes :
+
+**Similitudes :**
+- Extension du comportement d'une méthode existante
+- Respect d'une signature spécifique
+- Utilisation des concepts d'héritage et de polymorphisme
+
+**Différences :**
+- **Inversion du contrôle** : En DRF, c'est la méthode parente (`create()`) qui appelle votre hook (`perform_create()`), alors qu'en C#, c'est votre méthode surchargée qui peut appeler la méthode parente via `base.Method()`
+- **Objectif ciblé** : Les hooks perform_* ont un but spécifique (injection de données) alors qu'une surcharge en C# peut redéfinir tout le comportement
+- **Intervention précise** : Les hooks interviennent à un moment précis du cycle de vie de la requête, tandis qu'une méthode surchargée remplace complètement la méthode d'origine
+
+Cette approche donne plus de structure et guide les développeurs vers les bonnes pratiques pour des cas d'usage courants.
 
 ### 3. Surcharge complète des actions
 
