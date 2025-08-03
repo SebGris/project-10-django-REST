@@ -34,36 +34,18 @@ class ProjectViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=['post'])
     def add_contributor(self, request, pk=None):
-        """
-        Ajouter un contributeur au projet
-        Formats acceptés :
-        - {"user_id": 1}
-        - {"username": "john_doe"}
-        """
+        """Ajouter un contributeur au projet"""
         project = self.get_object()
-        
-        # Récupérer l'utilisateur par ID ou username
         user_id = request.data.get('user_id')
-        username = request.data.get('username')
         
-        if user_id:
-            try:
-                user = User.objects.get(id=user_id)
-            except User.DoesNotExist:
-                return Response({'error': 'Utilisateur non trouvé'}, status=status.HTTP_404_NOT_FOUND)
-        elif username:
-            try:
-                user = User.objects.get(username=username)
-            except User.DoesNotExist:
-                return Response({'error': 'Utilisateur non trouvé'}, status=status.HTTP_404_NOT_FOUND)
-        else:
-            return Response({'error': 'user_id ou username requis'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'Utilisateur non trouvé'}, status=status.HTTP_404_NOT_FOUND)
         
-        # Vérifier si déjà contributeur
         if Contributor.objects.filter(user=user, project=project).exists():
             return Response({'error': 'Déjà contributeur'}, status=status.HTTP_400_BAD_REQUEST)
         
-        # Ajouter le contributeur
         Contributor.objects.create(user=user, project=project)
         return Response({'message': f'{user.username} ajouté comme contributeur'}, status=status.HTTP_201_CREATED)
 
@@ -114,14 +96,5 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Créer un commentaire avec l'auteur et l'issue depuis l'URL"""
         issue_id = self.kwargs.get('issue_pk')
-        project_id = self.kwargs.get('project_pk')
-        
-        # Vérifier que l'issue appartient bien au projet
-        issue = get_object_or_404(Issue, pk=issue_id, project_id=project_id)
-        
-        # Vérifier que l'utilisateur est contributeur du projet
-        project = issue.project
-        if not project.is_user_contributor(self.request.user):
-            raise PermissionDenied("Seuls les contributeurs peuvent commenter les issues.")
-        
+        issue = get_object_or_404(Issue, pk=issue_id)
         serializer.save(author=self.request.user, issue=issue)

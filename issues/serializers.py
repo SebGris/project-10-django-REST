@@ -108,33 +108,11 @@ class IssueSerializer(serializers.ModelSerializer):
                  'project', 'author', 'assigned_to', 'created_time']
         read_only_fields = ['id', 'author', 'project', 'created_time']
 
-    def validate_assigned_to(self, value):
-        """Valider que l'utilisateur assigné existe et est contributeur du projet"""
-        if value is not None:
-            # La validation du contributeur sera faite dans la vue
-            # car on n'a pas accès au projet ici lors de la création
-            pass
-        return value
-    
-    def update(self, instance, validated_data):
-        """Mettre à jour une issue en gérant assigned_to_id"""
-        assigned_to_id = validated_data.pop('assigned_to_id', None)
-        if assigned_to_id is not None:
-            if assigned_to_id == 0:  # Désassigner
-                instance.assigned_to = None
-            else:
-                try:
-                    instance.assigned_to = User.objects.get(id=assigned_to_id)
-                except User.DoesNotExist:
-                    raise serializers.ValidationError("Utilisateur assigné non trouvé.")
-        
-        return super().update(instance, validated_data)
-
 
 class CommentSerializer(serializers.ModelSerializer):
     """Serializer pour le modèle Comment"""
     author = UserSummarySerializer(read_only=True)
-    issue = serializers.PrimaryKeyRelatedField(read_only=True)  # En lecture seule
+    issue = serializers.PrimaryKeyRelatedField(read_only=True)
     project = serializers.SerializerMethodField()
     
     class Meta:
