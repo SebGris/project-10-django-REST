@@ -49,6 +49,7 @@ Mise en place de la pagination sur les listes de ressources pour optimiser la na
 - [ModelViewSet DRF](./guides/djangorestframework/modelviewset-guide.md)
 - [DefaultRouter expliqué](./guides/djangorestframework/defaultrouter-guide.md)
 - [Routes imbriquées](./guides/djangorestframework/nested-router-guide.md)
+- [Décorateur @action](./guides/djangorestframework/action-decorator-guide.md)
 
 ### 🌱 Green Code & Performance
 - [Guide Green Code](./green-code/green-code-guide.md)
