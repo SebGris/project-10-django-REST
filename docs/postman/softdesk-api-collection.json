@@ -410,7 +410,7 @@
                   "    const response = pm.response.json();",
                   "    pm.environment.set('issue_id', response.id);",
                   "    pm.test('Issue créée avec succès', () => {",
-                  "        pm.expect(response.title).to.exist;",
+                  "        pm.expect(response.name).to.exist;",
                   "    });",
                   "}"
                 ]
@@ -427,7 +427,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"title\": \"Bug critique {{$timestamp}}\",\n    \"description\": \"Description détaillée du bug rencontré\",\n    \"assigned_to\": {{user_id}},\n    \"priority\": \"HIGH\",\n    \"tag\": \"BUG\",\n    \"status\": \"TODO\"\n}"
+              "raw": "{\n    \"name\": \"Bug critique {{$timestamp}}\",\n    \"description\": \"Description détaillée du bug rencontré\",\n    \"assigned_to\": {{user_id}},\n    \"priority\": \"HIGH\",\n    \"tag\": \"BUG\",\n    \"status\": \"To Do\"\n}"
             },
             "url": {
               "raw": "{{api_url}}/projects/{{project_id}}/issues/",
@@ -472,7 +472,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"title\": \"Bug corrigé\",\n    \"description\": \"Le bug a été résolu\",\n    \"assigned_to\": {{user_id}},\n    \"priority\": \"LOW\",\n    \"tag\": \"BUG\",\n    \"status\": \"DONE\"\n}"
+              "raw": "{\n    \"name\": \"Bug corrigé\",\n    \"description\": \"Le bug a été résolu\",\n    \"assigned_to\": {{user_id}},\n    \"priority\": \"LOW\",\n    \"tag\": \"BUG\",\n    \"status\": \"Finished\"\n}"
             },
             "url": {
               "raw": "{{api_url}}/projects/{{project_id}}/issues/{{issue_id}}/",
@@ -493,7 +493,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"status\": \"IN_PROGRESS\"\n}"
+              "raw": "{\n    \"status\": \"In Progress\"\n}"
             },
             "url": {
               "raw": "{{api_url}}/projects/{{project_id}}/issues/{{issue_id}}/",

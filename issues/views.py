@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.db import models
+from django.shortcuts import get_object_or_404
 from .models import Project, Contributor, Issue, Comment, User
 from .serializers import (
     ProjectSerializer,
@@ -75,15 +76,15 @@ class IssueViewSet(viewsets.ModelViewSet):
         return Issue.objects.filter(project__contributors__user=user)
     
     def perform_create(self, serializer):
-        """Créer une issue"""
-        project_id = self.request.data.get('project')
-        try:
-            project = Project.objects.get(id=project_id)
-            if not project.is_user_contributor(self.request.user):
-                raise permissions.PermissionDenied("Vous devez être contributeur")
-            serializer.save(author=self.request.user, project=project)
-        except Project.DoesNotExist:
-            raise permissions.PermissionDenied("Projet non trouvé")
+        """Créer une issue avec l'auteur et le projet depuis l'URL"""
+        project_id = self.kwargs.get('project_pk')
+        project = get_object_or_404(Project, pk=project_id)
+        
+        # Vérifier que l'utilisateur est contributeur du projet
+        if not project.is_user_contributor(self.request.user):
+            raise permissions.PermissionDenied("Vous devez être contributeur du projet pour créer une issue.")
+            
+        serializer.save(author=self.request.user, project=project)
     
 class CommentViewSet(viewsets.ModelViewSet):
     """Gestion des commentaires"""

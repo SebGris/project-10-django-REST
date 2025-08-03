@@ -76,13 +76,14 @@ class IssueSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     assigned_to = UserSerializer(read_only=True)
     assigned_to_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
+    project = serializers.PrimaryKeyRelatedField(read_only=True)  # En lecture seule
     
     class Meta:
         model = Issue
         fields = ['id', 'name', 'description', 'priority', 'tag', 'status', 
                  'project', 'author', 'assigned_to', 'assigned_to_id', 'created_time'
                  ]
-        read_only_fields = ['id', 'author', 'created_time']
+        read_only_fields = ['id', 'author', 'project', 'created_time']
     
     def validate_assigned_to_id(self, value):
         """Valider que l'utilisateur assigné existe et est contributeur du projet"""
