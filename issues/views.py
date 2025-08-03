@@ -1,41 +1,39 @@
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from django.db import models
+from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
-from .models import Project, Contributor, Issue, Comment, User
+from django.contrib.auth import get_user_model
+from django.db.models import Q
+
+from .models import Project, Contributor, Issue, Comment
 from .serializers import (
-    ProjectSerializer,
-    ProjectListSerializer,
-    ContributorSerializer,
-    IssueSerializer,
-    CommentSerializer
+    ProjectSerializer, ProjectListSerializer, ProjectCreateUpdateSerializer,
+    IssueSerializer, IssueListSerializer, CommentSerializer, ContributorSerializer,
+    UserSerializer
 )
-from .permissions import IsAuthor
+
+User = get_user_model()
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
-    """Gestion des projets"""
-    serializer_class = ProjectSerializer
-    permission_classes = [IsAuthenticated, IsAuthor]
+    """ViewSet pour les projets"""
+    queryset = Project.objects.all()
+    permission_classes = [IsAuthenticated]
     
     def get_serializer_class(self):
-        """Utiliser un serializer simplifié pour la liste"""
+        """Retourne le serializer approprié selon l'action"""
         if self.action == 'list':
             return ProjectListSerializer
+        elif self.action in ['create', 'update', 'partial_update']:
+            return ProjectCreateUpdateSerializer
         return ProjectSerializer
     
-    def get_queryset(self):
-        """Projets où l'utilisateur est contributeur"""
-        user = self.request.user
-        return Project.objects.filter(contributors__user=user)
-    
     def perform_create(self, serializer):
-        """L'utilisateur devient auteur du projet"""
+        """Créer un projet avec l'utilisateur actuel comme auteur"""
         serializer.save(author=self.request.user)
     
-    @action(detail=True, methods=['post'], url_path='add-contributor', url_name='add-contributor')
+    @action(detail=True, methods=['post'])
     def add_contributor(self, request, pk=None):
         """
         Ajouter un contributeur au projet
@@ -45,40 +43,57 @@ class ProjectViewSet(viewsets.ModelViewSet):
         """
         project = self.get_object()
         
-        if project.author != request.user:
-            return Response({"error": "Seul l'auteur peut ajouter des contributeurs"}, 
-                          status=status.HTTP_403_FORBIDDEN)
-        
+        # Récupérer l'utilisateur par ID ou username
         user_id = request.data.get('user_id')
-        if not user_id:
-            return Response({"error": "user_id requis"}, 
-                          status=status.HTTP_400_BAD_REQUEST)
+        username = request.data.get('username')
         
-        try:
-            user_to_add = User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            return Response({"error": "Utilisateur non trouvé"}, 
-                          status=status.HTTP_404_NOT_FOUND)
-        except ValueError:
-            return Response({"error": "user_id doit être un nombre entier"}, 
-                          status=status.HTTP_400_BAD_REQUEST) # inutile car serializer
-        if project.is_user_contributor(user_to_add):
-                return Response({"error": "Déjà contributeur"}, 
-                              status=status.HTTP_400_BAD_REQUEST)    
-        Contributor.objects.create(user=user_to_add, project=project)
-        return Response({"message": f"Contributeur {user_to_add.username} (ID: {user_id}) ajouté"}, 
-                          status=status.HTTP_201_CREATED)
+        if user_id:
+            try:
+                user = User.objects.get(id=user_id)
+            except User.DoesNotExist:
+                return Response({'error': 'Utilisateur non trouvé'}, status=status.HTTP_404_NOT_FOUND)
+        elif username:
+            try:
+                user = User.objects.get(username=username)
+            except User.DoesNotExist:
+                return Response({'error': 'Utilisateur non trouvé'}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({'error': 'user_id ou username requis'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Vérifier si déjà contributeur
+        if Contributor.objects.filter(user=user, project=project).exists():
+            return Response({'error': 'Déjà contributeur'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Ajouter le contributeur
+        Contributor.objects.create(user=user, project=project)
+        return Response({'message': f'{user.username} ajouté comme contributeur'}, status=status.HTTP_201_CREATED)
+
+
+class ContributorViewSet(viewsets.ReadOnlyModelViewSet):
+    """ViewSet pour les contributeurs d'un projet (lecture seule)"""
+    serializer_class = ContributorSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        """Retourne les contributeurs du projet spécifié dans l'URL"""
+        project_id = self.kwargs.get('project_pk')
+        return Contributor.objects.filter(project_id=project_id)
 
 
 class IssueViewSet(viewsets.ModelViewSet):
-    """Gestion des issues"""
-    serializer_class = IssueSerializer
-    permission_classes = [IsAuthenticated, IsAuthor]
+    """ViewSet pour les issues d'un projet"""
+    permission_classes = [IsAuthenticated]
+    
+    def get_serializer_class(self):
+        """Retourne le serializer approprié selon l'action"""
+        if self.action == 'list':
+            return IssueListSerializer
+        return IssueSerializer
     
     def get_queryset(self):
-        """Issues des projets accessibles"""
-        user = self.request.user
-        return Issue.objects.filter(project__contributors__user=user)
+        """Retourne les issues du projet spécifié dans l'URL"""
+        project_id = self.kwargs.get('project_pk')
+        return Issue.objects.filter(project_id=project_id)
     
     def perform_create(self, serializer):
         """Créer une issue avec l'auteur et le projet depuis l'URL"""
@@ -86,58 +101,19 @@ class IssueViewSet(viewsets.ModelViewSet):
         project = get_object_or_404(Project, pk=project_id)
         serializer.save(author=self.request.user, project=project)
 
-    
-class CommentViewSet(viewsets.ModelViewSet):
-    """Gestion des commentaires"""
-    serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated, IsAuthor]
 
-    def get_queryset(self):
-        """Commentaires des projets accessibles"""
-        user = self.request.user
-        return Comment.objects.filter(
-            models.Q(issue__project__contributors__user=user) | 
-            models.Q(issue__project__author=user)
-        ).distinct()
-    
-    def perform_create(self, serializer):
-        """Créer un commentaire"""
-        issue_id = self.request.data.get('issue')
-        try:
-            issue = Issue.objects.get(id=issue_id)
-            if not issue.project.is_user_contributor(self.request.user):
-                raise permissions.PermissionDenied("Vous devez être contributeur")
-            serializer.save(author=self.request.user, issue=issue)
-        except Issue.DoesNotExist:
-            raise permissions.PermissionDenied("Issue non trouvée")
-    
-class ContributorViewSet(viewsets.ModelViewSet):
-    """Gestion des contributeurs d'un projet"""
-    serializer_class = ContributorSerializer
+class CommentViewSet(viewsets.ModelViewSet):
+    """ViewSet pour les commentaires d'une issue"""
+    serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
-        """Contributeurs du projet spécifié"""
-        project_id = self.kwargs.get('project_pk')
-        return Contributor.objects.filter(project_id=project_id)
+        """Retourne les commentaires de l'issue spécifiée dans l'URL"""
+        issue_id = self.kwargs.get('issue_pk')
+        return Comment.objects.filter(issue_id=issue_id)
     
     def perform_create(self, serializer):
-        """Ajouter un contributeur (auteur du projet seulement)"""
-        project_id = self.kwargs.get('project_pk')
-        project = Project.objects.get(id=project_id)
-        
-        if project.author != self.request.user:
-            raise permissions.PermissionDenied("Seul l'auteur peut ajouter des contributeurs")
-        
-        # user_id devrait venir du request.data
-        user_id = self.request.data.get('user_id')
-        if not user_id:
-            raise permissions.PermissionDenied("user_id requis")
-            
-        try:
-            user_to_add = User.objects.get(id=user_id)
-            if project.is_user_contributor(user_to_add):
-                raise permissions.PermissionDenied("Déjà contributeur")
-            serializer.save(project=project, user=user_to_add)
-        except User.DoesNotExist:
-            raise permissions.PermissionDenied("Utilisateur non trouvé")
+        """Créer un commentaire avec l'auteur et l'issue depuis l'URL"""
+        issue_id = self.kwargs.get('issue_pk')
+        issue = get_object_or_404(Issue, pk=issue_id)
+        serializer.save(author=self.request.user, issue=issue)

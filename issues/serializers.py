@@ -13,9 +13,16 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
 
 
+class UserSummarySerializer(serializers.ModelSerializer):
+    """Serializer minimal pour afficher un résumé utilisateur"""
+    class Meta:
+        model = User
+        fields = ['id', 'username']
+
+
 class ContributorSerializer(serializers.ModelSerializer):
     """Serializer pour afficher les contributeurs d'un projet"""
-    user = UserSerializer(read_only=True)
+    user = UserSummarySerializer(read_only=True)  # Utiliser UserSummarySerializer au lieu de UserSerializer
     
     class Meta:
         model = Contributor
@@ -27,20 +34,25 @@ class ProjectListSerializer(serializers.ModelSerializer):
     """Serializer simplifié pour la liste des projets"""
     author_username = serializers.CharField(source='author.username', read_only=True)
     contributors_count = serializers.SerializerMethodField()
+    contributors_names = serializers.SerializerMethodField()
     
     class Meta:
         model = Project
-        fields = ['id', 'name', 'type', 'author_username', 'contributors_count', 'created_time']
+        fields = ['id', 'name', 'type', 'author_username', 'contributors_count', 'contributors_names', 'created_time']
         read_only_fields = ['id', 'created_time']
     
     def get_contributors_count(self, obj):
         """Retourne le nombre de contributeurs"""
         return obj.contributors.count()
+    
+    def get_contributors_names(self, obj):
+        """Retourne la liste des noms des contributeurs"""
+        return [contributor.user.username for contributor in obj.contributors.all()]
 
 
 class ProjectSerializer(serializers.ModelSerializer):
-    """Serializer pour le modèle Project"""
-    author = UserSerializer(read_only=True)
+    """Serializer complet pour le détail d'un projet"""
+    author = UserSummarySerializer(read_only=True)  # Utiliser UserSummarySerializer pour cohérence
     contributors = ContributorSerializer(many=True, read_only=True)
     
     class Meta:
@@ -71,8 +83,17 @@ class ProjectCreateUpdateSerializer(serializers.ModelSerializer):
         return value
 
 
+class IssueListSerializer(serializers.ModelSerializer):
+    """Serializer simplifié pour la liste des issues"""
+    author = serializers.CharField(source='author.username', read_only=True)
+    
+    class Meta:
+        model = Issue
+        fields = ['id', 'name', 'priority', 'tag', 'status', 'author', 'created_time']
+
+
 class IssueSerializer(serializers.ModelSerializer):
-    """Serializer pour le modèle Issue"""
+    """Serializer complet pour le détail d'une issue"""
     author = UserSerializer(read_only=True)
     assigned_to = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(),
@@ -124,12 +145,3 @@ class CommentSerializer(serializers.ModelSerializer):
         if not Issue.objects.filter(id=value.id).exists():
             raise serializers.ValidationError("Issue non trouvée.")
         return value
-
-class ContributorSerializer(serializers.ModelSerializer):
-    """Serializer pour le modèle Contributor"""
-    user = UserSerializer(read_only=True)
-
-    class Meta:
-        model = Contributor
-        fields = ['user', 'created_time']
-        read_only_fields = ['id', 'created_time']
