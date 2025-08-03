@@ -5,34 +5,42 @@
 SoftDesk est une API REST permettant la gestion collaborative de projets avec un système de tickets. Voici ses principales fonctionnalités :
 
 ### 👤 Gestion des utilisateurs
+- Inscription avec validation RGPD (âge minimum 15 ans)
+- Authentification JWT avec tokens de rafraîchissement
+- Gestion du profil et des préférences de confidentialité
 
 ### 📋 Gestion des projets
-- Création de projets par les utilisateurs (l'auteur devient automatiquement contributeur). [Voir l'implémentation](./projets/creation-projet-implementation.md)
+- Création de projets par les utilisateurs (l'auteur devient automatiquement contributeur)
+- Gestion des contributeurs par projet
+- Types de projets : back-end, front-end, iOS, Android
 
 ### 🐛 Gestion des tâches et problèmes
-Création, modification et suivi des tickets (issues).
+- Création, modification et suivi des tickets (issues)
+- Priorités : LOW, MEDIUM, HIGH
+- Tags : BUG, FEATURE, TASK
+- Statuts : To Do, In Progress, Finished
 
 ### 💬 Commentaires
-Ajout de commentaires pour faciliter la communication entre les membres du projet.
+- Ajout de commentaires pour faciliter la communication entre les membres du projet
+- Historique complet des échanges sur chaque issue
 
 ### ℹ️ Informations complémentaires
 
 #### Définition des auteurs
-- Chaque ressource (hors utilisateur) possède un auteur.
-- Seul l’auteur peut modifier ou supprimer sa ressource ; les autres utilisateurs ont un accès en lecture seule.
+- Chaque ressource (hors utilisateur) possède un auteur
+- Seul l'auteur peut modifier ou supprimer sa ressource ; les autres utilisateurs ont un accès en lecture seule
 
 #### 📄 Pagination
-Mise en place de la pagination sur les listes de ressources pour optimiser la navigation.
+- Mise en place de la pagination sur les listes de ressources pour optimiser la navigation
 
 ## 📋 Navigation rapide
 
 ### 🚀 Démarrage
 - [Installation et configuration](../README.md)
-- [Guide Django](./guides/django/django-guide.md)
 - [Architecture du projet](./architecture/architecture.md)
 
 ### 📖 Guides API
-- [Documentation complète de l’API](./api/api-guide.md)
+- [Documentation complète de l'API](./api/api-guide.md)
 - [Choix de conception de l'API](./api/api-design.md)
 - [Guide des tests API](./api/api-testing-complete-guide.md)
 - [Tests API utilisateurs](./api/users-api-testing.md)
@@ -60,15 +68,14 @@ Mise en place de la pagination sur les listes de ressources pour optimiser la na
 - [Guide de sécurité](./security/security-guide.md)
 - [Conformité RGPD](./security/rgpd-compliance.md)
 
-### 🧪 Tests & Dépannage
-- [Guide de tests](./tests/testing-guide.md)
-- [Guide de dépannage](./support/troubleshooting.md)
-
 ### 🔧 Maintenance
 - [Instructions de migration](./support/migration-instructions.md)
+- [Guide de dépannage](./support/troubleshooting.md)
 
 ### 📊 Références
 - [Modèle conceptuel de données](./architecture/mcd.md)
+- [Collection Postman](./postman/postman-guide.md)
+- [Guide tous contributeurs](./guides/all-contributors-guide.md)
 
 ## 🎯 Par où commencer ?
 
@@ -77,11 +84,10 @@ Mise en place de la pagination sur les listes de ressources pour optimiser la na
 | Installer le projet       | [README principal](../README.md)               |
 | Comprendre l'architecture | [architecture.md](./architecture/architecture.md) |
 | Utiliser l'API            | [api-guide.md](./api/api-guide.md)             |
-| Tester l'API              | [Collection Postman](./postman/postman-guide.md) |
+| Tester l'API              | [Collection Postman](./postman/softdesk-api-collection.json) |
 | Résoudre un problème      | [troubleshooting.md](./support/troubleshooting.md) |
 
 ## 📁 Organisation des fichiers
-
 ```
 docs/
 ├── README.md                        # Ce fichier (sommaire)
@@ -113,8 +119,6 @@ docs/
 ├── security/                        # Sécurité et conformité
 │   ├── rgpd-compliance.md
 │   └── security-guide.md
-├── tests/                           # Tests et qualité
-│   └── testing-guide.md
 ├── support/                         # Support et dépannage
 │   ├── troubleshooting.md
 │   └── migration-instructions.md

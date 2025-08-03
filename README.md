@@ -92,12 +92,6 @@ poetry run python manage.py runserver
 ```bash
 # Test de configuration Django
 poetry run python manage.py check
-
-# Test simple des modèles
-poetry run python test_simple.py
-
-# Tests complets
-poetry run python run_tests_universal.py
 ```
 
 ### Interface d'administration
@@ -117,8 +111,8 @@ poetry run python run_tests_universal.py
 | `/api/users/` | GET | Liste utilisateurs | Oui | - |
 | `/api/projects/` | GET/POST | Projets | Oui | `{"name": "...", "description": "...", "type": "back-end"}` |
 | `/api/projects/{id}/` | GET/PUT/DELETE | Détails projet | Oui | - |
-| `/api/projects/{id}/add-contributor/` | POST | Ajouter contributeur | Oui | `{"username": "user"}` ou `{"user_id": 1}` |
-| `/api/projects/{project_id}/issues/` | GET/POST | Issues du projet | Oui | `{"name": "...", "description": "...", "tag": "BUG", "assigned_to_id": 1}` |
+| `/api/projects/{id}/add_contributor/` | POST | Ajouter contributeur | Oui | `{"user_id": 1}` |
+| `/api/projects/{project_id}/issues/` | GET/POST | Issues du projet | Oui | `{"name": "...", "description": "...", "tag": "BUG", "assigned_to": 1}` |
 | `/api/projects/{project_id}/issues/{issue_id}/comments/` | GET/POST | Commentaires d'une issue | Oui | `{"description": "..."}` |
 
 ### Valeurs autorisées pour les champs :
@@ -155,25 +149,25 @@ poetry run python manage.py check
 **Erreurs de migration**
 ```bash
 # Réinitialiser la base de données
-del db.sqlite3
+rm db.sqlite3  # Linux/Mac
+del db.sqlite3  # Windows
 poetry run python manage.py migrate
 ```
 
 **Problème d'encodage (Windows)**
 ```bash
-# Utiliser le script universel
-poetry run python run_tests_universal.py
+# Configurer l'encodage UTF-8
+set PYTHONIOENCODING=utf-8
 ```
 
 ### Diagnostic complet
 ```bash
-poetry run python diagnose_project.py
+poetry run python manage.py check
 ```
 
 ## 📚 Documentation
 
 - 🏗️ **[Architecture du projet](docs/architecture/architecture.md)** - Structure et principes de conception
-- 🧪 **[Guide des tests](tests/README.md)** - Suite de tests et exécution
 - 🌱 **[Green Code](docs/green-code/green-code-guide.md)** - Optimisations éco-responsables
 - 📖 **[API Guide](docs/api/api-guide.md)** - Documentation complète des endpoints
 - 🔒 **[RGPD](docs/security/rgpd-compliance.md)** - Conformité et protection des données
@@ -194,22 +188,21 @@ project-10-django-REST/
 
 ### Commandes utiles
 ```bash
-# Démarrer le serveur
+# 🚀 Commandes rapides (après configuration)
+poetry run server          # Démarrer le serveur
+poetry run migrate         # Appliquer les migrations
+poetry run makemigrations  # Créer les migrations
+poetry run shell          # Shell Django
+
+# Ou avec Makefile
+make server               # Démarrer le serveur
+make migrate              # Appliquer les migrations
+make install              # Installation complète
+
+# Commandes classiques
 poetry run python manage.py runserver
-
-# Activer l’environnement virtuel
-poetry env activate
-# Ensuite, Poetry vous donne le chemin vers le script d'activation de l'environnement virtuel.
-# Cette réponse est normale avec `poetry env activate` - elle vous indique où se trouve le script d'activation.
-
-# Créer une migration
-poetry run python manage.py makemigrations
-
-# Appliquer les migrations
 poetry run python manage.py migrate
-
-# Tests
-poetry run python run_tests_universal.py
+poetry run python manage.py makemigrations
 
 # Linting et formatage avec Ruff
 poetry run ruff check .           # Vérifier le code
