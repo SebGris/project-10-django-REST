@@ -210,11 +210,11 @@ curl -X DELETE http://127.0.0.1:8000/api/projects/1/ \
 
 ### Ajouter un contributeur
 
-**Endpoint :** `POST /api/projects/{id}/add-contributor/`
+**Endpoint :** `POST /api/projects/{id}/add_contributor/`
 **Auth :** Requis (auteur uniquement)
 
 ```bash
-curl -X POST http://127.0.0.1:8000/api/projects/1/add-contributor/ \
+curl -X POST http://127.0.0.1:8000/api/projects/1/add_contributor/ \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"user_id": 2}'
@@ -361,53 +361,56 @@ curl -X DELETE http://127.0.0.1:8000/api/comments/1/ \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
-## 🔗 Routes imbriquées (RESTful)
+## 📋 Liste complète des endpoints
 
-### Issues d'un projet
+### 🔐 Authentification
 
-**Endpoint :** `GET /api/projects/{project_id}/issues/`
+| Endpoint | Méthode | Description | Auth requise |
+|----------|---------|-------------|--------------|
+| `/api/token/` | POST | Obtenir un token JWT | Non |
+| `/api/token/refresh/` | POST | Rafraîchir le token | Non |
 
-```bash
-curl -H "Authorization: Bearer YOUR_TOKEN" \
-  http://127.0.0.1:8000/api/projects/1/issues/
-```
+### 👥 Utilisateurs
 
-### Créer une issue dans un projet
+| Endpoint | Méthode | Description | Auth requise |
+|----------|---------|-------------|--------------|
+| `/api/users/` | GET | Liste des utilisateurs | Oui |
+| `/api/users/` | POST | Inscription (création compte) | Non |
+| `/api/users/{id}/` | GET | Détails d'un utilisateur | Oui |
+| `/api/users/profile/` | GET | Profil de l'utilisateur connecté | Oui |
+| `/api/users/profile/` | PUT/PATCH | Modifier son profil | Oui |
 
-**Endpoint :** `POST /api/projects/{project_id}/issues/`
+### 📁 Projets
 
-```bash
-curl -X POST http://127.0.0.1:8000/api/projects/1/issues/ \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "Nouvelle issue",
-    "description": "Description",
-    "tag": "feature"
-  }'
-```
+| Endpoint | Méthode | Description | Auth requise |
+|----------|---------|-------------|--------------|
+| `/api/projects/` | GET | Liste des projets | Oui |
+| `/api/projects/` | POST | Créer un projet | Oui |
+| `/api/projects/{id}/` | GET | Détails d'un projet | Oui |
+| `/api/projects/{id}/` | PUT/PATCH | Modifier un projet | Oui (auteur) |
+| `/api/projects/{id}/` | DELETE | Supprimer un projet | Oui (auteur) |
+| `/api/projects/{id}/add_contributor/` | POST | Ajouter un contributeur | Oui (auteur) |
+| `/api/projects/{id}/contributors/` | GET | Liste des contributeurs | Oui |
 
-### Commentaires d'une issue
+### 🐛 Issues
 
-**Endpoint :** `GET /api/projects/{project_id}/issues/{issue_id}/comments/`
+| Endpoint | Méthode | Description | Auth requise |
+|----------|---------|-------------|--------------|
+| `/api/projects/{project_id}/issues/` | GET | Liste des issues | Oui |
+| `/api/projects/{project_id}/issues/` | POST | Créer une issue | Oui |
+| `/api/projects/{project_id}/issues/{id}/` | GET | Détails d'une issue | Oui |
+| `/api/projects/{project_id}/issues/{id}/` | PUT/PATCH | Modifier une issue | Oui (auteur) |
+| `/api/projects/{project_id}/issues/{id}/` | DELETE | Supprimer une issue | Oui (auteur) |
 
-```bash
-curl -H "Authorization: Bearer YOUR_TOKEN" \
-  http://127.0.0.1:8000/api/projects/1/issues/1/comments/
-```
+### 💬 Commentaires
 
-### Créer un commentaire sur une issue
-
-**Endpoint :** `POST /api/projects/{project_id}/issues/{issue_id}/comments/`
-
-```bash
-curl -X POST http://127.0.0.1:8000/api/projects/1/issues/1/comments/ \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "description": "Nouveau commentaire"
-  }'
-```
+| Endpoint | Méthode | Description | Auth requise |
+|----------|---------|-------------|--------------|
+| `/api/projects/{project_id}/issues/{issue_id}/comments/` | GET | Liste des commentaires | Oui |
+| `/api/projects/{project_id}/issues/{issue_id}/comments/` | POST | Créer un commentaire | Oui |
+| `/api/projects/{project_id}/issues/{issue_id}/comments/{id}/` | GET | Détails d'un commentaire | Oui |
+| `/api/projects/{project_id}/issues/{issue_id}/comments/{id}/` | PUT/PATCH | Modifier un commentaire | Oui (auteur) |
+| `/api/projects/{project_id}/issues/{issue_id}/comments/{id}/` | DELETE | Supprimer un commentaire | Oui (auteur) |
 
 ## 🔒 Permissions et sécurité
 

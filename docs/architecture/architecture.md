@@ -15,7 +15,6 @@
 SoftDesk est une API REST développée avec Django REST Framework, suivant une architecture MVT (Model-View-Template) adaptée pour une API pure.
 
 ## 📁 Structure du projet
-
 ```
 project-10-django-REST/
 ├── 📁 softdesk_support/          # Configuration principale
@@ -134,7 +133,7 @@ Voir le [Guide de sécurité](../security/security-guide.md) pour les détails.
 
 | Resource | Create | Read | Update | Delete |
 |----------|--------|------|--------|--------|
-| Project | Auth users | Contributors | Author | Author |
+| Project | Authentiques | Contributors | Author | Author |
 | Issue | Contributors | Contributors | Author | Author |
 | Comment | Contributors | Contributors | Author | Author |
 

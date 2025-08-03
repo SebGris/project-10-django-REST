@@ -40,28 +40,36 @@ SIMPLE_JWT = {
 
 ### 2. Système de permissions granulaires
 
-**Permissions par rôle :**
-```python
-class IsAuthorOrReadOnly(permissions.BasePermission):
-    """
-    Permission personnalisée pour les auteurs uniquement
-    """
-    def has_object_permission(self, request, view, obj):
-        # Read permissions pour tous les utilisateurs authentifiés
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        # Write permissions seulement pour l'auteur
-        return obj.author == request.user
-```
+### Classes de permissions utilisées
 
-**Matrice des permissions :**
+1. **IsAuthenticated** (Django REST Framework)
+   - Vérifie que l'utilisateur est authentifié
+   - Appliquée globalement sur tous les endpoints protégés
 
-| Ressource | Créer | Lire | Modifier | Supprimer |
-|-----------|-------|------|----------|-----------|
-| **Projet** | ✅ Tous | ✅ Contributeurs | ✅ Auteur | ✅ Auteur |
-| **Issue** | ✅ Contributeurs | ✅ Contributeurs | ✅ Auteur | ✅ Auteur |
-| **Comment** | ✅ Contributeurs | ✅ Contributeurs | ✅ Auteur | ✅ Auteur |
-| **Contributor** | ✅ Auteur projet | ✅ Contributeurs | ✅ Auteur projet | ✅ Auteur projet |
+2. **IsAuthorOrReadOnly** (Custom)
+   ```python
+   class IsAuthorOrReadOnly(permissions.BasePermission):
+       """
+       Permission simple : l'auteur a tous les droits, les autres peuvent seulement lire
+       """
+       def has_object_permission(self, request, view, obj):
+           # Lecture pour tous
+           if request.method in permissions.SAFE_METHODS:
+               return True
+           
+           # Écriture seulement pour l'auteur
+           return obj.author == request.user
+   ```
+
+### Règles de permissions par ressource
+
+| Ressource | Création | Lecture | Modification | Suppression |
+|-----------|----------|---------|--------------|-------------|
+| User | Public (inscription) | Authentifié | Propriétaire | Admin |
+| Project | Authentifié | Authentifié | Auteur | Auteur |
+| Issue | Authentifié | Authentifié | Auteur | Auteur |
+| Comment | Authentifié | Authentifié | Auteur | Auteur |
+| Contributor | Auteur du projet | Authentifié | - | - |
 
 ### 3. Protection des mots de passe
 
