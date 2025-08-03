@@ -35,9 +35,14 @@ class ProjectViewSet(viewsets.ModelViewSet):
         """L'utilisateur devient auteur du projet"""
         serializer.save(author=self.request.user)
     
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=['post'], url_path='add-contributor', url_name='add-contributor')
     def add_contributor(self, request, pk=None):
-        """Ajouter un contributeur par son ID (auteur seulement)"""
+        """
+        Ajouter un contributeur au projet
+        Formats acceptés :
+        - {"user_id": 1}
+        - {"username": "john_doe"}
+        """
         project = self.get_object()
         
         if project.author != request.user:

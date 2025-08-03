@@ -364,9 +364,9 @@
               "raw": "{\n    \"user_id\": {{user_id}}\n}"
             },
             "url": {
-              "raw": "{{api_url}}/projects/{{project_id}}/add-contributor/",
+              "raw": "{{api_url}}/projects/{{project_id}}/add_contributor/",
               "host": ["{{api_url}}"],
-              "path": ["projects", "{{project_id}}", "add-contributor", ""]
+              "path": ["projects", "{{project_id}}", "add_contributor", ""]
             }
           }
         },
