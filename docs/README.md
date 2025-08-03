@@ -1,4 +1,3 @@
-
 # 📚 Documentation SoftDesk API
 
 ## 🎯 Fonctionnalités principales
@@ -34,6 +33,7 @@ Mise en place de la pagination sur les listes de ressources pour optimiser la na
 
 ### 📖 Guides API
 - [Documentation complète de l’API](./api/api-guide.md)
+- [Choix de conception de l'API](./api/api-design.md)
 - [Guide des tests API](./api/api-testing-complete-guide.md)
 - [Tests API utilisateurs](./api/users-api-testing.md)
 - [Guide Issues/Comments](./api/issue-comment-api-guide.md)
@@ -86,6 +86,7 @@ docs/
 ├── README.md                        # Ce fichier (sommaire)
 ├── api/                             # Documentation API
 │   ├── api-guide.md
+│   ├── api-design.md
 │   ├── api-testing-complete-guide.md
 │   ├── issue-comment-api-guide.md
 │   └── users-api-testing.md

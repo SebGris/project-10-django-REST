@@ -397,6 +397,225 @@
       ]
     },
     {
+      "name": "🐛 Issues",
+      "item": [
+        {
+          "name": "Créer Issue",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('issue_id', response.id);",
+                  "    pm.test('Issue créée avec succès', () => {",
+                  "        pm.expect(response.title).to.exist;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Bug critique {{$timestamp}}\",\n    \"description\": \"Description détaillée du bug rencontré\",\n    \"assigned_to\": {{user_id}},\n    \"priority\": \"HIGH\",\n    \"tag\": \"BUG\",\n    \"status\": \"TODO\"\n}"
+            },
+            "url": {
+              "raw": "{{api_url}}/projects/{{project_id}}/issues/",
+              "host": ["{{api_url}}"],
+              "path": ["projects", "{{project_id}}", "issues", ""]
+            }
+          }
+        },
+        {
+          "name": "Liste des Issues",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/projects/{{project_id}}/issues/",
+              "host": ["{{api_url}}"],
+              "path": ["projects", "{{project_id}}", "issues", ""]
+            }
+          }
+        },
+        {
+          "name": "Détails Issue",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/projects/{{project_id}}/issues/{{issue_id}}/",
+              "host": ["{{api_url}}"],
+              "path": ["projects", "{{project_id}}", "issues", "{{issue_id}}", ""]
+            }
+          }
+        },
+        {
+          "name": "Modifier Issue",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Bug corrigé\",\n    \"description\": \"Le bug a été résolu\",\n    \"assigned_to\": {{user_id}},\n    \"priority\": \"LOW\",\n    \"tag\": \"BUG\",\n    \"status\": \"DONE\"\n}"
+            },
+            "url": {
+              "raw": "{{api_url}}/projects/{{project_id}}/issues/{{issue_id}}/",
+              "host": ["{{api_url}}"],
+              "path": ["projects", "{{project_id}}", "issues", "{{issue_id}}", ""]
+            }
+          }
+        },
+        {
+          "name": "Modifier Statut Issue (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"IN_PROGRESS\"\n}"
+            },
+            "url": {
+              "raw": "{{api_url}}/projects/{{project_id}}/issues/{{issue_id}}/",
+              "host": ["{{api_url}}"],
+              "path": ["projects", "{{project_id}}", "issues", "{{issue_id}}", ""]
+            }
+          }
+        },
+        {
+          "name": "Supprimer Issue",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/projects/{{project_id}}/issues/{{issue_id}}/",
+              "host": ["{{api_url}}"],
+              "path": ["projects", "{{project_id}}", "issues", "{{issue_id}}", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "💬 Comments",
+      "item": [
+        {
+          "name": "Créer Commentaire",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('comment_id', response.id);",
+                  "    pm.test('Commentaire créé avec succès', () => {",
+                  "        pm.expect(response.description).to.exist;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"description\": \"Commentaire sur l'issue {{$timestamp}}\"\n}"
+            },
+            "url": {
+              "raw": "{{api_url}}/projects/{{project_id}}/issues/{{issue_id}}/comments/",
+              "host": ["{{api_url}}"],
+              "path": ["projects", "{{project_id}}", "issues", "{{issue_id}}", "comments", ""]
+            }
+          }
+        },
+        {
+          "name": "Liste des Commentaires",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/projects/{{project_id}}/issues/{{issue_id}}/comments/",
+              "host": ["{{api_url}}"],
+              "path": ["projects", "{{project_id}}", "issues", "{{issue_id}}", "comments", ""]
+            }
+          }
+        },
+        {
+          "name": "Détails Commentaire",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/projects/{{project_id}}/issues/{{issue_id}}/comments/{{comment_id}}/",
+              "host": ["{{api_url}}"],
+              "path": ["projects", "{{project_id}}", "issues", "{{issue_id}}", "comments", "{{comment_id}}", ""]
+            }
+          }
+        },
+        {
+          "name": "Modifier Commentaire",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"description\": \"Commentaire modifié avec plus de détails\"\n}"
+            },
+            "url": {
+              "raw": "{{api_url}}/projects/{{project_id}}/issues/{{issue_id}}/comments/{{comment_id}}/",
+              "host": ["{{api_url}}"],
+              "path": ["projects", "{{project_id}}", "issues", "{{issue_id}}", "comments", "{{comment_id}}", ""]
+            }
+          }
+        },
+        {
+          "name": "Supprimer Commentaire",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/projects/{{project_id}}/issues/{{issue_id}}/comments/{{comment_id}}/",
+              "host": ["{{api_url}}"],
+              "path": ["projects", "{{project_id}}", "issues", "{{issue_id}}", "comments", "{{comment_id}}", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "🔒 Tests de Permissions",
       "item": [
         {

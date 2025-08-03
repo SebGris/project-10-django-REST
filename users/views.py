@@ -1,6 +1,7 @@
 from rest_framework import viewsets, status, permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from django.contrib.auth import get_user_model
 from .serializers import UserSerializer, UserRegistrationSerializer, UserSummarySerializer
 
@@ -69,3 +70,15 @@ class UserViewSet(viewsets.ModelViewSet):
         response_serializer = UserSerializer(user)
         headers = self.get_success_headers(response_serializer.data)
         return Response(response_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
+    @action(detail=False, methods=['get', 'patch'], permission_classes=[IsAuthenticated])
+    def profile(self, request):
+        """Consulter ou modifier son propre profil"""
+        if request.method == 'GET':
+            serializer = self.get_serializer(request.user)
+            return Response(serializer.data)
+        
+        serializer = self.get_serializer(request.user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
