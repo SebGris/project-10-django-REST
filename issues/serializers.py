@@ -133,15 +133,15 @@ class IssueSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     """Serializer pour le modèle Comment"""
-    author = UserSerializer(read_only=True)
+    author = UserSummarySerializer(read_only=True)
+    issue = serializers.PrimaryKeyRelatedField(read_only=True)  # En lecture seule
+    project = serializers.SerializerMethodField()
     
     class Meta:
         model = Comment
-        fields = ['id', 'description', 'issue', 'author', 'created_time']
-        read_only_fields = ['id', 'author', 'created_time']
+        fields = ['id', 'description', 'project', 'issue', 'author', 'created_time']
+        read_only_fields = ['id', 'author', 'project', 'issue', 'created_time']
     
-    def validate_issue(self, value):
-        """Valider que l'issue existe"""
-        if not Issue.objects.filter(id=value.id).exists():
-            raise serializers.ValidationError("Issue non trouvée.")
-        return value
+    def get_project(self, obj):
+        """Retourne l'ID du projet associé à l'issue"""
+        return obj.issue.project.id

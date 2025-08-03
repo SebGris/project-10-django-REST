@@ -4,14 +4,13 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
-from django.db.models import Q
 
 from .models import Project, Contributor, Issue, Comment
 from .serializers import (
     ProjectSerializer, ProjectListSerializer, ProjectCreateUpdateSerializer,
-    IssueSerializer, IssueListSerializer, CommentSerializer, ContributorSerializer,
-    UserSerializer
+    IssueSerializer, IssueListSerializer, CommentSerializer, ContributorSerializer
 )
+from .permissions import IsAuthorOrReadOnly
 
 User = get_user_model()
 
@@ -19,7 +18,7 @@ User = get_user_model()
 class ProjectViewSet(viewsets.ModelViewSet):
     """ViewSet pour les projets"""
     queryset = Project.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
     
     def get_serializer_class(self):
         """Retourne le serializer approprié selon l'action"""
@@ -82,7 +81,7 @@ class ContributorViewSet(viewsets.ReadOnlyModelViewSet):
 
 class IssueViewSet(viewsets.ModelViewSet):
     """ViewSet pour les issues d'un projet"""
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
     
     def get_serializer_class(self):
         """Retourne le serializer approprié selon l'action"""
@@ -105,7 +104,7 @@ class IssueViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     """ViewSet pour les commentaires d'une issue"""
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
     
     def get_queryset(self):
         """Retourne les commentaires de l'issue spécifiée dans l'URL"""
@@ -115,5 +114,14 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Créer un commentaire avec l'auteur et l'issue depuis l'URL"""
         issue_id = self.kwargs.get('issue_pk')
-        issue = get_object_or_404(Issue, pk=issue_id)
+        project_id = self.kwargs.get('project_pk')
+        
+        # Vérifier que l'issue appartient bien au projet
+        issue = get_object_or_404(Issue, pk=issue_id, project_id=project_id)
+        
+        # Vérifier que l'utilisateur est contributeur du projet
+        project = issue.project
+        if not project.is_user_contributor(self.request.user):
+            raise PermissionDenied("Seuls les contributeurs peuvent commenter les issues.")
+        
         serializer.save(author=self.request.user, issue=issue)

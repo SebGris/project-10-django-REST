@@ -2,12 +2,14 @@ from rest_framework import permissions
 
 
 
-class IsAuthor(permissions.BasePermission):
+class IsAuthorOrReadOnly(permissions.BasePermission):
     """
-    Seul l'auteur de la ressource peut modifier ou supprimer.
-    Les autres utilisateurs ont un accès en lecture seule.
+    Permission simple : l'auteur a tous les droits, les autres peuvent seulement lire
     """
     def has_object_permission(self, request, view, obj):
+        # Lecture pour tous
         if request.method in permissions.SAFE_METHODS:
             return True
+        
+        # Écriture seulement pour l'auteur
         return obj.author == request.user
