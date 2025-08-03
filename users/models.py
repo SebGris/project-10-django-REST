@@ -7,9 +7,10 @@ class User(AbstractUser):
     """
     Modèle utilisateur personnalisé avec gestion RGPD et âge
     """
-    age = models.PositiveIntegerField(
-        validators=[MinValueValidator(15)],
-        help_text="L'utilisateur doit avoir au moins 15 ans (RGPD)"
+    age = models.IntegerField(
+        verbose_name="Âge",
+        validators=[MinValueValidator(15, message="L'âge minimum requis est de 15 ans.")],
+        help_text="Doit avoir au moins 15 ans (RGPD)"
     )
     can_be_contacted = models.BooleanField(
         default=False,

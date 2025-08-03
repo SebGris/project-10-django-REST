@@ -58,31 +58,30 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
-    """
-    Serializer pour l'inscription d'un nouvel utilisateur
-    """
-    password = serializers.CharField(write_only=True, min_length=8)
-    password_confirm = serializers.CharField(write_only=True)
+    """Serializer pour l'inscription des utilisateurs"""
+    password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
+    password_confirm = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
+    age = serializers.IntegerField(min_value=15, error_messages={
+        'min_value': 'L\'âge minimum requis est de 15 ans (conformité RGPD).'
+    })
     
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 
-                 'age', 'can_be_contacted', 'can_data_be_shared', 
-                 'password', 'password_confirm']
-    
-    def validate(self, data):
-        # Validation des mots de passe
-        if data['password'] != data['password_confirm']:
+        fields = ['id', 'username', 'email', 'password', 'password_confirm', 
+                 'first_name', 'last_name', 'age', 'can_be_contacted', 'can_data_be_shared']
+        
+    def validate(self, attrs):
+        """Validation des données"""
+        if attrs['password'] != attrs['password_confirm']:
             raise serializers.ValidationError("Les mots de passe ne correspondent pas.")
         
-        # Validation RGPD : âge minimum de 15 ans
-        age = data.get('age')
-        if age is not None and age < 15:
+        # Validation RGPD - âge minimum
+        if attrs.get('age', 0) < 15:
             raise serializers.ValidationError({
-                'age': "Conformément au RGPD, l'inscription n'est autorisée qu'aux personnes âgées d'au moins 15 ans."
+                'age': 'Vous devez avoir au moins 15 ans pour vous inscrire (conformité RGPD).'
             })
         
-        return data
+        return attrs
     
     def create(self, validated_data):
         validated_data.pop('password_confirm')
@@ -98,4 +97,5 @@ class UserSummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'can_be_contacted', 'can_data_be_shared']
+        read_only_fields = ['id', 'username', 'email', 'can_be_contacted', 'can_data_be_shared']
         read_only_fields = ['id', 'username', 'email', 'can_be_contacted', 'can_data_be_shared']
