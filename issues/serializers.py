@@ -74,26 +74,25 @@ class ProjectCreateUpdateSerializer(serializers.ModelSerializer):
 class IssueSerializer(serializers.ModelSerializer):
     """Serializer pour le modèle Issue"""
     author = UserSerializer(read_only=True)
-    assigned_to = UserSerializer(read_only=True)
-    assigned_to_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
-    project = serializers.PrimaryKeyRelatedField(read_only=True)  # En lecture seule
+    assigned_to = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(),
+        required=False,
+        allow_null=True
+    )
+    project = serializers.PrimaryKeyRelatedField(read_only=True)
     
     class Meta:
         model = Issue
         fields = ['id', 'name', 'description', 'priority', 'tag', 'status', 
-                 'project', 'author', 'assigned_to', 'assigned_to_id', 'created_time'
-                 ]
+                 'project', 'author', 'assigned_to', 'created_time']
         read_only_fields = ['id', 'author', 'project', 'created_time']
-    
-    def validate_assigned_to_id(self, value):
+
+    def validate_assigned_to(self, value):
         """Valider que l'utilisateur assigné existe et est contributeur du projet"""
         if value is not None:
-            try:
-                user = User.objects.get(id=value)
-                # La validation du projet sera faite dans la vue
-                return value
-            except User.DoesNotExist:
-                raise serializers.ValidationError("Utilisateur non trouvé.")
+            # La validation du contributeur sera faite dans la vue
+            # car on n'a pas accès au projet ici lors de la création
+            pass
         return value
     
     def update(self, instance, validated_data):

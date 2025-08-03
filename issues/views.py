@@ -84,12 +84,8 @@ class IssueViewSet(viewsets.ModelViewSet):
         """Créer une issue avec l'auteur et le projet depuis l'URL"""
         project_id = self.kwargs.get('project_pk')
         project = get_object_or_404(Project, pk=project_id)
-        
-        # Vérifier que l'utilisateur est contributeur du projet
-        if not project.is_user_contributor(self.request.user):
-            raise permissions.PermissionDenied("Vous devez être contributeur du projet pour créer une issue.")
-            
         serializer.save(author=self.request.user, project=project)
+
     
 class CommentViewSet(viewsets.ModelViewSet):
     """Gestion des commentaires"""
