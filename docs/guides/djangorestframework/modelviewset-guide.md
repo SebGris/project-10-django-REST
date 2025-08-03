@@ -30,7 +30,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectSerializer
     
     # 2. Permissions requises
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     
     # 3. Données accessibles à l'utilisateur
     def get_queryset(self):

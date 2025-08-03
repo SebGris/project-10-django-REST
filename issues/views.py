@@ -1,5 +1,6 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.db import models
 from .models import Project, Contributor, Issue, Comment, User
@@ -10,13 +11,13 @@ from .serializers import (
     IssueSerializer,
     CommentSerializer
 )
-from .permissions import IsProjectAuthor, IsAuthorOrProjectAuthor
+from .permissions import IsAuthor
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
     """Gestion des projets"""
     serializer_class = ProjectSerializer
-    permission_classes = [permissions.IsAuthenticated, IsProjectAuthor]
+    permission_classes = [IsAuthenticated, IsAuthor]
     
     def get_serializer_class(self):
         """Utiliser un serializer simplifié pour la liste"""
@@ -66,7 +67,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
 class IssueViewSet(viewsets.ModelViewSet):
     """Gestion des issues"""
     serializer_class = IssueSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAuthorOrProjectAuthor]
+    permission_classes = [IsAuthenticated, IsAuthor]
     
     def get_queryset(self):
         """Issues des projets accessibles"""
@@ -87,8 +88,8 @@ class IssueViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     """Gestion des commentaires"""
     serializer_class = CommentSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAuthorOrProjectAuthor]
-    
+    permission_classes = [IsAuthenticated, IsAuthor]
+
     def get_queryset(self):
         """Commentaires des projets accessibles"""
         user = self.request.user
@@ -111,7 +112,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 class ContributorViewSet(viewsets.ModelViewSet):
     """Gestion des contributeurs d'un projet"""
     serializer_class = ContributorSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
         """Contributeurs du projet spécifié"""

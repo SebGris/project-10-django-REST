@@ -1,4 +1,5 @@
 from rest_framework import viewsets, status, permissions
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from .serializers import UserSerializer, UserRegistrationSerializer, UserSummarySerializer
@@ -20,7 +21,7 @@ class UserViewSet(viewsets.ModelViewSet):
         """Création ouverte à tous, le reste nécessite authentification"""
         if self.action == 'create':
             return [permissions.AllowAny()]
-        return [permissions.IsAuthenticated()]
+        return [IsAuthenticated()]
     
     def get_serializer_class(self):
         """Serializer spécifique selon l'action"""

@@ -411,26 +411,6 @@ curl -X POST http://127.0.0.1:8000/api/projects/1/issues/1/comments/ \
 
 ## 🔒 Permissions et sécurité
 
-### Règles d'autorisation
-
-#### Projets
-- **Lecture :** Contributeurs du projet
-- **Création :** Utilisateurs authentifiés
-- **Modification :** Auteur du projet uniquement
-- **Suppression :** Auteur du projet uniquement
-
-#### Issues
-- **Lecture :** Contributeurs du projet
-- **Création :** Contributeurs du projet
-- **Modification :** Auteur de l'issue
-- **Suppression :** Auteur de l'issue
-
-#### Commentaires
-- **Lecture :** Contributeurs du projet
-- **Création :** Contributeurs du projet
-- **Modification :** Auteur du commentaire
-- **Suppression :** Auteur du commentaire
-
 ### Codes d'erreur
 
 | Code | Description |
