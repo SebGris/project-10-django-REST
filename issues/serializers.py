@@ -59,14 +59,6 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project
         fields = ['id', 'name', 'description', 'type', 'author', 'contributors', 'created_time']
         read_only_fields = ['id', 'author', 'created_time']
-    
-    def create(self, validated_data):
-        """Créer un projet et ajouter l'auteur comme contributeur"""
-        user = self.context['request'].user
-        validated_data.pop('author', None)
-        # La méthode save() du modèle s'occupera d'ajouter l'auteur comme contributeur
-        project = Project.objects.create(author=user, **validated_data)
-        return project
 
 
 class ProjectCreateUpdateSerializer(serializers.ModelSerializer):

@@ -66,13 +66,6 @@ class Contributor(models.Model):
             )
         ]  # Un utilisateur ne peut être contributeur qu'une fois par projet, évite les doublons dans la table
 
-    @property
-    def is_author(self):
-        """
-        Vérifie si ce contributeur est aussi l'auteur du projet
-        """
-        return self.user == self.project.author
-
     def __str__(self):
         role = " (Auteur)" if self.is_author else ""
         return f"{self.user.username} - {self.project.name}{role}"
