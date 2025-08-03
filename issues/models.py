@@ -40,37 +40,6 @@ class Project(models.Model):
                 project=self
             )
     
-    def get_all_contributors(self):
-        """
-        Retourne tous les contributeurs incluant l'auteur
-        """
-        return self.contributors.all()
-    
-    def get_non_author_contributors(self):
-        """
-        Retourne seulement les contributeurs qui ne sont pas l'auteur
-        """
-        return self.contributors.exclude(user=self.author)
-    
-    def is_author_or_contributor(self, user):
-        """
-        Vérifie si un utilisateur est auteur ou contributeur du projet
-        """
-        return (self.author == user or 
-                self.contributors.filter(user=user).exists())
-    
-    def can_user_access(self, user):
-        """
-        Vérifie si un utilisateur peut accéder au projet (auteur ou contributeur)
-        """
-        return self.is_author_or_contributor(user)
-    
-    def can_user_modify(self, user):
-        """
-        Vérifie si un utilisateur peut modifier le projet (seul l'auteur)
-        """
-        return self.author == user
-    
     def is_user_contributor(self, user):
         """
         Vérifie si un utilisateur est contributeur de ce projet
@@ -171,5 +140,4 @@ class Comment(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Comment on {self.issue.name} by {self.author.username}"
         return f"Comment on {self.issue.name} by {self.author.username}"

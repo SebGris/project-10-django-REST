@@ -43,8 +43,6 @@ def main():
     
     # Tests de modèles
     tests_models = [
-        ("poetry run python tests/models/test_project_contributor.py", "Tests Project/Contributor détaillés"),
-        ("poetry run python tests/models/test_project_contributor_simple.py", "Tests Project/Contributor simplifiés"),
         ("poetry run python tests/models/test_issue_comment.py", "Tests Issue/Comment détaillés"),
         ("poetry run python tests/models/test_issue_comment_simple.py", "Tests Issue/Comment simplifiés"),
     ]

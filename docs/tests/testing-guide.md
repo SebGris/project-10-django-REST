@@ -22,7 +22,6 @@ poetry run python run_all_tests.py
 ### Tests par catégorie
 ```bash
 # Tests des modèles
-poetry run python tests/models/test_project_contributor.py
 poetry run python tests/models/test_issue_comment.py
 
 # Tests des API
@@ -44,8 +43,6 @@ tests/
 ├── test_config.py               # Configuration partagée
 ├── README.md                    # Documentation des tests
 ├── models/                      # Tests des modèles Django
-│   ├── test_project_contributor.py
-│   ├── test_project_contributor_simple.py
 │   ├── test_issue_comment.py
 │   └── test_issue_comment_simple.py
 ├── api/                         # Tests des endpoints API
@@ -65,20 +62,6 @@ tests/
 ## 🔍 Description détaillée des tests
 
 ### Tests des modèles (tests/models/)
-
-#### `test_project_contributor.py`
-Test complet des modèles Project et Contributor :
-- ✅ Création d'utilisateurs et projets
-- ✅ Test des méthodes `can_user_modify()`, `can_user_access()`
-- ✅ Gestion automatique auteur → contributeur
-- ✅ Relations Many-to-Many et permissions
-- ✅ Méthodes `get_all_contributors()`, `get_non_author_contributors()`
-
-#### `test_project_contributor_simple.py`
-Version allégée pour validation rapide :
-- ✅ Création utilisateurs avec champs RGPD
-- ✅ Création projet et ajout contributeur
-- ✅ Vérification des relations de base
 
 #### `test_issue_comment.py`
 Test exhaustif des modèles Issue et Comment :

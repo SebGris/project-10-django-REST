@@ -15,8 +15,6 @@ tests/
 ├── __init__.py
 ├── test_config.py          # Configuration commune pour tous les tests
 ├── models/                 # Tests des modèles Django
-│   ├── test_project_contributor.py
-│   ├── test_project_contributor_simple.py
 │   ├── test_issue_comment.py
 │   └── test_issue_comment_simple.py
 ├── api/                    # Tests des endpoints API
@@ -83,7 +81,6 @@ poetry run coverage report
 **Tests des modèles :**
 ```bash
 # Avec le runner de tests spécifique
-poetry run python tests/models/test_project_contributor.py
 poetry run python tests/models/test_issue_comment.py
 
 # Avec Django

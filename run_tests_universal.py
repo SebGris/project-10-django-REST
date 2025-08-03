@@ -153,8 +153,6 @@ def main():
     # Tests organisés par priorité
     test_files = [
         # Tests des modèles
-        ("tests/models/test_project_contributor.py", "Tests Project/Contributor détaillés"),
-        ("tests/models/test_project_contributor_simple.py", "Tests Project/Contributor simplifiés"),
         ("tests/models/test_issue_comment.py", "Tests Issue/Comment détaillés"),
         ("tests/models/test_issue_comment_simple.py", "Tests Issue/Comment simplifiés"),
         
@@ -205,9 +203,7 @@ def main():
         print("[WARNING] Certains tests ont échoué ou sont manquants.")
         print("\nDébogage recommandé:")
         print("1. Vérifiez les logs d'erreur ci-dessus")
-        print("2. Exécutez les tests individuellement:")
-        print("   poetry run python tests/models/test_project_contributor_simple.py")
-        print("3. Vérifiez la configuration Django:")
+        print("2. Vérifiez la configuration Django:")
         print("   poetry run python manage.py check")
         return 1
 
