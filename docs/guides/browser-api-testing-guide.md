@@ -34,10 +34,6 @@ Ouvrez votre navigateur à : http://127.0.0.1:8000/api/
    - Password: `SoftDesk2025!` (ou `SecurePass123!` pour les autres utilisateurs)
 3. Une fois connecté, vous verrez "Log in" remplacé par votre username en haut à droite
 
-**Note** : Si vous ne voyez pas votre username après connexion, cela peut être dû à :
-- L'authentification par session n'est pas activée
-- Vous utilisez uniquement JWT (sans sessions)
-
 Pour vérifier votre connexion :
 - Essayez d'accéder à http://127.0.0.1:8000/api/users/profile/
 - Si vous êtes connecté, vous verrez vos informations

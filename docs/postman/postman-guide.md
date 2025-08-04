@@ -254,29 +254,123 @@ C'est **normal** ! Les tests suivants **doivent échouer** :
 - ❌ "Test RGPD - <15 ans" → Code 400 attendu
 - ❌ "Accès sans token" → Code 401 attendu
 
-## 📈 **Métriques de Validation**
+## 🔄 Changer d'utilisateur dans Postman
 
-### **Collection complète = 12+ requêtes**
-- ✅ **8-10 succès** (authentification, CRUD)
-- ❌ **2-3 échecs** (tests sécurité/RGPD - **attendus**)
+### Méthode 1 : Modifier la requête d'authentification
 
-### **Temps d'exécution :** ~30 secondes
+1. **Dans la collection Postman, allez à** : `🔐 Authentication` > `Obtenir Token JWT`
 
-### **Couverture fonctionnelle :**
-- ✅ **Authentification JWT** complète
-- ✅ **CRUD Utilisateurs** complet
-- ✅ **CRUD Projets** complet
-- ✅ **Permissions** validées
-- ✅ **Conformité RGPD** testée
+2. **Modifiez le body avec les identifiants d'un autre utilisateur** :
+   ```json
+   {
+       "username": "john_doe_1754220224",
+       "password": "SecurePass123!"
+   }
+   ```
 
-## 🎯 **Pour OpenClassrooms**
+3. **Envoyez la requête** : Le nouveau token sera automatiquement sauvegardé dans `{{access_token}}`
 
-Cette collection Postman démontre :
-1. **✅ API fonctionnelle** (tous les endpoints)
-2. **✅ Sécurité** (authentification JWT)
-3. **✅ Conformité RGPD** (validation âge)
-4. **✅ Tests automatisés** (qualité du code)
-5. **✅ Documentation pratique** (prêt pour démo)
+4. **Toutes vos prochaines requêtes** utiliseront ce nouveau token (donc le nouvel utilisateur)
+
+### Méthode 2 : Créer plusieurs environnements
+
+1. **Créez un environnement par utilisateur** :
+   - Environment 1 : `Admin`
+   - Environment 2 : `John Doe`
+   - Environment 3 : `Test User`
+
+2. **Dans chaque environnement, stockez** :
+   ```
+   username: john_doe_1754220224
+   password: SecurePass123!
+   access_token: (sera rempli après authentification)
+   ```
+
+3. **Changez d'environnement** pour changer d'utilisateur
+
+### Exemple pratique : Tester les permissions
+
+```javascript
+// 1. Connectez-vous en tant qu'admin
+POST /api/token/
+{
+    "username": "admin",
+    "password": "SoftDesk2025!"
+}
+
+// 2. Créez un projet (vous serez l'auteur)
+POST /api/projects/
+{
+    "name": "Projet Admin",
+    "description": "Créé par admin",
+    "type": "back-end"
+}
+// Réponse : {"id": 1, "author": {...}, ...}
+
+// 3. Connectez-vous en tant qu'autre utilisateur
+POST /api/token/
+{
+    "username": "john_doe_1754220224",
+    "password": "SecurePass123!"
+}
+
+// 4. Essayez de modifier le projet de l'admin
+PUT /api/projects/1/
+{
+    "name": "Projet modifié par John",
+    "description": "Tentative de modification",
+    "type": "front-end"
+}
+// Réponse : 403 Forbidden - "You do not have permission to perform this action."
+
+// 5. Créez votre propre projet
+POST /api/projects/
+{
+    "name": "Projet John",
+    "description": "Créé par John",
+    "type": "iOS"
+}
+// Réponse : 201 Created - Succès car John crée son propre projet
+```
+
+### 📝 Liste des utilisateurs pour tests
+
+Pour voir tous les utilisateurs disponibles :
+1. **Connectez-vous en tant qu'admin**
+2. **Envoyez** : `GET /api/users/`
+3. **Notez les usernames** pour vous connecter avec eux
+
+### ⚡ Script de test automatique
+
+Dans l'onglet "Pre-request Script" de votre collection :
+
+```javascript
+// Rotation automatique d'utilisateurs pour les tests
+const users = [
+    { username: "admin", password: "SoftDesk2025!" },
+    { username: "john_doe_1754220224", password: "SecurePass123!" },
+    { username: "SEB", password: "VotreMotDePasse!" }
+];
+
+// Sélectionner un utilisateur aléatoire
+const randomUser = users[Math.floor(Math.random() * users.length)];
+pm.environment.set("current_username", randomUser.username);
+pm.environment.set("current_password", randomUser.password);
+```
+
+Puis dans le body de votre requête d'authentification :
+```json
+{
+    "username": "{{current_username}}",
+    "password": "{{current_password}}"
+}
+```
+
+### 🔑 Points importants
+
+- **Le token JWT contient l'identité** : Changer de token = changer d'utilisateur
+- **Les permissions sont vérifiées côté serveur** : Le token détermine qui vous êtes
+- **Gardez les mots de passe en sécurité** : Utilisez les variables d'environnement Postman
 
 ---
 
