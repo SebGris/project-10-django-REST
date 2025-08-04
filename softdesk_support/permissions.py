@@ -1,4 +1,3 @@
-from issues.models import Project
 from rest_framework import permissions
 
 
@@ -31,7 +30,8 @@ class IsProjectAuthorOrContributor(permissions.BasePermission):
     
     def has_object_permission(self, request, view, obj):
         # IMPORTANT: Seuls les contributeurs peuvent accéder au projet
-        if not obj.contributors.filter(id=request.user.id).exists():
+        # Vérifier via la relation contributors__user
+        if not obj.contributors.filter(user=request.user).exists():
             return False
             
         # Pour les actions de modification/suppression et gestion des contributeurs
@@ -50,6 +50,9 @@ class IsProjectContributor(permissions.BasePermission):
     """
     
     def has_permission(self, request, view):
+        # Import local pour éviter les imports circulaires
+        from issues.models import Project
+        
         # Récupère le projet depuis l'URL (pour les nested routes)
         project_id = view.kwargs.get('project_pk')
         if not project_id:
@@ -58,7 +61,7 @@ class IsProjectContributor(permissions.BasePermission):
         # Vérifie que l'utilisateur est contributeur
         try:
             project = Project.objects.get(pk=project_id)
-            return project.contributors.filter(id=request.user.id).exists()
+            return project.contributors.filter(user=request.user).exists()
         except Project.DoesNotExist:
             return False
     
@@ -66,7 +69,7 @@ class IsProjectContributor(permissions.BasePermission):
         # Double vérification au niveau de l'objet
         project = getattr(obj, 'project', None)
         if project:
-            return project.contributors.filter(id=request.user.id).exists()
+            return project.contributors.filter(user=request.user).exists()
         return False
 
 
@@ -85,7 +88,7 @@ class IsAuthorOrProjectAuthorOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         # D'abord vérifier que l'utilisateur est contributeur
         project = getattr(obj, 'project', None)
-        if not project or not project.contributors.filter(id=request.user.id).exists():
+        if not project or not project.contributors.filter(user=request.user).exists():
             return False
         
         # Lecture pour tous les contributeurs

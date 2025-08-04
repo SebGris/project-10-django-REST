@@ -40,8 +40,13 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return ProjectSerializer
     
     def perform_create(self, serializer):
-        """Créer un projet avec l'utilisateur actuel comme auteur"""
-        serializer.save(author=self.request.user)
+        """Créer un projet avec l'utilisateur actuel comme auteur et contributeur"""
+        project = serializer.save(author=self.request.user)
+        # Ajouter automatiquement l'auteur comme contributeur s'il n'existe pas déjà
+        Contributor.objects.get_or_create(
+            user=self.request.user, 
+            project=project
+        )
     
     @action(detail=True, methods=['post'])
     def add_contributor(self, request, pk=None):
