@@ -1,4 +1,4 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -129,13 +129,20 @@ class IssueViewSet(viewsets.ModelViewSet):
         """Créer une issue avec l'auteur et le projet depuis l'URL"""
         project_id = self.kwargs.get('project_pk')
         project = get_object_or_404(Project, pk=project_id)
+        
+        # Vérification explicite que l'utilisateur est contributeur
+        if not (project.author == self.request.user or 
+                project.contributors.filter(user=self.request.user).exists()):
+            raise PermissionDenied("Vous n'êtes pas contributeur de ce projet")
+            
+        # Sauvegarde avec l'utilisateur actuel comme auteur
         serializer.save(author=self.request.user, project=project)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
     """ViewSet pour les commentaires d'une issue"""
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated, IsProjectContributor, IsAuthorOrProjectAuthorOrReadOnly]
+    permission_classes = [IsAuthenticated, IsProjectContributor]
     
     def get_queryset(self):
         """Retourne les commentaires de l'issue spécifiée dans l'URL"""
@@ -149,3 +156,16 @@ class CommentViewSet(viewsets.ModelViewSet):
         issue_id = self.kwargs.get('issue_pk')
         issue = get_object_or_404(Issue, pk=issue_id)
         serializer.save(author=self.request.user, issue=issue)
+    
+    def check_object_permissions(self, request, obj):
+        """Override pour permettre aux auteurs de modifier leurs commentaires"""
+        # D'abord vérifier les permissions de base (IsProjectContributor)
+        super().check_object_permissions(request, obj)
+        
+        # Pour les méthodes non-safe, vérifier si l'utilisateur est l'auteur
+        if request.method not in permissions.SAFE_METHODS:
+            if obj.author != request.user and obj.issue.project.author != request.user:
+                self.permission_denied(
+                    request,
+                    message="Seul l'auteur du commentaire ou l'auteur du projet peut le modifier."
+                )

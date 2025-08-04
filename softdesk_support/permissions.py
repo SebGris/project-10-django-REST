@@ -58,23 +58,34 @@ class IsProjectContributor(permissions.BasePermission):
         if not project_id:
             return False
             
-        # Vérifie que l'utilisateur est contributeur
+        # Vérifie que l'utilisateur est contributeur ou auteur
         try:
             project = Project.objects.get(pk=project_id)
             if project.author == request.user:
                 return True
-            return project.contributors.filter(user=request.user).exists()
+            is_contributor = project.contributors.filter(user=request.user).exists()
+            
+            # Log de débogage
+            if not is_contributor:
+                print(f"DEBUG: User {request.user.username} (ID: {request.user.id}) is not a contributor of project {project_id}")
+                print(f"DEBUG: Project author: {project.author.username} (ID: {project.author.id})")
+                print(f"DEBUG: Contributors: {list(project.contributors.values_list('user__username', 'user__id'))}")
+            
+            return is_contributor
         except Project.DoesNotExist:
             return False
     
     def has_object_permission(self, request, view, obj):
-        # Double vérification au niveau de l'objet
+        # Pour les commentaires, on veut permettre la lecture à tous les contributeurs
+        # mais seulement l'auteur ou l'auteur du projet peut modifier
         project = getattr(obj, 'project', None)
+        if not project and hasattr(obj, 'issue'):
+            project = obj.issue.project
+            
         if project:
-            # Vérifier si l'utilisateur est l'auteur du projet
+            # Vérifier si l'utilisateur est contributeur ou auteur du projet
             if project.author == request.user:
                 return True
-            # Sinon, vérifier s'il est contributeur
             return project.contributors.filter(user=request.user).exists()
         return False
 
