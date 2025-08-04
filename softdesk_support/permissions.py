@@ -61,6 +61,8 @@ class IsProjectContributor(permissions.BasePermission):
         # Vérifie que l'utilisateur est contributeur
         try:
             project = Project.objects.get(pk=project_id)
+            if project.author == request.user:
+                return True
             return project.contributors.filter(user=request.user).exists()
         except Project.DoesNotExist:
             return False
@@ -69,6 +71,10 @@ class IsProjectContributor(permissions.BasePermission):
         # Double vérification au niveau de l'objet
         project = getattr(obj, 'project', None)
         if project:
+            # Vérifier si l'utilisateur est l'auteur du projet
+            if project.author == request.user:
+                return True
+            # Sinon, vérifier s'il est contributeur
             return project.contributors.filter(user=request.user).exists()
         return False
 

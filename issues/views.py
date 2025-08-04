@@ -66,19 +66,47 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return Response({'message': f'{user.username} ajouté comme contributeur'}, status=status.HTTP_201_CREATED)
 
 
-class ContributorViewSet(viewsets.ReadOnlyModelViewSet):
-    """ViewSet pour les contributeurs d'un projet (lecture seule)"""
+class ContributorViewSet(viewsets.ModelViewSet):
+    """ViewSet pour les contributeurs d'un projet"""
     serializer_class = ContributorSerializer
     permission_classes = [IsAuthenticated, IsProjectContributor]
     
     def get_queryset(self):
-        """Retourne les contributeurs du projet spécifié dans l'URL"""
+        """Retourne uniquement les contributeurs du projet spécifié"""
         project_id = self.kwargs.get('project_pk')
-        # Vérifier d'abord que l'utilisateur est contributeur du projet
+        
+        # S'assurer que l'utilisateur est contributeur ou auteur du projet
         project = get_object_or_404(Project, pk=project_id)
-        if not project.contributors.filter(id=self.request.user.id).exists():
-            raise PermissionDenied("Vous n'êtes pas contributeur de ce projet")
+        
+        # Check permission explicitement pour la liste
+        if not (project.author == self.request.user or 
+                project.contributors.filter(user=self.request.user).exists()):
+            # On retourne un queryset vide si l'utilisateur n'a pas accès
+            # La permission doit ensuite bloquer l'accès
+            return Contributor.objects.none()
+            
         return Contributor.objects.filter(project_id=project_id)
+    
+    def perform_create(self, serializer):
+        """Crée un contributeur lié au projet et à l'utilisateur spécifiés"""
+        project_id = self.kwargs.get('project_pk')
+        project = get_object_or_404(Project, pk=project_id)
+        
+        # Vérifie que l'utilisateur actuel est l'auteur du projet
+        if project.author != self.request.user:
+            raise PermissionDenied("Seul l'auteur du projet peut ajouter des contributeurs")
+            
+        user_id = self.request.data.get('user_id')
+        user = get_object_or_404(User, pk=user_id)
+        
+        # Vérifie si le contributeur existe déjà
+        if Contributor.objects.filter(project=project, user=user).exists():
+            return Response(
+                {"detail": "Cet utilisateur est déjà contributeur"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            
+        serializer.save(project=project, user=user)
 
 
 class IssueViewSet(viewsets.ModelViewSet):
