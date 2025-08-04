@@ -157,15 +157,43 @@ class CommentViewSet(viewsets.ModelViewSet):
         issue = get_object_or_404(Issue, pk=issue_id)
         serializer.save(author=self.request.user, issue=issue)
     
-    def check_object_permissions(self, request, obj):
-        """Override pour permettre aux auteurs de modifier leurs commentaires"""
-        # D'abord vérifier les permissions de base (IsProjectContributor)
-        super().check_object_permissions(request, obj)
+    def update(self, request, *args, **kwargs):
+        """Override update pour vérifier les permissions"""
+        comment = self.get_object()
         
-        # Pour les méthodes non-safe, vérifier si l'utilisateur est l'auteur
-        if request.method not in permissions.SAFE_METHODS:
-            if obj.author != request.user and obj.issue.project.author != request.user:
-                self.permission_denied(
-                    request,
-                    message="Seul l'auteur du commentaire ou l'auteur du projet peut le modifier."
-                )
+        # Seul l'auteur du commentaire peut le modifier
+        # L'auteur du projet peut seulement supprimer
+        if comment.author != request.user:
+            return Response(
+                {"detail": "Seul l'auteur du commentaire peut le modifier."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        return super().update(request, *args, **kwargs)
+    
+    def partial_update(self, request, *args, **kwargs):
+        """Override partial_update pour vérifier les permissions"""
+        comment = self.get_object()
+        
+        # Seul l'auteur du commentaire peut le modifier
+        # L'auteur du projet peut seulement supprimer
+        if comment.author != request.user:
+            return Response(
+                {"detail": "Seul l'auteur du commentaire peut le modifier."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        return super().partial_update(request, *args, **kwargs)
+    
+    def destroy(self, request, *args, **kwargs):
+        """Override destroy pour permettre à l'auteur du projet de supprimer"""
+        comment = self.get_object()
+        
+        # L'auteur du commentaire ou l'auteur du projet peut supprimer
+        if comment.author != request.user and comment.issue.project.author != request.user:
+            return Response(
+                {"detail": "Seul l'auteur du commentaire ou l'auteur du projet peut supprimer ce commentaire."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        return super().destroy(request, *args, **kwargs)
