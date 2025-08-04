@@ -155,40 +155,59 @@ Postman permet d'exécuter automatiquement une série de requêtes pour tester r
 
 #### Option 2 : Utiliser le Runner (automatique)
 
-1. **Cliquer sur "Runner"** en bas à gauche de Postman
-   ![Runner Icon](https://www.postman.com/assets/runner-button.png)
+1. **Ouvrir le Runner** : Cliquer sur "Runner" en bas à gauche de Postman
 
-2. **Dans la fenêtre qui s'ouvre** :
-   - **Select a collection or folder** : Choisir "SoftDesk API - Tests Complets"
+2. **Faire glisser ce que vous voulez tester** :
+   
+   - **Pour tester TOUT** : Glissez "SoftDesk API - Tests Complets" (la collection entière)
+     ```
+     Cela exécutera TOUTES les requêtes dans l'ordre :
+     - Authentication
+     - Users
+     - Projects
+     - Issues
+     - Comments
+     - Tests de Permissions
+     ```
+   
+   - **Pour tester SEULEMENT les permissions** : Glissez "🔒 Tests de Permissions" (le dossier)
+     ```
+     Cela exécutera seulement :
+     - Accès sans token (401)
+     - Token invalide (401)
+     ```
+
+3. **Configurer le Runner** :
    - **Environment** : Sélectionner "SoftDesk Local"
-   - **Run order** : Garder l'ordre par défaut
+   - **Iterations** : 1 (nombre de fois à exécuter)
+   - **Delay** : 0 (pas de délai entre les requêtes)
 
-3. **Cliquer sur "Run SoftDesk API"**
+4. **Cliquer sur "Run"**
 
-4. **Postman exécute automatiquement** toutes les requêtes et affiche :
+### ⚠️ Important : Ordre d'exécution
+
+Si vous exécutez **toute la collection**, assurez-vous que :
+1. **"Obtenir Token JWT"** est exécuté EN PREMIER
+2. Les requêtes sont dans le bon ordre (création avant modification)
+
+Si vous exécutez **seulement un dossier** :
+- Le dossier "🔒 Tests de Permissions" peut être exécuté seul
+- Les autres dossiers nécessitent d'avoir un token valide
+
+### Exemple concret : Tester uniquement les permissions
+
+1. **D'abord, obtenir un token** :
+   - Exécuter manuellement : `🔐 Authentication > Obtenir Token JWT`
+
+2. **Ensuite, lancer le Runner** :
+   - Glisser le dossier "🔒 Tests de Permissions"
+   - Cliquer "Run"
+
+3. **Résultats attendus** :
    ```
-   ✅ Obtenir Token JWT          → 200 OK
-   ✅ Inscription (Public)       → 201 Created
-   ❌ Test RGPD - <15 ans       → 400 Bad Request (✅ c'est normal !)
-   ✅ Créer Projet              → 201 Created
-   ❌ Accès sans token          → 401 Unauthorized (✅ c'est normal !)
+   ❌ Accès sans token (401)     → 401 Unauthorized ✅ (c'est normal !)
+   ❌ Token invalide (401)       → 401 Unauthorized ✅ (c'est normal !)
    ```
-
-### Comprendre les résultats
-
-- **✅ Vert** = La requête a réussi avec le code attendu
-- **❌ Rouge** = La requête a échoué
-- **Certains échecs sont voulus** ! Par exemple :
-  - "Test RGPD - <15 ans" DOIT échouer (400)
-  - "Accès sans token" DOIT échouer (401)
-
-### Exemple concret : Tester qu'on ne peut pas modifier le projet d'un autre
-
-1. **Se connecter en tant qu'admin et créer un projet**
-2. **Noter l'ID du projet** (ex: 5)
-3. **Se reconnecter avec un autre utilisateur**
-4. **Essayer de modifier le projet ID 5**
-5. **Résultat attendu** : 403 Forbidden ❌ (c'est le comportement voulu !)
 
 ## 📝 Scripts de test automatiques
 
