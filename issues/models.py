@@ -67,8 +67,7 @@ class Contributor(models.Model):
         ]  # Un utilisateur ne peut être contributeur qu'une fois par projet, évite les doublons dans la table
 
     def __str__(self):
-        role = " (Auteur)" if self.is_author else ""
-        return f"{self.user.username} - {self.project.name}{role}"
+        return f"{self.user.username} - {self.project.name}"
 
 
 class Issue(models.Model):
@@ -133,4 +132,5 @@ class Comment(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
+        return f"Comment on {self.issue.name} by {self.author.username}"
         return f"Comment on {self.issue.name} by {self.author.username}"
