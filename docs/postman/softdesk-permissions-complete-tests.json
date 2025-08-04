@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "SoftDesk - Tests Complets des Permissions",
-    "description": "Collection exhaustive pour tester toutes les permissions de l'API SoftDesk : Projects, Issues, Comments, Users et Contributors",
+    "description": "Collection exhaustive pour tester toutes les permissions de l'API SoftDesk : Projects, Issues, Comments, Users et Contributors. Vérifie que seuls les contributeurs peuvent accéder aux projets.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -364,6 +364,8 @@
                   "    });",
                   "    pm.test('Alice est automatiquement contributrice', () => {",
                   "        pm.expect(response.contributors).to.have.length.greaterThan(0);",
+                  "        const contributorIds = response.contributors.map(c => c.id);",
+                  "        pm.expect(contributorIds).to.include(parseInt(pm.environment.get('alice_id')));",
                   "    });",
                   "}"
                 ]
@@ -567,6 +569,103 @@
               "path": ["projects", "{{project_id}}", ""]
             }
           }
+        },
+        {
+          "name": "Login Charlie",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('charlie_token', response.access);",
+                  "    pm.environment.set('access_token', response.access);",
+                  "    pm.test('Charlie connecté', () => {",
+                  "        pm.expect(response.access).to.exist;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"{{charlie_username}}\",\n    \"password\": \"TestPass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{api_url}}/token/",
+              "host": ["{{api_url}}"],
+              "path": ["token", ""]
+            }
+          }
+        },
+        {
+          "name": "❌ Charlie ne peut pas voir le projet (pas contributeur)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Charlie ne peut pas accéder au projet (403)', () => {",
+                  "    pm.expect(pm.response.code).to.equal(403);",
+                  "});",
+                  "",
+                  "pm.test('Message indique permission refusée', () => {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.detail.toLowerCase()).to.include('permission');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/projects/{{project_id}}/",
+              "host": ["{{api_url}}"],
+              "path": ["projects", "{{project_id}}", ""]
+            }
+          }
+        },
+        {
+          "name": "❌ Charlie ne voit pas le projet dans la liste",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Charlie ne voit que ses propres projets', () => {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const response = pm.response.json();",
+                  "    const projectIds = response.results.map(p => p.id);",
+                  "    pm.expect(projectIds).to.not.include(parseInt(pm.environment.get('project_id')));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/projects/",
+              "host": ["{{api_url}}"],
+              "path": ["projects", ""]
+            }
+          }
         }
       ]
     },
@@ -672,7 +771,8 @@
                   "    pm.expect(pm.response.code).to.equal(200);",
                   "    const response = pm.response.json();",
                   "    pm.expect(response.results).to.be.an('array');",
-                  "    pm.expect(response.results.length).to.be.at.least(3);",
+                  "    // Alice, Bob et Diana devraient être contributeurs",
+                  "    pm.expect(response.results.length).to.equal(3);",
                   "});"
                 ]
               }
@@ -689,13 +789,13 @@
           }
         },
         {
-          "name": "Switch to Bob",
+          "name": "Switch to Charlie",
           "event": [
             {
               "listen": "prerequest",
               "script": {
                 "exec": [
-                  "pm.environment.set('access_token', pm.environment.get('bob_token'));"
+                  "pm.environment.set('access_token', pm.environment.get('charlie_token'));"
                 ]
               }
             }
@@ -711,13 +811,13 @@
           }
         },
         {
-          "name": "❌ Bob ne peut pas ajouter contributeur",
+          "name": "❌ Charlie ne peut pas voir les contributeurs",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Bob ne peut pas ajouter de contributeur', () => {",
+                  "pm.test('Charlie ne peut pas voir les contributeurs (403)', () => {",
                   "    pm.expect(pm.response.code).to.equal(403);",
                   "});"
                 ]
@@ -725,54 +825,12 @@
             }
           ],
           "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"user_id\": {{charlie_id}}\n}"
-            },
+            "method": "GET",
+            "header": [],
             "url": {
-              "raw": "{{api_url}}/projects/{{project_id}}/add_contributor/",
+              "raw": "{{api_url}}/projects/{{project_id}}/contributors/",
               "host": ["{{api_url}}"],
-              "path": ["projects", "{{project_id}}", "add_contributor", ""]
-            }
-          }
-        },
-        {
-          "name": "❌ Bob contributeur ne peut toujours pas modifier projet",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Bob contributeur ne peut pas modifier le projet', () => {",
-                  "    pm.expect(pm.response.code).to.equal(403);",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"name\": \"Tentative de renommer par Bob contributeur\"\n}"
-            },
-            "url": {
-              "raw": "{{api_url}}/projects/{{project_id}}/",
-              "host": ["{{api_url}}"],
-              "path": ["projects", "{{project_id}}", ""]
+              "path": ["projects", "{{project_id}}", "contributors", ""]
             }
           }
         }
@@ -782,7 +840,7 @@
       "name": "4️⃣ Tests Permissions Issues",
       "item": [
         {
-          "name": "✅ Bob contributeur peut créer une issue",
+          "name": "✅ Bob contribueur peut créer une issue",
           "event": [
             {
               "listen": "test",

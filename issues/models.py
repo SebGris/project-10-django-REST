@@ -133,4 +133,3 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Comment on {self.issue.name} by {self.author.username}"
-        return f"Comment on {self.issue.name} by {self.author.username}"
