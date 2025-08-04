@@ -35,7 +35,7 @@ Ouvrez votre navigateur à : http://127.0.0.1:8000/api/
 1. Cliquez sur **"Log in"** en haut à droite
 2. Entrez les identifiants :
    - Username: `admin`
-   - Password: `SoftDesk2025!`
+   - Password: `SoftDesk2025!` (ou `SecurePass123!` pour les autres utilisateurs)
 3. Une fois connecté, vous verrez "Log in" remplacé par votre username en haut à droite
 
 **Note** : Si vous ne voyez pas votre username après connexion, cela peut être dû à :
