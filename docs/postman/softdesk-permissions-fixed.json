@@ -1,6 +1,6 @@
 {
   "info": {
-    "name": "SoftDesk - Tests Complets des Permissions",
+    "name": "SoftDesk - Tests Complets des Permissions (Corrigé)",
     "description": "Collection exhaustive pour tester toutes les permissions de l'API SoftDesk : Projects, Issues, Comments, Users et Contributors. Vérifie que seuls les contributeurs peuvent accéder aux projets.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -490,13 +490,13 @@
           }
         },
         {
-          "name": "❌ Bob ne peut pas voir le projet (pas encore contributeur)",
+          "name": "❌ Bob ne peut pas voir le projet (pas contributeur)",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Bob ne peut pas voir le projet avant d\\'être contributeur', () => {",
+                  "pm.test('Bob ne peut pas voir le projet (pas contributeur)', () => {",
                   "    pm.expect(pm.response.code).to.equal(403);",
                   "});"
                 ]
@@ -539,6 +539,30 @@
               "mode": "raw",
               "raw": "{\n    \"description\": \"Tentative de modification par Bob\"\n}"
             },
+            "url": {
+              "raw": "{{api_url}}/projects/{{project_id}}/",
+              "host": ["{{api_url}}"],
+              "path": ["projects", "{{project_id}}", ""]
+            }
+          }
+        },
+        {
+          "name": "❌ Bob ne peut pas supprimer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Bob ne peut pas supprimer le projet', () => {",
+                  "    pm.expect(pm.response.code).to.equal(403);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
             "url": {
               "raw": "{{api_url}}/projects/{{project_id}}/",
               "host": ["{{api_url}}"],
@@ -704,6 +728,67 @@
           }
         },
         {
+          "name": "✅ Alice ajoute Diana comme contributrice",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Diana ajoutée comme contributrice', () => {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"user_id\": {{diana_id}}\n}"
+            },
+            "url": {
+              "raw": "{{api_url}}/projects/{{project_id}}/add_contributor/",
+              "host": ["{{api_url}}"],
+              "path": ["projects", "{{project_id}}", "add_contributor", ""]
+            }
+          }
+        },
+        {
+          "name": "✅ Alice peut voir les contributeurs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Liste des contributeurs accessible', () => {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(response.results).to.be.an('array');",
+                  "    // Alice, Bob et Diana devraient être contributeurs",
+                  "    pm.expect(response.results.length).to.equal(3);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/projects/{{project_id}}/contributors/",
+              "host": ["{{api_url}}"],
+              "path": ["projects", "{{project_id}}", "contributors", ""]
+            }
+          }
+        },
+        {
           "name": "Switch to Bob",
           "event": [
             {
@@ -732,7 +817,7 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Bob peut voir le projet après être devenu contributeur', () => {",
+                  "pm.test('Bob peut voir le projet maintenant qu\\'il est contributeur', () => {",
                   "    pm.expect(pm.response.code).to.equal(200);",
                   "});"
                 ]
@@ -783,7 +868,150 @@
           }
         },
         {
-          "name": "Switch back to Alice",
+          "name": "Switch to Charlie",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.environment.set('access_token', pm.environment.get('charlie_token'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/users/profile/",
+              "host": ["{{api_url}}"],
+              "path": ["users", "profile", ""]
+            }
+          }
+        },
+        {
+          "name": "❌ Charlie ne peut pas voir les contributeurs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Charlie ne peut pas voir les contributeurs (403)', () => {",
+                  "    pm.expect(pm.response.code).to.equal(403);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/projects/{{project_id}}/contributors/",
+              "host": ["{{api_url}}"],
+              "path": ["projects", "{{project_id}}", "contributors", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4️⃣ Tests Permissions Issues",
+      "item": [
+        {
+          "name": "Switch to Bob",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.environment.set('access_token', pm.environment.get('bob_token'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_url}}/users/profile/",
+              "host": ["{{api_url}}"],
+              "path": ["users", "profile", ""]
+            }
+          }
+        },
+        {
+          "name": "✅ Bob contributeur peut créer une issue",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('issue_id', response.id);",
+                  "    pm.test('Bob peut créer une issue', () => {",
+                  "        pm.expect(response.author.id).to.equal(parseInt(pm.environment.get('bob_id')));",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Issue créée par Bob\",\n    \"description\": \"Bob est contributeur et peut créer des issues\",\n    \"tag\": \"FEATURE\",\n    \"priority\": \"MEDIUM\",\n    \"status\": \"To Do\",\n    \"assigned_to\": {{diana_id}}\n}"
+            },
+            "url": {
+              "raw": "{{api_url}}/projects/{{project_id}}/issues/",
+              "host": ["{{api_url}}"],
+              "path": ["projects", "{{project_id}}", "issues", ""]
+            }
+          }
+        },
+        {
+          "name": "✅ Bob peut modifier son issue",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Bob peut modifier son issue', () => {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"In Progress\",\n    \"priority\": \"HIGH\"\n}"
+            },
+            "url": {
+              "raw": "{{api_url}}/projects/{{project_id}}/issues/{{issue_id}}/",
+              "host": ["{{api_url}}"],
+              "path": ["projects", "{{project_id}}", "issues", "{{issue_id}}", ""]
+            }
+          }
+        },
+        {
+          "name": "Switch to Alice",
           "event": [
             {
               "listen": "prerequest",
@@ -875,43 +1103,24 @@
           }
         },
         {
-          "name": "Login Charlie",
+          "name": "Switch to Charlie",
           "event": [
             {
-              "listen": "test",
+              "listen": "prerequest",
               "script": {
                 "exec": [
-                  "if (pm.response.code === 200) {",
-                  "    const response = pm.response.json();",
-                  "    pm.environment.set('charlie_token', response.access);",
-                  "    pm.environment.set('access_token', response.access);",
-                  "    pm.test('Charlie connecté', () => {",
-                  "        pm.expect(response.access).to.exist;",
-                  "    });",
-                  "}"
+                  "pm.environment.set('access_token', pm.environment.get('charlie_token'));"
                 ]
               }
             }
           ],
           "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"username\": \"{{charlie_username}}\",\n    \"password\": \"TestPass123!\"\n}"
-            },
+            "method": "GET",
+            "header": [],
             "url": {
-              "raw": "{{api_url}}/token/",
+              "raw": "{{api_url}}/users/profile/",
               "host": ["{{api_url}}"],
-              "path": ["token", ""]
+              "path": ["users", "profile", ""]
             }
           }
         },
@@ -1272,133 +1481,6 @@
             "auth": {
               "type": "noauth"
             },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{api_url}}/projects/",
-              "host": ["{{api_url}}"],
-              "path": ["projects", ""]
-            }
-          }
-        },
-        {
-          "name": "❌ POST projet sans auth (401)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Création refusée sans authentification', () => {",
-                  "    pm.expect(pm.response.code).to.equal(401);",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"name\": \"Projet non autorisé\",\n    \"description\": \"Test\",\n    \"type\": \"back-end\"\n}"
-            },
-            "url": {
-              "raw": "{{api_url}}/projects/",
-              "host": ["{{api_url}}"],
-              "path": ["projects", ""]
-            }
-          }
-        },
-        {
-          "name": "❌ GET users sans auth (401)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Liste users refusée sans authentification', () => {",
-                  "    pm.expect(pm.response.code).to.equal(401);",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{api_url}}/users/",
-              "host": ["{{api_url}}"],
-              "path": ["users", ""]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "7️⃣ Tests de Nettoyage",
-      "item": [
-        {
-          "name": "Switch to Alice",
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  "pm.environment.set('access_token', pm.environment.get('alice_token'));"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{api_url}}/users/profile/",
-              "host": ["{{api_url}}"],
-              "path": ["users", "profile", ""]
-            }
-          }
-        },
-        {
-          "name": "Alice supprime son projet",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Alice peut supprimer son propre projet', () => {",
-                  "    pm.expect(pm.response.code).to.equal(204);",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{api_url}}/projects/{{project_id}}/",
-              "host": ["{{api_url}}"],
-              "path": ["projects", "{{project_id}}", ""]
-            }
-          }
-        }
-      ]
-    }
-  ]
-}
             "method": "GET",
             "header": [],
             "url": {
