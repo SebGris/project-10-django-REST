@@ -2,7 +2,7 @@ from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, ValidationError
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 
@@ -101,10 +101,7 @@ class ContributorViewSet(viewsets.ModelViewSet):
         
         # Vérifie si le contributeur existe déjà
         if Contributor.objects.filter(project=project, user=user).exists():
-            return Response(
-                {"detail": "Cet utilisateur est déjà contributeur"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            raise ValidationError("Cet utilisateur est déjà contributeur")
             
         serializer.save(project=project, user=user)
 

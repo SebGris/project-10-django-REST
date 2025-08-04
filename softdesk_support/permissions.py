@@ -63,15 +63,7 @@ class IsProjectContributor(permissions.BasePermission):
             project = Project.objects.get(pk=project_id)
             if project.author == request.user:
                 return True
-            is_contributor = project.contributors.filter(user=request.user).exists()
-            
-            # Log de débogage
-            if not is_contributor:
-                print(f"DEBUG: User {request.user.username} (ID: {request.user.id}) is not a contributor of project {project_id}")
-                print(f"DEBUG: Project author: {project.author.username} (ID: {project.author.id})")
-                print(f"DEBUG: Contributors: {list(project.contributors.values_list('user__username', 'user__id'))}")
-            
-            return is_contributor
+            return project.contributors.filter(user=request.user).exists()
         except Project.DoesNotExist:
             return False
     
@@ -105,7 +97,15 @@ class IsAuthorOrProjectAuthorOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         # D'abord vérifier que l'utilisateur est contributeur
         project = getattr(obj, 'project', None)
-        if not project or not project.contributors.filter(user=request.user).exists():
+        if not project:
+            # Si on a une issue, le projet est directement accessible
+            if hasattr(obj, 'issue') and obj.issue:
+                project = obj.issue.project
+            else:
+                return False
+                
+        if not (project.author == request.user or 
+                project.contributors.filter(user=request.user).exists()):
             return False
         
         # Lecture pour tous les contributeurs
@@ -113,7 +113,10 @@ class IsAuthorOrProjectAuthorOrReadOnly(permissions.BasePermission):
             return True
         
         # Modification/suppression : auteur de l'objet ou auteur du projet
-        return obj.author == request.user or project.author == request.user
+        is_author = obj.author == request.user
+        is_project_author = project.author == request.user
+        
+        return is_author or is_project_author
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
