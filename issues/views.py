@@ -6,12 +6,13 @@ from rest_framework.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 
+from softdesk_support.permissions import IsAuthorOrReadOnly
+
 from .models import Project, Contributor, Issue, Comment
 from .serializers import (
     ProjectSerializer, ProjectListSerializer, ProjectCreateUpdateSerializer,
     IssueSerializer, IssueListSerializer, CommentSerializer, ContributorSerializer
 )
-from .permissions import IsAuthorOrReadOnly
 
 User = get_user_model()
 
