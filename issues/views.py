@@ -6,7 +6,11 @@ from rest_framework.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 
-from softdesk_support.permissions import IsAuthorOrReadOnly
+from softdesk_support.permissions import (
+    IsProjectAuthorOrContributor,
+    IsProjectContributor,
+    IsAuthorOrProjectAuthorOrReadOnly
+)
 
 from .models import Project, Contributor, Issue, Comment
 from .serializers import (
@@ -20,7 +24,12 @@ User = get_user_model()
 class ProjectViewSet(viewsets.ModelViewSet):
     """ViewSet pour les projets"""
     queryset = Project.objects.all()
-    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
+    permission_classes = [IsAuthenticated, IsProjectAuthorOrContributor]
+    
+    def get_queryset(self):
+        """Retourne uniquement les projets où l'utilisateur est contributeur"""
+        # Utiliser contributors__user au lieu de contributors directement
+        return Project.objects.filter(contributors__user=self.request.user).distinct()
     
     def get_serializer_class(self):
         """Retourne le serializer approprié selon l'action"""
@@ -55,17 +64,21 @@ class ProjectViewSet(viewsets.ModelViewSet):
 class ContributorViewSet(viewsets.ReadOnlyModelViewSet):
     """ViewSet pour les contributeurs d'un projet (lecture seule)"""
     serializer_class = ContributorSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsProjectContributor]
     
     def get_queryset(self):
         """Retourne les contributeurs du projet spécifié dans l'URL"""
         project_id = self.kwargs.get('project_pk')
+        # Vérifier d'abord que l'utilisateur est contributeur du projet
+        project = get_object_or_404(Project, pk=project_id)
+        if not project.contributors.filter(id=self.request.user.id).exists():
+            raise PermissionDenied("Vous n'êtes pas contributeur de ce projet")
         return Contributor.objects.filter(project_id=project_id)
 
 
 class IssueViewSet(viewsets.ModelViewSet):
     """ViewSet pour les issues d'un projet"""
-    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
+    permission_classes = [IsAuthenticated, IsProjectContributor, IsAuthorOrProjectAuthorOrReadOnly]
     
     def get_serializer_class(self):
         """Retourne le serializer approprié selon l'action"""
@@ -76,6 +89,7 @@ class IssueViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Retourne les issues du projet spécifié dans l'URL"""
         project_id = self.kwargs.get('project_pk')
+        # La permission IsProjectContributor vérifie déjà l'accès
         return Issue.objects.filter(project_id=project_id)
     
     def perform_create(self, serializer):
@@ -88,12 +102,14 @@ class IssueViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     """ViewSet pour les commentaires d'une issue"""
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
+    permission_classes = [IsAuthenticated, IsProjectContributor, IsAuthorOrProjectAuthorOrReadOnly]
     
     def get_queryset(self):
         """Retourne les commentaires de l'issue spécifiée dans l'URL"""
         issue_id = self.kwargs.get('issue_pk')
-        return Comment.objects.filter(issue_id=issue_id)
+        project_id = self.kwargs.get('project_pk')
+        # La permission IsProjectContributor vérifie déjà l'accès
+        return Comment.objects.filter(issue_id=issue_id, issue__project_id=project_id)
     
     def perform_create(self, serializer):
         """Créer un commentaire avec l'auteur et l'issue depuis l'URL"""
