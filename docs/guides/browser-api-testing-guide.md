@@ -1,12 +1,8 @@
 # 🌐 Guide : Tester les permissions de l'API dans un navigateur
 
-## 🎯 Objectif
+## 🚀 Interface Django REST Framework
 
-Tester rapidement les permissions et accès de l'API SoftDesk directement dans un navigateur web.
-
-## 🚀 Méthode 1 : Interface Django REST Framework (Recommandée)
-
-Django REST Framework fournit une interface web interactive pour tester l'API.
+Django REST Framework fournit une interface web interactive pour tester rapidement les permissions et accès de l'API SoftDesk directement dans un navigateur web.
 
 ### 1. Démarrer le serveur
 ```bash
@@ -58,34 +54,6 @@ Pour vérifier votre connexion :
 1. Allez sur un projet dont vous n'êtes pas l'auteur
 2. Essayez de le modifier via le formulaire
 3. Vous obtiendrez : `"detail": "You do not have permission to perform this action."`
-
-## 🔧 Méthode 2 : Extension de navigateur (ModHeader)
-
-### 1. Installer l'extension
-- **Chrome** : ModHeader
-- **Firefox** : Modify Header Value
-
-### 2. Obtenir un token JWT
-```bash
-curl -X POST http://127.0.0.1:8000/api/token/ \
-  -H "Content-Type: application/json" \
-  -d '{"username": "admin", "password": "SoftDesk2025!"}'
-```
-
-Réponse :
-```json
-{
-    "refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
-    "access": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
-}
-```
-
-### 3. Configurer l'extension
-- Name: `Authorization`
-- Value: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...` (votre token)
-
-### 4. Naviguer avec authentification
-Maintenant, vous pouvez accéder aux endpoints protégés.
 
 ## 📊 Scénarios de test des permissions
 
