@@ -1,205 +1,205 @@
-# 🌐 Guide : Tester les permissions de l'API dans un navigateur
+# 📮 Guide : Tester les permissions de l'API avec Postman
 
-## 🚀 Interface Django REST Framework
+## 🚀 Configuration initiale avec Postman
 
-Django REST Framework fournit une interface web interactive pour tester rapidement les permissions et accès de l'API SoftDesk directement dans un navigateur web.
+Postman est l'outil recommandé pour tester efficacement les permissions et accès de l'API SoftDesk.
 
-### 1. Démarrer le serveur
-```bash
-poetry run python manage.py runserver
-```
+### 1. Prérequis
+- Serveur Django démarré : `poetry run python manage.py runserver`
+- Collection Postman importée (voir [Guide Postman](../postman/postman-guide.md))
+- Environnement "SoftDesk Local" sélectionné
 
-### 2. Accéder à l'interface
-Ouvrez votre navigateur à : http://127.0.0.1:8000/api/
+### 2. Workflow de test recommandé
 
-### 3. Tests de permissions sans authentification
-
-1. **Accès public** :
-   - ✅ http://127.0.0.1:8000/api/users/ (POST pour inscription)
-   - ❌ http://127.0.0.1:8000/api/projects/ (401 Unauthorized)
-   - ❌ http://127.0.0.1:8000/api/users/profile/ (401 Unauthorized)
-
-2. **Observer les erreurs** :
-   ```json
-   {
-       "detail": "Authentication credentials were not provided."
-   }
-   ```
-
-### 4. S'authentifier via l'interface
-
-1. Cliquez sur **"Log in"** en haut à droite
-2. Entrez les identifiants :
-   - Username: `admin`
-   - Password: `SoftDesk2025!` (ou `SecurePass123!` pour les autres utilisateurs)
-3. Une fois connecté, vous verrez "Log in" remplacé par votre username en haut à droite
-
-Pour vérifier votre connexion :
-- Essayez d'accéder à http://127.0.0.1:8000/api/users/profile/
-- Si vous êtes connecté, vous verrez vos informations
-- Sinon, vous aurez une erreur 401
-
-### 5. Tester les permissions authentifié
-
-#### ✅ Lecture autorisée :
-- http://127.0.0.1:8000/api/projects/
-- http://127.0.0.1:8000/api/projects/1/
-- http://127.0.0.1:8000/api/projects/1/issues/
-
-#### ❌ Modification non autorisée (si pas auteur) :
-1. Allez sur un projet dont vous n'êtes pas l'auteur
-2. Essayez de le modifier via le formulaire
-3. Vous obtiendrez : `"detail": "You do not have permission to perform this action."`
+1. **Obtenir un token JWT** : Exécuter `🔐 Authentication > Obtenir Token JWT`
+2. **Vérifier l'authentification** : Tester `👥 Users > Profil Personnel (GET)`
+3. **Créer des ressources** : Projet → Issue → Comment
+4. **Tester les permissions** : Modifier/supprimer avec différents utilisateurs
 
 ## 📊 Scénarios de test des permissions
 
-### Test 1 : Création de projet
-1. **Connecté** : POST sur http://127.0.0.1:8000/api/projects/
-   - ✅ Formulaire de création disponible
-   - ✅ Projet créé avec vous comme auteur
+### Test 1 : Accès sans authentification
 
-### Test 2 : Modification d'un projet
-1. **Votre projet** : PUT sur http://127.0.0.1:8000/api/projects/1/
-   - ✅ Formulaire de modification disponible
-   
-2. **Projet d'un autre** : PUT sur http://127.0.0.1:8000/api/projects/2/
-   - ❌ Erreur 403 Forbidden
+1. **Désactiver temporairement le token** :
+   - Dans l'onglet "Authorization" de la requête
+   - Sélectionner "No Auth" au lieu de "Inherit auth from parent"
 
-### Test 3 : Ajout de contributeur
-1. **Votre projet** : POST sur http://127.0.0.1:8000/api/projects/1/add_contributor/
-   ```json
-   {"user_id": 2}
+2. **Tester les endpoints publics vs protégés** :
    ```
-   - ✅ Contributeur ajouté
+   ✅ POST /api/users/          → 201 Created (inscription publique)
+   ❌ GET  /api/projects/        → 401 Unauthorized
+   ❌ GET  /api/users/profile/   → 401 Unauthorized
+   ```
 
-2. **Projet d'un autre** : 
-   - ❌ Erreur 403 Forbidden
+### Test 2 : Permissions selon le rôle
 
-## 🎨 Console du navigateur (DevTools)
-
-### Tests avec JavaScript
-Ouvrez la console (F12) et testez :
-
-```javascript
-// Test sans authentification
-fetch('http://127.0.0.1:8000/api/projects/')
-  .then(response => response.json())
-  .then(data => console.log(data))
-  .catch(error => console.error('Erreur:', error));
-
-// Test avec token
-const token = 'votre_token_ici';
-fetch('http://127.0.0.1:8000/api/projects/', {
-    headers: {
-        'Authorization': `Bearer ${token}`
-    }
-})
-.then(response => response.json())
-.then(data => console.log(data));
-
-// Test de création
-fetch('http://127.0.0.1:8000/api/projects/', {
-    method: 'POST',
-    headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-        name: 'Test Browser',
-        description: 'Projet créé depuis le navigateur',
-        type: 'back-end'
-    })
-})
-.then(response => response.json())
-.then(data => console.log('Projet créé:', data));
-```
-
-## 📋 Résumé des permissions
-
-| Action | Non authentifié | Authentifié | Auteur | Admin |
-|--------|----------------|-------------|---------|--------|
-| Inscription | ✅ | ✅ | ✅ | ✅ |
-| Voir projets | ❌ | ✅ | ✅ | ✅ |
-| Créer projet | ❌ | ✅ | ✅ | ✅ |
-| Modifier projet | ❌ | ❌ | ✅ | ✅ |
-| Supprimer projet | ❌ | ❌ | ✅ | ✅ |
-| Ajouter contributeur | ❌ | ❌ | ✅ | ✅ |
-
-## 🔢 Codes de réponse HTTP de l'API
-
-### ✅ Codes de succès (2xx)
-
-| Code | Statut | Description | Exemple d'utilisation |
-|------|--------|-------------|----------------------|
-| **200** | OK | Requête réussie | GET sur une ressource existante |
-| **201** | Created | Ressource créée avec succès | POST pour créer un projet/issue/comment |
-| **204** | No Content | Suppression réussie | DELETE sur une ressource |
-
-### ❌ Codes d'erreur client (4xx)
-
-| Code | Statut | Description | Exemple de situation |
-|------|--------|-------------|---------------------|
-| **400** | Bad Request | Données invalides | Âge < 15 ans, mot de passe trop faible |
-| **401** | Unauthorized | Non authentifié | Accès sans token JWT |
-| **403** | Forbidden | Pas les permissions | Modifier un projet dont vous n'êtes pas l'auteur |
-| **404** | Not Found | Ressource inexistante | Accès à un projet/issue/comment supprimé |
-| **405** | Method Not Allowed | Méthode HTTP non autorisée | POST sur `/api/projects/1/` |
-
-### 💥 Codes d'erreur serveur (5xx)
-
-| Code | Statut | Description | Cause possible |
-|------|--------|-------------|----------------|
-| **500** | Internal Server Error | Erreur serveur | Bug dans le code |
-| **503** | Service Unavailable | Service indisponible | Serveur en maintenance |
-
-### 📊 Exemples concrets dans l'API SoftDesk
-
-#### 1. **200 OK** - Lecture réussie
-```http
-GET /api/projects/1/
-Authorization: Bearer {token}
-
-Response: 200 OK
+#### Étape 1 : Se connecter en tant qu'admin
+```json
+POST /api/token/
 {
-    "id": 1,
-    "name": "Mon Projet",
-    "description": "...",
-    ...
+    "username": "admin",
+    "password": "SoftDesk2025!"
 }
 ```
 
-#### 2. **201 Created** - Création réussie
-```http
+#### Étape 2 : Créer un projet
+```json
 POST /api/projects/
-Authorization: Bearer {token}
-Content-Type: application/json
-
 {
-    "name": "Nouveau Projet",
-    "description": "Description",
+    "name": "Projet Admin",
+    "description": "Projet créé par admin",
     "type": "back-end"
 }
+// Notez l'ID du projet créé
+```
 
-Response: 201 Created
+#### Étape 3 : Changer d'utilisateur
+```json
+POST /api/token/
 {
-    "id": 2,
-    "name": "Nouveau Projet",
-    ...
+    "username": "john_doe_1754220224",
+    "password": "SecurePass123!"
 }
 ```
 
-#### 3. **400 Bad Request** - Données invalides
-```http
-POST /api/users/
-Content-Type: application/json
+#### Étape 4 : Tester les permissions
+```
+❌ PUT    /api/projects/{id}/  → 403 Forbidden (pas l'auteur)
+❌ DELETE /api/projects/{id}/  → 403 Forbidden (pas l'auteur)
+✅ GET    /api/projects/{id}/  → 200 OK (lecture autorisée)
+```
 
+### Test 3 : Contributeurs
+
+1. **En tant qu'auteur du projet** : Ajouter un contributeur
+   ```json
+   POST /api/projects/{id}/add_contributor/
+   {
+       "user_id": 2
+   }
+   ```
+
+2. **En tant que contributeur** : Créer une issue
+   ```json
+   POST /api/projects/{id}/issues/
+   {
+       "name": "Issue du contributeur",
+       "description": "Test des permissions contributeur",
+       "tag": "BUG",
+       "priority": "MEDIUM",
+       "status": "To Do"
+   }
+   ```
+
+## 🔢 Codes de réponse et leur signification
+
+### Vue d'ensemble dans Postman
+
+| Code | Couleur | Signification | Action corrective |
+|------|---------|---------------|-------------------|
+| **200** | 🟢 Vert | Lecture réussie | - |
+| **201** | 🟢 Vert | Création réussie | - |
+| **204** | 🟢 Vert | Suppression réussie | - |
+| **400** | 🟠 Orange | Données invalides | Vérifier le body |
+| **401** | 🔴 Rouge | Non authentifié | Obtenir un token |
+| **403** | 🔴 Rouge | Pas autorisé | Changer d'utilisateur |
+| **404** | 🔴 Rouge | Ressource introuvable | Vérifier l'ID |
+
+### Exemples concrets dans Postman
+
+#### ✅ Succès (200/201)
+- **Body** : Contient les données de la ressource
+- **Headers** : Token valide accepté
+- **Tests** : Tous en vert
+
+#### ❌ Erreur d'authentification (401)
+```json
 {
-    "username": "jeune_user",
-    "age": 12,  // ❌ Trop jeune
-    ...
+    "detail": "Authentication credentials were not provided."
 }
+// Solution : Exécuter "Obtenir Token JWT"
+```
 
-Response: 400 Bad Request
+#### ❌ Erreur de permission (403)
+```json
+{
+    "detail": "You do not have permission to perform this action."
+}
+// Solution : Vérifier que vous êtes l'auteur de la ressource
+```
+
+#### ❌ Erreur de validation (400)
+```json
+{
+    "age": ["L'âge minimum requis est de 15 ans (conformité RGPD)."],
+    "type": ["Type invalide. Choisir parmi: ['back-end', 'front-end', 'iOS', 'Android']"]
+}
+// Solution : Corriger les données dans le body
+```
+
+## 🎯 Collection Runner pour tests automatisés
+
+### Exécuter tous les tests de permissions
+
+1. **Ouvrir le Collection Runner** : Icône "Runner" en bas de Postman
+2. **Sélectionner** :
+   - Collection : "SoftDesk API - Tests Complets"
+   - Environnement : "SoftDesk Local"
+   - Dossier : "🔒 Tests de Permissions"
+3. **Cliquer "Run"**
+
+### Résultats attendus
+```
+✅ Obtenir Token JWT          → 200 OK
+❌ Accès sans token (401)     → 401 Unauthorized (attendu)
+❌ Token invalide (401)       → 401 Unauthorized (attendu)
+✅ Créer Projet              → 201 Created
+❌ Modifier projet d'autrui   → 403 Forbidden (attendu)
+```
+
+## 💡 Astuces Postman
+
+### 1. Variables dynamiques
+- `{{$timestamp}}` : Génère un timestamp unique
+- `{{$randomInt}}` : Nombre aléatoire
+- `{{$guid}}` : UUID unique
+
+### 2. Visualiser les réponses
+- **Pretty** : JSON formaté
+- **Raw** : Réponse brute
+- **Preview** : Rendu HTML (pour les erreurs)
+
+### 3. Console Postman
+- **View > Show Postman Console** : Debug détaillé
+- Voir les headers envoyés/reçus
+- Tracer les redirections
+
+### 4. Tests conditionnels
+```javascript
+// Dans l'onglet "Tests"
+if (pm.response.code === 403) {
+    pm.test("Permission refusée comme attendu", () => {
+        pm.expect(pm.response.json().detail).to.include("permission");
+    });
+}
+```
+
+## 🗺️ Référence rapide des endpoints
+
+| Ressource | Endpoint | Permissions |
+|-----------|----------|-------------|
+| **Token** | `POST /api/token/` | Public |
+| **Inscription** | `POST /api/users/` | Public |
+| **Profil** | `GET/PUT/PATCH /api/users/profile/` | Authentifié (propriétaire) |
+| **Projets** | `GET /api/projects/` | Authentifié |
+| **Projet** | `PUT/DELETE /api/projects/{id}/` | Auteur uniquement |
+| **Contributeur** | `POST /api/projects/{id}/add_contributor/` | Auteur du projet |
+| **Issues** | `POST /api/projects/{id}/issues/` | Contributeur du projet |
+| **Comments** | `POST /api/projects/{id}/issues/{id}/comments/` | Contributeur du projet |
+
+---
+
+**Note** : Pour une documentation complète de la collection Postman, consultez le [Guide Postman](../postman/postman-guide.md).
 {
     "age": ["L'âge minimum requis est de 15 ans (conformité RGPD)."]
 }
