@@ -6,6 +6,8 @@ L'API **SoftDesk** est une plateforme collaborative de gestion de projets dével
 
 ## 🛡️ Conformité OWASP Top 10 (2021)
 
+**Référence officielle :** [OWASP Top 10 - 2021](https://owasp.org/Top10/fr/)
+
 ### ✅ A01 - Broken Access Control (Contrôle d'accès défaillant)
 
 **Implémentation :** Système de permissions à plusieurs niveaux
