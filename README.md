@@ -165,13 +165,6 @@ set PYTHONIOENCODING=utf-8
 poetry run python manage.py check
 ```
 
-## 📚 Documentation
-
-- 🏗️ **[Architecture du projet](docs/architecture/architecture.md)** - Structure et principes de conception
-- 🌱 **[Green Code](docs/green-code/green-code-guide.md)** - Optimisations éco-responsables
-- 📖 **[API Guide](docs/api/api-guide.md)** - Documentation complète des endpoints
-- 🔒 **[RGPD](docs/security/rgpd-compliance.md)** - Conformité et protection des données
-
 ## 🛠️ Développement
 
 ### Structure du projet
@@ -182,8 +175,7 @@ project-10-django-REST/
 ├── users/                   # App utilisateurs (auth, profils)
 ├── issues/                  # App projets (projects, issues, comments)
 ├── softdesk_support/        # Configuration Django
-├── tests/                   # Suite de tests organisée
-└── docs/                    # Documentation
+└── tests/                   # non utilisé
 ```
 
 ### Commandes utiles
