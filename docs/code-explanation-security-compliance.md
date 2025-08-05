@@ -89,24 +89,41 @@ AUTH_PASSWORD_VALIDATORS = [
 
 **Protection automatique Django :**
 - ORM Django prévient les injections SQL automatiquement
-- Paramétrage sécurisé des requêtes
 - Validation stricte via serializers DRF
 
-**Exemple de requête sécurisée :**
+**Exemple concret de validation stricte :**
 ```python
-# Sécurisé avec l'ORM
-project = Project.objects.get(pk=project_id)
-contributors = project.contributors.filter(user=request.user)
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    """Validation multicouche pour l'inscription utilisateur"""
+    password = serializers.CharField(write_only=True, required=True)
+    password_confirm = serializers.CharField(write_only=True, required=True)
+    age = serializers.IntegerField(min_value=15, error_messages={
+        'min_value': 'L\'âge minimum requis est de 15 ans (conformité RGPD).'
+    })
+    
+    def validate(self, attrs):
+        """Validation personnalisée multicritères"""
+        # 1. Validation des mots de passe
+        if attrs['password'] != attrs['password_confirm']:
+            raise serializers.ValidationError("Les mots de passe ne correspondent pas.")
+        
+        # 2. Validation RGPD - âge minimum (double vérification)
+        if attrs.get('age', 0) < 15:
+            raise serializers.ValidationError({
+                'age': 'Vous devez avoir au moins 15 ans (conformité RGPD).'
+            })
+        
+        return attrs
 ```
 
-### ✅ A04 - Insecure Design (Conception non sécurisée)
+**Protection contre l'injection via validation :**
+- Validation des types de données (`IntegerField`, `CharField`)
+- Validation des valeurs (`min_value=15`)
+- Validation des formats (email, username)
+- Validation métier personnalisée (`validate()`)
+- Messages d'erreur sécurisés (pas de divulgation d'informations)
 
-**Architecture "Security by Design" :**
-- Permissions définies dès la conception
-- Validation des données à tous les niveaux
-- Séparation claire des responsabilités
-
-### ✅ A05 - Security Misconfiguration (Configuration de sécurité défaillante)
+### ✅ A05 - Mauvaise configuration de la sécurité
 
 **Configuration sécurisée :**
 ```python
@@ -132,15 +149,12 @@ MIDDLEWARE = [
 **Gestion des dépendances avec Poetry :**
 - Versions figées dans `poetry.lock`
 - Dépendances à jour (Django 5.2.4, DRF récent)
-- Suivi des vulnérabilités via outils automatisés
 
-### ✅ A07 - Identification and Authentication Failures
-
-**Authentification robuste :**
-- JWT avec expiration courte (5 minutes)
-- Rotation automatique des refresh tokens
-- Blacklist des tokens compromis
-- Sessions Django en backup
+```bash
+# Vérifier les versions
+poetry --version
+poetry run python -c "import django; print(f'Django {django.get_version()}')"
+```
 
 ### ✅ A08 - Software and Data Integrity Failures
 
@@ -149,17 +163,7 @@ MIDDLEWARE = [
 - Constraints de base de données
 - Serializers pour validation des entrées
 
-### ✅ A09 - Security Logging and Monitoring Failures
-
-**Rate Limiting implémenté :**
-```python
-'DEFAULT_THROTTLE_RATES': {
-    'anon': '100/hour',   # Limitation pour anonymes
-    'user': '1000/hour'   # Limitation pour authentifiés
-}
-```
-
-### ✅ A10 - Server-Side Request Forgery (SSRF)
+### ✅ A10 - Server-Side Request Forgery (SSRF) (Falsification de requête côté serveur)
 
 **Protection native Django :**
 - Validation des URLs
