@@ -47,12 +47,14 @@ INSTALLED_APPS = [
 # Configuration du modèle User personnalisé
 AUTH_USER_MODEL = 'users.User'
 
-# Configuration JWT
+# Configuration JWT optimisée pour OpenClassrooms
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # 1 heure - Idéal pour évaluation
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': True,  # À chaque refresh, un nouveau refresh token est émis et l'ancien devient invalide (meilleure sécurité)
+    'ROTATE_REFRESH_TOKENS': True,                   # Sécurité renforcée
+    'BLACKLIST_AFTER_ROTATION': True,                # Invalider anciens tokens
+    'ALGORITHM': 'HS256',                            # Algorithme standard sécurisé
 }
 
 REST_FRAMEWORK = {
