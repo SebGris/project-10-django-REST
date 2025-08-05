@@ -52,7 +52,7 @@ class ProjectListSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
     """Serializer complet pour le détail d'un projet"""
-    author = UserSummarySerializer(read_only=True)  # Utiliser UserSummarySerializer pour cohérence
+    author = UserSummarySerializer(read_only=True)
     contributors = ContributorSerializer(many=True, read_only=True)
     
     class Meta:

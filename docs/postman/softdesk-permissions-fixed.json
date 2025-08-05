@@ -1,6 +1,6 @@
 {
   "info": {
-    "name": "SoftDesk - Tests Complets des Permissions (Corrigé)",
+    "name": "SoftDesk - Tests Complets des Permissions",
     "description": "Collection exhaustive pour tester toutes les permissions de l'API SoftDesk : Projects, Issues, Comments, Users et Contributors. Vérifie que seuls les contributeurs peuvent accéder aux projets.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
