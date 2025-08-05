@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.contrib.auth import get_user_model
+from softdesk_support.permissions import IsOwnerOrReadOnly
 from .serializers import UserSerializer, UserRegistrationSerializer, UserSummarySerializer
 
 User = get_user_model()
@@ -19,9 +20,16 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     
     def get_permissions(self):
-        """Création ouverte à tous, le reste nécessite authentification"""
+        """
+        Permissions spécifiques selon l'action :
+        - Création : accessible à tous
+        - Lecture : authentification requise
+        - Modification/Suppression : propriétaire uniquement
+        """
         if self.action == 'create':
             return [permissions.AllowAny()]
+        elif self.action in ['update', 'partial_update', 'destroy']:
+            return [IsAuthenticated(), IsOwnerOrReadOnly()]
         return [IsAuthenticated()]
     
     def get_serializer_class(self):
@@ -37,26 +45,6 @@ class UserViewSet(viewsets.ModelViewSet):
         if self.request.user.is_authenticated:
             return User.objects.all()
         return User.objects.none()
-    
-    def update(self, request, *args, **kwargs):
-        """Un utilisateur ne peut modifier que son propre profil"""
-        instance = self.get_object()
-        if instance != request.user:
-            return Response(
-                {"detail": "Vous ne pouvez modifier que votre propre profil."},
-                status=status.HTTP_403_FORBIDDEN
-            )
-        return super().update(request, *args, **kwargs)
-    
-    def destroy(self, request, *args, **kwargs):
-        """Un utilisateur ne peut supprimer que son propre compte"""
-        instance = self.get_object()
-        if instance != request.user:
-            return Response(
-                {"detail": "Vous ne pouvez supprimer que votre propre compte."},
-                status=status.HTTP_403_FORBIDDEN
-            )
-        return super().destroy(request, *args, **kwargs)
     
     def create(self, request, *args, **kwargs):
         """

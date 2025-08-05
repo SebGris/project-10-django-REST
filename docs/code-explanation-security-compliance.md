@@ -67,13 +67,7 @@ L'API **SoftDesk** est une plateforme collaborative de gestion de projets dével
    - Permissions en cascade pour issues et commentaires
    - **Utilisée dans :** `CommentViewSet`
 
-#### Permissions définies mais non utilisées :
-
-4. **`IsAuthorOrReadOnly`** ❌ **NON UTILISÉE**
-   - **Status :** Définie mais jamais importée ni utilisée dans les vues
-   - **Action recommandée :** Supprimer du fichier `permissions.py`
-
-5. **`IsOwnerOrReadOnly`** ❌ **NON UTILISÉE**
+4. **`IsOwnerOrReadOnly`** ✅ **UTILISÉE**
    ```python
    class IsOwnerOrReadOnly(permissions.BasePermission):
        def has_object_permission(self, request, view, obj):
@@ -84,7 +78,13 @@ L'API **SoftDesk** est une plateforme collaborative de gestion de projets dével
            return request.user.is_authenticated
    ```
    - Protection des profils utilisateurs
-   - **Status :** Définie mais jamais utilisée (UserViewSet utilise une logique custom)
+   - Modification limitée au propriétaire uniquement
+   - **Utilisée dans :** `UserViewSet` pour les actions update/destroy
+
+#### Permissions définies mais non utilisées :
+
+5. **`IsAuthorOrReadOnly`** ❌ **NON UTILISÉE**
+   - **Status :** Définie mais jamais importée ni utilisée dans les vues
    - **Action recommandée :** Supprimer du fichier `permissions.py`
 
 **Sécurité renforcée :**
@@ -96,7 +96,6 @@ L'API **SoftDesk** est une plateforme collaborative de gestion de projets dével
 
 **Classes de permissions inutilisées à supprimer :**
 - `IsAuthorOrReadOnly` : Définie mais jamais utilisée
-- `IsOwnerOrReadOnly` : Remplacée par une logique custom dans `UserViewSet`
 
 **Avantages du nettoyage :**
 - Réduction de la complexité du code
