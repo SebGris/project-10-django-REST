@@ -9,12 +9,6 @@ class IsProjectAuthorOrContributor(permissions.BasePermission):
     - Seul l'auteur peut gérer les contributeurs
     """
     
-    def has_permission(self, request, view):
-        # Pour la création, tout utilisateur authentifié peut créer
-        if view.action == 'create':
-            return request.user.is_authenticated
-        return request.user.is_authenticated
-    
     def has_object_permission(self, request, view, obj):
         # IMPORTANT: Seuls les contributeurs peuvent accéder au projet
         # Vérifier via la relation contributors__user
