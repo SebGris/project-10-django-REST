@@ -2,7 +2,7 @@
 
 ## 📋 Vue d'ensemble
 
-L'API SoftDesk utilise une architecture de **serializers multiples** dans le `UserViewSet` pour optimiser les performances, renforcer la sécurité et respecter les normes RGPD. Cette approche suit le principe **"Right serializer for the right job"**.
+L'API SoftDesk utilise une architecture de **serializers multiples** dans le `UserViewSet` pour optimiser les performances, renforcer la sécurité et respecter les normes RGPD.
 
 ## 🔧 Mécanisme de sélection dynamique
 

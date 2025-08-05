@@ -4,30 +4,6 @@
 
 L'API **SoftDesk** est une plateforme collaborative de gestion de projets développée avec Django REST Framework. Elle permet la gestion de projets avec un système de tickets (issues) et de commentaires, tout en respectant rigoureusement les normes de sécurité OWASP et la réglementation RGPD.
 
-### 🏗️ Architecture principale
-
-```
-├── Users (Utilisateurs)
-│   ├── Authentification JWT
-│   ├── Profils avec consentements RGPD
-│   └── Validation d'âge obligatoire
-│
-├── Projects (Projets)
-│   ├── Système de contributeurs
-│   ├── Permissions granulaires
-│   └── Gestion par l'auteur
-│
-├── Issues (Tickets)
-│   ├── Liées aux projets
-│   ├── Assignations et priorités
-│   └── Accès restreint aux contributeurs
-│
-└── Comments (Commentaires)
-    ├── Attachés aux issues
-    ├── Historique complet
-    └── Modération par auteurs
-```
-
 ## 🛡️ Conformité OWASP Top 10 (2021)
 
 ### ✅ A01 - Broken Access Control (Contrôle d'accès défaillant)

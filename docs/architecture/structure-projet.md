@@ -26,16 +26,11 @@ project-10-django-REST/
 │   └── admin.py                # Configuration admin
 │
 ├── 📁 docs/                     # Documentation
-│   ├── README.md               # Sommaire principal
-│   ├── 📁 api/                 # Documentation API
-│   ├── 📁 architecture/        # Architecture technique
-│   └── 📁 developpement/       # Guides développement
 │
 ├── 📄 manage.py                 # Script de gestion Django
 ├── 📄 pyproject.toml           # Configuration Poetry
 ├── 📄 poetry.lock              # Verrous de dépendances
 ├── 📄 README.md                # Documentation principale
-├── 📄 TODO.md                  # Liste des tâches
 └── 📄 .gitignore              # Fichiers ignorés par Git
 ```
 
