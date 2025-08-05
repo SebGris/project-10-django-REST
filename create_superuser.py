@@ -46,7 +46,7 @@ def create_superuser():
         print(f"   👤 Username: {superuser.username}")
         print(f"   📧 Email: {superuser.email}")
         print(f"   🎂 Âge: {superuser.age} ans")
-        print(f"   🔑 Password: SoftDesk2025!")
+        print(f"   🔑 Password: {superuser.password}")
         print(f"   🛡️  Superuser: {superuser.is_superuser}")
         print(f"   📊 Staff: {superuser.is_staff}")
         
