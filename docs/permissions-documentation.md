@@ -56,11 +56,11 @@
 class IsProjectContributor(permissions.BasePermission):
     """Vérifie que l'utilisateur est contributeur du projet"""
     
-class IsAuthorOrReadOnly(permissions.BasePermission):
-    """L'auteur peut tout faire, les autres en lecture seule"""
+class IsAuthorOrProjectAuthorOrReadOnly(permissions.BasePermission):
+    """Permissions pour issues et commentaires : auteur ou auteur du projet"""
     
 class IsProjectAuthorOrContributor(permissions.BasePermission):
-    """Combine les permissions auteur/contributeur"""
+    """Combine les permissions auteur/contributeur pour les projets"""
 ```
 
 ### ViewSets avec Permissions

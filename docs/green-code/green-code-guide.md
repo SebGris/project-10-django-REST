@@ -430,20 +430,20 @@ class Issue(TimestampMixin, AuthorMixin):
 
 **Permissions réutilisables :**
 ```python
-class IsAuthorOrReadOnlyMixin:
-    """Mixin de permission réutilisable"""
+class IsProjectContributorMixin:
+    """Mixin de permission réutilisable pour les ressources de projet"""
     def get_permissions(self):
         if self.action in ['create', 'list']:
             permission_classes = [IsAuthenticated]
         else:
-            permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
+            permission_classes = [IsAuthenticated, IsProjectContributor]
         return [permission() for permission in permission_classes]
 
 # Utilisation dans plusieurs ViewSets
-class ProjectViewSet(IsAuthorOrReadOnlyMixin, ModelViewSet):
+class IssueViewSet(IsProjectContributorMixin, ModelViewSet):
     pass
 
-class IssueViewSet(IsAuthorOrReadOnlyMixin, ModelViewSet):
+class CommentViewSet(IsProjectContributorMixin, ModelViewSet):
     pass
 ```
 

@@ -13,12 +13,12 @@
 - **Résultat**: Seuls les contributeurs peuvent voir la liste des contributeurs
 
 ### 3. **IssueViewSet** ⚠️
-- **Problème**: Utilisait seulement `IsAuthorOrReadOnly`
+- **Problème**: Utilisait seulement `IsProjectAuthorOrContributor`
 - **Correction**: Ajout de `IsProjectContributor` pour vérifier l'accès au projet
 - **Résultat**: Seuls les contributeurs peuvent accéder aux issues
 
 ### 4. **CommentViewSet** ⚠️
-- **Problème**: Utilisait seulement `IsAuthorOrReadOnly`
+- **Problème**: Utilisait seulement `IsProjectAuthorOrContributor`
 - **Correction**: Ajout de `IsProjectContributor` et amélioration du queryset
 - **Résultat**: Seuls les contributeurs peuvent accéder aux commentaires
 

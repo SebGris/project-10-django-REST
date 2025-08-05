@@ -46,19 +46,24 @@ SIMPLE_JWT = {
    - Vérifie que l'utilisateur est authentifié
    - Appliquée globalement sur tous les endpoints protégés
 
-2. **IsAuthorOrReadOnly** (Custom)
+2. **IsProjectAuthorOrContributor** (Custom)
    ```python
-   class IsAuthorOrReadOnly(permissions.BasePermission):
+   class IsProjectAuthorOrContributor(permissions.BasePermission):
        """
-       Permission simple : l'auteur a tous les droits, les autres peuvent seulement lire
+       Permission pour les projets : seuls les contributeurs peuvent accéder,
+       seul l'auteur peut modifier/supprimer
        """
        def has_object_permission(self, request, view, obj):
-           # Lecture pour tous
-           if request.method in permissions.SAFE_METHODS:
-               return True
+           # Seuls les contributeurs peuvent accéder au projet
+           if not obj.contributors.filter(user=request.user).exists():
+               return False
            
-           # Écriture seulement pour l'auteur
-           return obj.author == request.user
+           # Pour les modifications, seul l'auteur peut modifier
+           if view.action in ['update', 'partial_update', 'destroy']:
+               return obj.author == request.user
+           
+           # Pour la lecture (tous les contributeurs)
+           return True
    ```
 
 ### Règles de permissions par ressource
