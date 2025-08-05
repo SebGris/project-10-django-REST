@@ -216,17 +216,19 @@ poetry run ruff check . --output-format=full  # Format détaillé
 - [SimpleJWT](https://django-rest-framework-simplejwt.readthedocs.io/en/latest/)
 - [JWT Authentication in Django](https://code.tutsplus.com/how-to-authenticate-with-jwt-in-django--cms-30460t)
 
-🎯 Codes HTTP Couverts
-Code	Nom	Contextes dans votre API
-200	OK	Récupération de données, modifications réussies
-201	Created	Création d'utilisateurs, projets, issues, commentaires
-204	No Content	Suppressions réussies
-400	Bad Request	Données invalides, validation échouée
-401	Unauthorized	Token manquant/invalide/expiré
-403	Forbidden	Permissions insuffisantes
-404	Not Found	Ressource inexistante
-405	Method Not Allowed	Méthode HTTP non supportée
-500	Internal Server Error	Erreurs serveur
+## 🎯 Codes de Statut HTTP Couverts
+
+| Code | Nom | Contextes dans votre API |
+|------|-----|--------------------------|
+| 200 | OK | Récupération de données, modifications réussies |
+| 201 | Created | Création d'utilisateurs, projets, issues, commentaires |
+| 204 | No Content | Suppressions réussies |
+| 400 | Bad Request | Données invalides, validation échouée |
+| 401 | Unauthorized | Token manquant/invalide/expiré |
+| 403 | Forbidden | Permissions insuffisantes |
+| 404 | Not Found | Ressource inexistante |
+| 405 | Method Not Allowed | Méthode HTTP non supportée |
+| 500 | Internal Server Error | Erreurs serveur |
 
 ---
 
