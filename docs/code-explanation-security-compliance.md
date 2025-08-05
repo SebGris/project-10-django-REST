@@ -70,9 +70,8 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),    # Durée courte
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),      # Rotation fréquente
     'ROTATE_REFRESH_TOKENS': True,                    # Rotation automatique
-    'BLACKLIST_AFTER_ROTATION': True,                # Invalidation immédiate
-    'ALGORITHM': 'HS256',                             # Algorithme sécurisé
-    'SIGNING_KEY': SECRET_KEY,                        # Clé secrète
+    'BLACKLIST_AFTER_ROTATION': True,                 # Invalidation immédiate
+    ...
 }
 ```
 
