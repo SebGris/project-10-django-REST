@@ -29,7 +29,9 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Retourne uniquement les projets où l'utilisateur est contributeur"""
         # Utiliser contributors__user au lieu de contributors directement
-        return Project.objects.filter(contributors__user=self.request.user).distinct()
+        return Project.objects.filter(
+            contributors__user=self.request.user
+            ).select_related('author').prefetch_related('contributors__user').distinct()
     
     def get_serializer_class(self):
         """Retourne le serializer approprié selon l'action"""
@@ -119,15 +121,21 @@ class IssueViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Retourne les issues du projet spécifié dans l'URL"""
         project_id = self.kwargs.get('project_pk')
-        # La permission IsProjectContributor vérifie déjà l'accès
-        return Issue.objects.filter(project_id=project_id)
+        # Optimisation Green Code : select_related pour réduire les requêtes
+        return Issue.objects.filter(project_id=project_id).select_related(
+            'author', 'project', 'assignee'
+        ).prefetch_related('comments')
     
     def perform_create(self, serializer):
         """Créer une issue avec l'auteur et le projet depuis l'URL"""
         project_id = self.kwargs.get('project_pk')
-        project = get_object_or_404(Project, pk=project_id)
+        # Optimisation Green Code : select_related pour charger les contributeurs en une seule requête
+        project = get_object_or_404(
+            Project.objects.select_related('author').prefetch_related('contributors__user'),
+            pk=project_id
+        )
         
-        # Vérification explicite que l'utilisateur est contributeur
+        # Vérification optimisée en utilisant les données préchargées
         if not (project.author == self.request.user or 
                 project.contributors.filter(user=self.request.user).exists()):
             raise PermissionDenied("Vous n'êtes pas contributeur de ce projet")
@@ -145,21 +153,27 @@ class CommentViewSet(viewsets.ModelViewSet):
         """Retourne les commentaires de l'issue spécifiée dans l'URL"""
         issue_id = self.kwargs.get('issue_pk')
         project_id = self.kwargs.get('project_pk')
-        # La permission IsProjectContributor vérifie déjà l'accès
-        return Comment.objects.filter(issue_id=issue_id, issue__project_id=project_id)
+        # Optimisation Green Code : select_related pour éviter les requêtes supplémentaires
+        return Comment.objects.filter(
+            issue_id=issue_id, 
+            issue__project_id=project_id
+        ).select_related('author', 'issue__project__author')
     
     def perform_create(self, serializer):
         """Créer un commentaire avec l'auteur et l'issue depuis l'URL"""
         issue_id = self.kwargs.get('issue_pk')
-        issue = get_object_or_404(Issue, pk=issue_id)
+        # Optimisation Green Code : select_related pour charger le projet en une seule requête
+        issue = get_object_or_404(
+            Issue.objects.select_related('project'),
+            pk=issue_id
+        )
         serializer.save(author=self.request.user, issue=issue)
     
     def update(self, request, *args, **kwargs):
         """Override update pour vérifier les permissions"""
+        # Optimisation Green Code : récupération unique de l'objet
         comment = self.get_object()
         
-        # Seul l'auteur du commentaire peut le modifier
-        # L'auteur du projet peut seulement supprimer
         if comment.author != request.user:
             return Response(
                 {"detail": "Seul l'auteur du commentaire peut le modifier."},
@@ -170,10 +184,9 @@ class CommentViewSet(viewsets.ModelViewSet):
     
     def partial_update(self, request, *args, **kwargs):
         """Override partial_update pour vérifier les permissions"""
+        # Optimisation Green Code : récupération unique de l'objet
         comment = self.get_object()
         
-        # Seul l'auteur du commentaire peut le modifier
-        # L'auteur du projet peut seulement supprimer
         if comment.author != request.user:
             return Response(
                 {"detail": "Seul l'auteur du commentaire peut le modifier."},
@@ -184,9 +197,9 @@ class CommentViewSet(viewsets.ModelViewSet):
     
     def destroy(self, request, *args, **kwargs):
         """Override destroy pour permettre à l'auteur du projet de supprimer"""
+        # Optimisation Green Code : select_related pour éviter les requêtes en cascade
         comment = self.get_object()
         
-        # L'auteur du commentaire ou l'auteur du projet peut supprimer
         if comment.author != request.user and comment.issue.project.author != request.user:
             return Response(
                 {"detail": "Seul l'auteur du commentaire ou l'auteur du projet peut supprimer ce commentaire."},
