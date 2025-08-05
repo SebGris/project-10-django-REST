@@ -10,9 +10,7 @@ L'API **SoftDesk** est une plateforme collaborative de gestion de projets dével
 
 **Implémentation :** Système de permissions à plusieurs niveaux
 
-#### Permissions personnalisées développées et utilisées :
-
-1. **`IsProjectAuthorOrContributor`** ✅ **UTILISÉE**
+1. **`IsProjectAuthorOrContributor`**
    ```python
    class IsProjectAuthorOrContributor(permissions.BasePermission):
        def has_object_permission(self, request, view, obj):
@@ -32,18 +30,18 @@ L'API **SoftDesk** est une plateforme collaborative de gestion de projets dével
    - Validation stricte via `obj.contributors.filter(user=request.user).exists()`
    - **Utilisée dans :** `ProjectViewSet`
 
-2. **`IsProjectContributor`** ✅ **UTILISÉE**
+2. **`IsProjectContributor`**
    - Vérification via nested routes (`project_pk`)
    - Protection contre l'accès non autorisé aux ressources
    - Gestion des cas d'erreur (projet inexistant)
    - **Utilisée dans :** `IssueViewSet`, `ContributorViewSet`
 
-3. **`IsAuthorOrProjectAuthorOrReadOnly`** ✅ **UTILISÉE**
+3. **`IsAuthorOrProjectAuthorOrReadOnly`**
    - Double vérification : contributeur ET auteur/auteur du projet
    - Permissions en cascade pour issues et commentaires
    - **Utilisée dans :** `CommentViewSet`
 
-4. **`IsOwnerOrReadOnly`** ✅ **UTILISÉE**
+4. **`IsOwnerOrReadOnly`**
    ```python
    class IsOwnerOrReadOnly(permissions.BasePermission):
        def has_object_permission(self, request, view, obj):
@@ -57,27 +55,10 @@ L'API **SoftDesk** est une plateforme collaborative de gestion de projets dével
    - Modification limitée au propriétaire uniquement
    - **Utilisée dans :** `UserViewSet` pour les actions update/destroy
 
-#### Permissions définies mais non utilisées :
-
-5. **`IsAuthorOrReadOnly`** ❌ **NON UTILISÉE**
-   - **Status :** Définie mais jamais importée ni utilisée dans les vues
-   - **Action recommandée :** Supprimer du fichier `permissions.py`
-
 **Sécurité renforcée :**
 - Toutes les vues protégées par `IsAuthenticated`
 - Vérifications d'existence des objets avant accès
 - Permissions combinées pour protection multicouche
-
-#### 🧹 Recommandations de nettoyage du code
-
-**Classes de permissions inutilisées à supprimer :**
-- `IsAuthorOrReadOnly` : Définie mais jamais utilisée
-
-**Avantages du nettoyage :**
-- Réduction de la complexité du code
-- Amélioration de la maintenabilité
-- Respect des principes SOLID (Single Responsibility)
-- Conformité Green Code (moins de code = moins de ressources)
 
 ### ✅ A02 - Cryptographic Failures (Défaillances cryptographiques)
 
