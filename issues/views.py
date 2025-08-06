@@ -9,7 +9,6 @@ from django.db import transaction
 
 from softdesk_support.permissions import (
     IsProjectAuthorOrContributor,
-    IsProjectContributor,
     IsAuthorOrProjectAuthorOrReadOnly
 )
 
@@ -128,7 +127,7 @@ class ContributorViewSet(viewsets.ModelViewSet):
 
 class IssueViewSet(viewsets.ModelViewSet):
     """ViewSet pour les issues d'un projet"""
-    permission_classes = [IsAuthenticated, IsProjectContributor, IsAuthorOrProjectAuthorOrReadOnly]
+    permission_classes = [IsAuthenticated, IsAuthorOrProjectAuthorOrReadOnly]
     
     def get_serializer_class(self):
         """Retourne le serializer approprié selon l'action"""
