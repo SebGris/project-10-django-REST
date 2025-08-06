@@ -86,6 +86,26 @@ class ProjectSerializer(serializers.ModelSerializer):
         return UserSerializer(users, many=True).data
 
 
+class ProjectListSerializer(serializers.ModelSerializer):
+    """Serializer simplifié pour la liste des projets"""
+    author_username = serializers.CharField(source='author.username', read_only=True)
+    contributors_count = serializers.SerializerMethodField()
+    contributors_names = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Project
+        fields = ['id', 'name', 'type', 'author_username', 'contributors_count', 'contributors_names', 'created_time']
+        read_only_fields = ['id', 'created_time']
+    
+    def get_contributors_count(self, obj):
+        """Retourne le nombre de contributeurs"""
+        return obj.contributors.count()
+    
+    def get_contributors_names(self, obj):
+        """Retourne la liste des noms des contributeurs"""
+        return [contributor.user.username for contributor in obj.contributors.all()]
+    
+
 class ProjectCreateUpdateSerializer(serializers.ModelSerializer):
     """Serializer simplifié pour la création/modification de projets"""
     class Meta:
