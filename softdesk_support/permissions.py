@@ -4,9 +4,9 @@ from rest_framework import permissions
 class IsProjectAuthorOrContributor(permissions.BasePermission):
     """
     Permission personnalisée pour les projets.
-    - Seuls les contributeurs peuvent voir le projet
-    - Seul l'auteur peut modifier/supprimer le projet
-    - Seul l'auteur peut gérer les contributeurs
+    - GET: Seuls les contributeurs peuvent voir le projet
+    - PUT/PATCH/DELETE: Seul l'auteur peut modifier/supprimer le projet
+    - POST (add_contributor): Seul l'auteur peut gérer les contributeurs
     """
     
     def has_object_permission(self, request, view, obj):
@@ -26,8 +26,8 @@ class IsProjectAuthorOrContributor(permissions.BasePermission):
 class IsProjectContributor(permissions.BasePermission):
     """
     Permission pour vérifier que l'utilisateur est contributeur du projet.
-    Utilisée pour les Issues et Comments.
-    Seuls les contributeurs peuvent accéder aux ressources du projet.
+    Utilisée pour les ViewSets imbriqués (Issues, Comments, Contributors).
+    Vérifie l'accès au niveau du projet parent.
     """
     
     def has_permission(self, request, view):
@@ -70,9 +70,9 @@ class IsProjectContributor(permissions.BasePermission):
 class IsAuthorOrProjectAuthorOrReadOnly(permissions.BasePermission):
     """
     Permission pour les Issues et Comments.
-    - Seuls les contributeurs peuvent accéder (lecture/écriture)
-    - Auteur de l'objet peut modifier/supprimer
-    - Auteur du projet peut tout faire
+    - GET: Tous les contributeurs du projet peuvent lire
+    - POST: Tous les contributeurs peuvent créer
+    - PUT/PATCH/DELETE: Seulement l'auteur de l'objet ou l'auteur du projet
     """
     
     def has_permission(self, request, view):
@@ -107,8 +107,8 @@ class IsAuthorOrProjectAuthorOrReadOnly(permissions.BasePermission):
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """
     Permission pour les profils utilisateur.
-    - L'utilisateur peut voir et modifier uniquement son propre profil
-    - Les autres peuvent voir certaines informations (selon RGPD)
+    - GET: Tous les utilisateurs authentifiés peuvent voir
+    - PUT/PATCH/DELETE: Seulement le propriétaire du profil
     """
     
     def has_object_permission(self, request, view, obj):
