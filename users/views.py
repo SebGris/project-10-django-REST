@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.contrib.auth import get_user_model
-from softdesk_support.permissions import IsOwnerOrReadOnly
+from .permissions import IsOwnerOrReadOnly
 from .serializers import UserSerializer, UserRegistrationSerializer, UserSummarySerializer
 
 User = get_user_model()

@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.db import transaction
 
-from softdesk_support.permissions import (
+from .permissions import (
     IsProjectAuthorOrContributor,
     IsProjectContributorOrObjectAuthorOrReadOnly
 )
@@ -93,13 +93,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
 class ContributorViewSet(viewsets.ModelViewSet):
     """ViewSet pour les contributeurs d'un projet"""
     serializer_class = ContributorSerializer
-    permission_classes = [IsAuthenticated]  # Retirer IsProjectContributor pour éviter le paradoxe
+    permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
         """Retourne uniquement les contributeurs du projet spécifié"""
         project_id = self.kwargs.get('project_pk')
         
-        # Optimisation : utiliser select_related pour éviter les requêtes supplémentaires
         try:
             project = Project.objects.select_related('author').prefetch_related('contributors__user').get(pk=project_id)
         except Project.DoesNotExist:

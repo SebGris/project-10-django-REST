@@ -1,5 +1,5 @@
 from rest_framework import permissions
-from issues.models import Project
+from .models import Project
 
 
 class IsProjectAuthorOrContributor(permissions.BasePermission):
@@ -66,19 +66,3 @@ class IsProjectContributorOrObjectAuthorOrReadOnly(permissions.BasePermission):
         is_author = obj.author == request.user
         is_project_author = project.author == request.user
         return is_author or is_project_author
-
-
-class IsOwnerOrReadOnly(permissions.BasePermission):
-    """
-    Permission pour les profils utilisateur.
-    - GET: Tous les utilisateurs authentifiés peuvent voir
-    - PUT/PATCH/DELETE: Seulement le propriétaire du profil
-    """
-    
-    def has_object_permission(self, request, view, obj):
-        # Pour la modification, seulement le propriétaire
-        if request.method in ['PUT', 'PATCH', 'DELETE']:
-            return obj == request.user
-        
-        # Pour la lecture, tous les utilisateurs authentifiés
-        return request.user.is_authenticated
