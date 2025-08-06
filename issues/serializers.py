@@ -22,12 +22,60 @@ class UserSummarySerializer(serializers.ModelSerializer):
 
 class ContributorSerializer(serializers.ModelSerializer):
     """Serializer pour afficher les contributeurs d'un projet"""
-    user = UserSummarySerializer(read_only=True)  # Utiliser UserSummarySerializer au lieu de UserSerializer
+    user = UserSerializer(read_only=True)
+    user_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(),
+        source='user',
+        write_only=True
+    )
     
     class Meta:
         model = Contributor
-        fields = ['user', 'created_time']
-        read_only_fields = ['id', 'created_time']
+        fields = ['id', 'user', 'user_id', 'project', 'created_time']
+        read_only_fields = ['project', 'created_time']
+    
+    def validate(self, attrs):
+        """Valide qu'un contributeur n'existe pas déjà pour ce projet"""
+        user = attrs.get('user')
+        project = self.context.get('project') or getattr(self.instance, 'project', None)
+        
+        if user and project:
+            # Pour la création uniquement (pas la mise à jour)
+            if not self.instance and Contributor.objects.filter(user=user, project=project).exists():
+                raise serializers.ValidationError("Cet utilisateur est déjà contributeur de ce projet.")
+        
+        return attrs
+
+
+class AddContributorSerializer(serializers.Serializer):
+    """Serializer pour ajouter un contributeur à un projet"""
+    user_id = serializers.IntegerField(required=True)
+    
+    def validate_user_id(self, value):
+        """Valide que l'utilisateur existe"""
+        try:
+            User.objects.get(id=value)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("L'utilisateur avec cet ID n'existe pas.")
+        return value
+    
+    def validate(self, attrs):
+        """Validation additionnelle"""
+        user_id = attrs.get('user_id')
+        project = self.context.get('project')
+        
+        if project and Contributor.objects.filter(user_id=user_id, project=project).exists():
+            raise serializers.ValidationError("Cet utilisateur est déjà contributeur de ce projet.")
+        
+        return attrs
+    
+    def create(self, validated_data):
+        """Crée le contributeur"""
+        project = self.context.get('project')
+        user_id = validated_data.get('user_id')
+        user = User.objects.get(id=user_id)
+        
+        return Contributor.objects.create(user=user, project=project)
 
 
 class ProjectListSerializer(serializers.ModelSerializer):
@@ -52,20 +100,32 @@ class ProjectListSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
     """Serializer complet pour le détail d'un projet"""
-    author = UserSummarySerializer(read_only=True)
-    contributors = ContributorSerializer(many=True, read_only=True)
+    author = UserSerializer(read_only=True)
+    contributors = serializers.SerializerMethodField()  # Changé ici
+    issues_count = serializers.SerializerMethodField()
     
     class Meta:
         model = Project
-        fields = ['id', 'name', 'description', 'type', 'author', 'contributors', 'created_time']
-        read_only_fields = ['id', 'author', 'created_time']
+        fields = ['id', 'name', 'description', 'type', 'author', 'contributors', 
+                  'created_time', 'issues_count']
+        read_only_fields = ['id', 'created_time']
+    
+    def get_issues_count(self, obj):
+        return obj.issues.count()
+    
+    def get_contributors(self, obj):
+        """Retourne la liste des utilisateurs contributeurs"""
+        # Récupérer les users via la relation Contributor
+        users = User.objects.filter(contributor__project=obj)
+        return UserSerializer(users, many=True).data
 
 
 class ProjectCreateUpdateSerializer(serializers.ModelSerializer):
     """Serializer simplifié pour la création/modification de projets"""
     class Meta:
         model = Project
-        fields = ['name', 'description', 'type']
+        fields = ['id', 'name', 'description', 'type']  # Ajout de 'id' pour s'assurer qu'il est retourné
+        read_only_fields = ['id']  # L'ID est en lecture seule
         
     def validate_type(self, value):
         """Valider le type de projet"""

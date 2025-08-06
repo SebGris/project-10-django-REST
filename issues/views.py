@@ -16,7 +16,8 @@ from softdesk_support.permissions import (
 from .models import Project, Contributor, Issue, Comment
 from .serializers import (
     ProjectSerializer, ProjectListSerializer, ProjectCreateUpdateSerializer,
-    IssueSerializer, IssueListSerializer, CommentSerializer, ContributorSerializer
+    IssueSerializer, IssueListSerializer, CommentSerializer, ContributorSerializer,
+    AddContributorSerializer
 )
 
 User = get_user_model()
@@ -55,18 +56,26 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def add_contributor(self, request, pk=None):
         """Ajouter un contributeur au projet"""
         project = self.get_object()
-        user_id = request.data.get('user_id')
         
-        try:
-            user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            return Response({'error': 'Utilisateur non trouvé'}, status=status.HTTP_404_NOT_FOUND)
+        # Utiliser le serializer pour valider les données
+        serializer = AddContributorSerializer(
+            data=request.data,
+            context={'project': project, 'request': request}
+        )
         
-        if Contributor.objects.filter(user=user, project=project).exists():
-            return Response({'error': 'Déjà contributeur'}, status=status.HTTP_400_BAD_REQUEST)
+        if serializer.is_valid():
+            contributor = serializer.save()
+            # Retourner les données du contributeur créé
+            contributor_serializer = ContributorSerializer(contributor)
+            return Response(
+                {
+                    'message': f'{contributor.user.username} ajouté comme contributeur',
+                    'contributor': contributor_serializer.data
+                },
+                status=status.HTTP_201_CREATED
+            )
         
-        Contributor.objects.create(user=user, project=project)
-        return Response({'message': f'{user.username} ajouté comme contributeur'}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ContributorViewSet(viewsets.ModelViewSet):
@@ -101,16 +110,8 @@ class ContributorViewSet(viewsets.ModelViewSet):
         if project.author != self.request.user:
             raise PermissionDenied("Seul l'auteur du projet peut ajouter des contributeurs")
         
-        # Valider que l'utilisateur existe et n'est pas déjà contributeur
-        user_data = serializer.validated_data.get('user')
-        if not user_data:
-            raise ValidationError({"user": "Ce champ est requis"})
-            
-        # Vérifier si le contributeur existe déjà
-        if Contributor.objects.filter(project=project, user=user_data).exists():
-            raise ValidationError({"user": "Cet utilisateur est déjà contributeur"})
-            
-        serializer.save(project=project, user=user_data)
+        # Le serializer ContributorSerializer gère déjà la validation
+        serializer.save(project=project)
 
 
 class IssueViewSet(viewsets.ModelViewSet):
