@@ -15,7 +15,7 @@ from softdesk_support.permissions import (
 
 from .models import Project, Contributor, Issue, Comment
 from .serializers import (
-    ProjectSerializer, ProjectListSerializer, ProjectCreateUpdateSerializer,
+    ProjectSerializer, ProjectCreateUpdateSerializer,
     IssueSerializer, IssueListSerializer, CommentSerializer, ContributorSerializer,
     AddContributorSerializer
 )
@@ -37,9 +37,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     
     def get_serializer_class(self):
         """Retourne le serializer approprié selon l'action"""
-        if self.action == 'list':
-            return ProjectListSerializer
-        elif self.action in ['create', 'update', 'partial_update']:
+        if self.action in ['create', 'update', 'partial_update']:
             return ProjectCreateUpdateSerializer
         return ProjectSerializer
     
