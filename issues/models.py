@@ -121,6 +121,10 @@ class Comment(models.Model):
     """
     Modèle pour les commentaires d'une issue
     """
+    @property
+    def project(self):
+        return self.issue.project
+    
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     description = models.TextField()
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='comments')

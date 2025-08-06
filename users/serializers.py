@@ -20,6 +20,13 @@ class UserSummarySerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'can_be_contacted', 'can_data_be_shared']
 
 
+class UserMiniSerializer(serializers.ModelSerializer):
+    """Serializer minimal pour afficher uniquement id, username, email"""
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email']
+
+
 class UserRegistrationSerializer(serializers.ModelSerializer):
     """Serializer pour l'inscription d'un nouvel utilisateur"""
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])

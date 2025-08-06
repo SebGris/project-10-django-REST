@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from users.serializers import UserSerializer, UserSummarySerializer
+from users.serializers import UserSerializer, UserSummarySerializer, UserMiniSerializer
 from .models import Project, Contributor, Issue, Comment
 
 User = get_user_model()
@@ -112,7 +112,7 @@ class IssueListSerializer(serializers.ModelSerializer):
 
 class IssueSerializer(serializers.ModelSerializer):
     """Serializer complet pour le détail d'une issue"""
-    author = UserSerializer(read_only=True)
+    author = UserMiniSerializer(read_only=True)
     assigned_to = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(),
         required=False,
@@ -129,7 +129,7 @@ class IssueSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     """Serializer pour le modèle Comment"""
-    author = UserSummarySerializer(read_only=True)
+    author = UserMiniSerializer(read_only=True)
     issue = serializers.PrimaryKeyRelatedField(read_only=True)
     project = serializers.SerializerMethodField()
     

@@ -49,10 +49,8 @@ class IsProjectContributorOrObjectAuthorOrReadOnly(permissions.BasePermission):
         return project.contributors.filter(user=request.user).exists()
 
     def has_object_permission(self, request, view, obj):
-        # Récupérer le projet lié à l'objet
-        project = getattr(obj, 'project', None)
-        if not project and hasattr(obj, 'issue') and obj.issue:
-            project = obj.issue.project
+        # On suppose que tous les objets ont un attribut project (direct ou via @property)
+        project = obj.project
         if not project:
             return False
 
@@ -64,8 +62,8 @@ class IsProjectContributorOrObjectAuthorOrReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS or request.method == 'POST':
             return True
 
-        # Modification/suppression : auteur de l'objet ou auteur du projet
-        is_author = hasattr(obj, 'author') and obj.author == request.user
+        # Modification : auteur de l'objet ou auteur du projet
+        is_author = obj.author == request.user
         is_project_author = project.author == request.user
         return is_author or is_project_author
 
