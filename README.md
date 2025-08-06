@@ -5,18 +5,17 @@
 **SoftDesk** est une API REST sécurisée développée avec Django REST Framework pour la gestion collaborative de projets avec système de tickets (issues) et commentaires.
 
 ### ✨ Fonctionnalités principales
-- 🔐 **Authentification JWT** sécurisée avec refresh tokens
+- 🔐 **Authentification JWT** sécurisée avec refresh tokens  
 - 👥 **Gestion des contributeurs** par projet avec permissions granulaires
 - 🎫 **Système de tickets (issues)** avec assignations et priorités
-- 💬 **Commentaires** sur les issues avec historique complet
+- 💬 **Commentaires** sur les issues
 - 🛡️ **Sécurité RGPD** avec consentement et gestion des données
-- ⚡ **Optimisations Green Code** pour performances et écologie
+- ⚡ **Optimisations Green Code** pour les performances
 
 ## 📚 Documentation complète
 
 ### 🚀 Guides de démarrage
 - **[Installation et configuration](#-installation-et-lancement-rapide)** - Setup complet avec Poetry
-- **[Guide de test avec Postman](docs/postman/postman-guide.md)** - Collection complète d'endpoints
 
 ## 🚀 Installation et lancement rapide
 
@@ -216,7 +215,7 @@ poetry run ruff check . --output-format=full  # Format détaillé
 - [SimpleJWT](https://django-rest-framework-simplejwt.readthedocs.io/en/latest/)
 - [JWT Authentication in Django](https://code.tutsplus.com/how-to-authenticate-with-jwt-in-django--cms-30460t)
 
-## 🎯 Codes de Statut HTTP Couverts
+## 🎯 Codes de Statut HTTP
 
 | Code | Nom | Contextes dans votre API |
 |------|-----|--------------------------|
