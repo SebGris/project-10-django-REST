@@ -10,13 +10,12 @@ class IsProjectAuthorOrContributor(permissions.BasePermission):
     """
     
     def has_object_permission(self, request, view, obj):
-        # IMPORTANT: Seuls les contributeurs peuvent accéder au projet
-        # Vérifier via la relation contributors__user
+        # Vérifie que l'utilisateur fait partie des contributeurs du projet (relation contributors__user)
         if not obj.contributors.filter(user=request.user).exists():
             return False
             
-        # Pour les actions de modification/suppression et gestion des contributeurs
-        if view.action in ['update', 'partial_update', 'destroy', 'add_contributor', 'remove_contributor']:
+        # Pour les actions de modification, suppression et ajout de contributeurs
+        if view.action in ['update', 'partial_update', 'destroy', 'add_contributor']:
             return obj.author == request.user
             
         # Pour la lecture (tous les contributeurs)
