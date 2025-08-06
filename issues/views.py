@@ -9,7 +9,7 @@ from django.db import transaction
 
 from softdesk_support.permissions import (
     IsProjectAuthorOrContributor,
-    IsAuthorOrProjectAuthorOrReadOnly
+    IsProjectContributorOrObjectAuthorOrReadOnly
 )
 
 from .models import Project, Contributor, Issue, Comment
@@ -127,7 +127,7 @@ class ContributorViewSet(viewsets.ModelViewSet):
 
 class IssueViewSet(viewsets.ModelViewSet):
     """ViewSet pour les issues d'un projet"""
-    permission_classes = [IsAuthenticated, IsAuthorOrProjectAuthorOrReadOnly]
+    permission_classes = [IsAuthenticated, IsProjectContributorOrObjectAuthorOrReadOnly]
     
     def get_serializer_class(self):
         """Retourne le serializer approprié selon l'action"""
@@ -162,11 +162,11 @@ class IssueViewSet(viewsets.ModelViewSet):
         if assigned_to_id:
             try:
                 assigned_user = User.objects.get(id=assigned_to_id)
-                # Vérifier que l'assigned_to est contributeur du projet
-                if not project.contributors.filter(user=assigned_user).exists():
-                    raise ValidationError("L'utilisateur assigné doit être un contributeur du projet")
             except User.DoesNotExist:
                 raise ValidationError("L'utilisateur assigné n'existe pas")
+            # Vérifier que l'assigned_to est contributeur du projet
+            if not project.contributors.filter(user=assigned_user).exists():
+                raise ValidationError("L'utilisateur assigné doit être un contributeur du projet")
             
         # Sauvegarde avec l'utilisateur actuel comme auteur
         serializer.save(author=self.request.user, project=project)
