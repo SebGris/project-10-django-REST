@@ -2,9 +2,10 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import PermissionDenied, ValidationError
+from rest_framework.exceptions import PermissionDenied, ValidationError, NotFound
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
+from django.db import transaction
 
 from softdesk_support.permissions import (
     IsProjectAuthorOrContributor,
@@ -71,24 +72,26 @@ class ProjectViewSet(viewsets.ModelViewSet):
 class ContributorViewSet(viewsets.ModelViewSet):
     """ViewSet pour les contributeurs d'un projet"""
     serializer_class = ContributorSerializer
-    permission_classes = [IsAuthenticated, IsProjectContributor]
+    permission_classes = [IsAuthenticated]  # Retirer IsProjectContributor pour éviter le paradoxe
     
     def get_queryset(self):
         """Retourne uniquement les contributeurs du projet spécifié"""
         project_id = self.kwargs.get('project_pk')
         
-        # S'assurer que l'utilisateur est contributeur ou auteur du projet
-        project = get_object_or_404(Project, pk=project_id)
+        # Optimisation : utiliser select_related pour éviter les requêtes supplémentaires
+        try:
+            project = Project.objects.select_related('author').prefetch_related('contributors__user').get(pk=project_id)
+        except Project.DoesNotExist:
+            raise NotFound("Projet non trouvé")
         
-        # Check permission explicitement pour la liste
+        # Vérification des permissions pour la lecture
         if not (project.author == self.request.user or 
                 project.contributors.filter(user=self.request.user).exists()):
-            # On retourne un queryset vide si l'utilisateur n'a pas accès
-            # La permission doit ensuite bloquer l'accès
-            return Contributor.objects.none()
+            raise PermissionDenied("Vous n'avez pas accès à ce projet")
             
-        return Contributor.objects.filter(project_id=project_id)
+        return Contributor.objects.filter(project=project).select_related('user')
     
+    @transaction.atomic
     def perform_create(self, serializer):
         """Crée un contributeur lié au projet et à l'utilisateur spécifiés"""
         project_id = self.kwargs.get('project_pk')
@@ -97,15 +100,17 @@ class ContributorViewSet(viewsets.ModelViewSet):
         # Vérifie que l'utilisateur actuel est l'auteur du projet
         if project.author != self.request.user:
             raise PermissionDenied("Seul l'auteur du projet peut ajouter des contributeurs")
-            
-        user_id = self.request.data.get('user_id')
-        user = get_object_or_404(User, pk=user_id)
         
-        # Vérifie si le contributeur existe déjà
-        if Contributor.objects.filter(project=project, user=user).exists():
-            raise ValidationError("Cet utilisateur est déjà contributeur")
+        # Valider que l'utilisateur existe et n'est pas déjà contributeur
+        user_data = serializer.validated_data.get('user')
+        if not user_data:
+            raise ValidationError({"user": "Ce champ est requis"})
             
-        serializer.save(project=project, user=user)
+        # Vérifier si le contributeur existe déjà
+        if Contributor.objects.filter(project=project, user=user_data).exists():
+            raise ValidationError({"user": "Cet utilisateur est déjà contributeur"})
+            
+        serializer.save(project=project, user=user_data)
 
 
 class IssueViewSet(viewsets.ModelViewSet):
@@ -121,9 +126,9 @@ class IssueViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Retourne les issues du projet spécifié dans l'URL"""
         project_id = self.kwargs.get('project_pk')
-        # Optimisation Green Code : select_related pour réduire les requêtes
+        # Correction: utiliser 'assigned_to' au lieu de 'assignee'
         return Issue.objects.filter(project_id=project_id).select_related(
-            'author', 'project', 'assignee'
+            'author', 'project', 'assigned_to'
         ).prefetch_related('comments')
     
     def perform_create(self, serializer):
@@ -139,6 +144,17 @@ class IssueViewSet(viewsets.ModelViewSet):
         if not (project.author == self.request.user or 
                 project.contributors.filter(user=self.request.user).exists()):
             raise PermissionDenied("Vous n'êtes pas contributeur de ce projet")
+        
+        # Valider l'assignee si fourni (utiliser assigned_to au lieu d'assignee)
+        assigned_to_id = self.request.data.get('assigned_to')
+        if assigned_to_id:
+            try:
+                assigned_user = User.objects.get(id=assigned_to_id)
+                # Vérifier que l'assigned_to est contributeur du projet
+                if not project.contributors.filter(user=assigned_user).exists():
+                    raise ValidationError("L'utilisateur assigné doit être un contributeur du projet")
+            except User.DoesNotExist:
+                raise ValidationError("L'utilisateur assigné n'existe pas")
             
         # Sauvegarde avec l'utilisateur actuel comme auteur
         serializer.save(author=self.request.user, project=project)
@@ -147,13 +163,19 @@ class IssueViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     """ViewSet pour les commentaires d'une issue"""
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated, IsProjectContributor]
+    permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
         """Retourne les commentaires de l'issue spécifiée dans l'URL"""
         issue_id = self.kwargs.get('issue_pk')
         project_id = self.kwargs.get('project_pk')
-        # Optimisation Green Code : select_related pour éviter les requêtes supplémentaires
+        
+        # Vérifier que l'utilisateur a accès au projet
+        project = get_object_or_404(Project, pk=project_id)
+        if not (project.author == self.request.user or 
+                project.contributors.filter(user=self.request.user).exists()):
+            raise PermissionDenied("Vous n'avez pas accès à ce projet")
+        
         return Comment.objects.filter(
             issue_id=issue_id, 
             issue__project_id=project_id
@@ -162,48 +184,46 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Créer un commentaire avec l'auteur et l'issue depuis l'URL"""
         issue_id = self.kwargs.get('issue_pk')
-        # Optimisation Green Code : select_related pour charger le projet en une seule requête
+        project_id = self.kwargs.get('project_pk')
+        
+        # Vérifier la cohérence entre issue et project
         issue = get_object_or_404(
-            Issue.objects.select_related('project'),
-            pk=issue_id
+            Issue.objects.select_related('project').prefetch_related('project__contributors__user'),
+            pk=issue_id,
+            project_id=project_id
         )
+        
+        # Vérifier que l'utilisateur est contributeur du projet
+        project = issue.project
+        if not (project.author == self.request.user or 
+                project.contributors.filter(user=self.request.user).exists()):
+            raise PermissionDenied("Vous devez être contributeur du projet pour commenter")
+        
         serializer.save(author=self.request.user, issue=issue)
+    
+    def check_comment_permission(self, comment, for_deletion=False):
+        """Méthode utilitaire pour vérifier les permissions sur un commentaire"""
+        if for_deletion:
+            if comment.author != self.request.user and comment.issue.project.author != self.request.user:
+                raise PermissionDenied("Seul l'auteur du commentaire ou l'auteur du projet peut supprimer ce commentaire.")
+        else:
+            if comment.author != self.request.user:
+                raise PermissionDenied("Seul l'auteur du commentaire peut le modifier.")
     
     def update(self, request, *args, **kwargs):
         """Override update pour vérifier les permissions"""
-        # Optimisation Green Code : récupération unique de l'objet
         comment = self.get_object()
-        
-        if comment.author != request.user:
-            return Response(
-                {"detail": "Seul l'auteur du commentaire peut le modifier."},
-                status=status.HTTP_403_FORBIDDEN
-            )
-        
+        self.check_comment_permission(comment)
         return super().update(request, *args, **kwargs)
     
     def partial_update(self, request, *args, **kwargs):
         """Override partial_update pour vérifier les permissions"""
-        # Optimisation Green Code : récupération unique de l'objet
         comment = self.get_object()
-        
-        if comment.author != request.user:
-            return Response(
-                {"detail": "Seul l'auteur du commentaire peut le modifier."},
-                status=status.HTTP_403_FORBIDDEN
-            )
-        
+        self.check_comment_permission(comment)
         return super().partial_update(request, *args, **kwargs)
     
     def destroy(self, request, *args, **kwargs):
         """Override destroy pour permettre à l'auteur du projet de supprimer"""
-        # Optimisation Green Code : select_related pour éviter les requêtes en cascade
         comment = self.get_object()
-        
-        if comment.author != request.user and comment.issue.project.author != request.user:
-            return Response(
-                {"detail": "Seul l'auteur du commentaire ou l'auteur du projet peut supprimer ce commentaire."},
-                status=status.HTTP_403_FORBIDDEN
-            )
-        
+        self.check_comment_permission(comment, for_deletion=True)
         return super().destroy(request, *args, **kwargs)
