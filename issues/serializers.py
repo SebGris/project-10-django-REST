@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from users.serializers import UserSerializer, UserSummarySerializer, UserMiniSerializer
+from users.serializers import UserSerializer, UserMiniSerializer
 from .models import Project, Contributor, Issue, Comment
 
 User = get_user_model()
