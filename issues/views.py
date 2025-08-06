@@ -41,6 +41,21 @@ class ProjectViewSet(viewsets.ModelViewSet):
             return ProjectCreateUpdateSerializer
         return ProjectSerializer
     
+    def create(self, request, *args, **kwargs):
+        """Override create pour retourner le projet complet après création"""
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        
+        # Récupérer l'instance créée avec toutes les relations préchargées
+        project = Project.objects.select_related('author').prefetch_related('contributors__user').get(pk=serializer.instance.pk)
+        
+        # Utiliser ProjectSerializer pour la réponse avec toutes les données
+        output_serializer = ProjectSerializer(project)
+        
+        headers = self.get_success_headers(output_serializer.data)
+        return Response(output_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
     def perform_create(self, serializer):
         """Créer un projet avec l'utilisateur actuel comme auteur et contributeur"""
         project = serializer.save(author=self.request.user)
@@ -74,7 +89,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
             )
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    
 
 class ContributorViewSet(viewsets.ModelViewSet):
     """ViewSet pour les contributeurs d'un projet"""
@@ -108,7 +123,6 @@ class ContributorViewSet(viewsets.ModelViewSet):
         if project.author != self.request.user:
             raise PermissionDenied("Seul l'auteur du projet peut ajouter des contributeurs")
         
-        # Le serializer ContributorSerializer gère déjà la validation
         serializer.save(project=project)
 
 

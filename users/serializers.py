@@ -1,104 +1,70 @@
 from rest_framework import serializers
-from .models import User
+from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
+
+User = get_user_model()  # Récupère le modèle User configuré dans settings.py
 
 
 class UserSerializer(serializers.ModelSerializer):
-    """
-    Serializer pour le modèle User (toutes les informations)
-    """
-    password = serializers.CharField(write_only=True, required=False)
-    
+    """Serializer pour le modèle User"""
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 
-                 'age', 'can_be_contacted', 'can_data_be_shared', 'created_time', 'password']
-        read_only_fields = ['id', 'created_time']
-    
-    def create(self, validated_data):
-        password = validated_data.pop('password')
-        user = User(**validated_data)
-        user.set_password(password)
-        user.save()
-        return user
-    
-    def update(self, instance, validated_data):
-        # Gérer le mot de passe séparément s'il est fourni
-        password = validated_data.pop('password', None)
-        
-        # Mettre à jour les autres champs
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        
-        # Mettre à jour le mot de passe si fourni
-        if password:
-            instance.set_password(password)
-        
-        instance.save()
-        return instance
-
-
-class UserPublicSerializer(serializers.ModelSerializer):
-    """
-    Serializer pour les informations publiques de l'utilisateur
-    """
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'first_name', 'last_name']
-
-
-class UserProfileSerializer(serializers.ModelSerializer):
-    """
-    Serializer pour la mise à jour du profil (sans mot de passe)
-    """
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 
-                 'age', 'can_be_contacted', 'can_data_be_shared', 'created_time']
-        read_only_fields = ['id', 'created_time']
-
-
-class UserRegistrationSerializer(serializers.ModelSerializer):
-    """Serializer pour l'inscription des utilisateurs"""
-    password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
-    password_confirm = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
-    age = serializers.IntegerField(min_value=15, error_messages={
-        'min_value': 'L\'âge minimum requis est de 15 ans (conformité RGPD).'
-    })
-    
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'email', 'password', 'password_confirm', 
-                 'first_name', 'last_name', 'age', 'can_be_contacted', 'can_data_be_shared']
-        
-    def validate(self, attrs):
-        """Validation des données"""
-        if attrs['password'] != attrs['password_confirm']:
-            raise serializers.ValidationError("Les mots de passe ne correspondent pas.")
-        
-        # Validation RGPD - âge minimum
-        if attrs.get('age', 0) < 15:
-            raise serializers.ValidationError({
-                'age': 'Vous devez avoir au moins 15 ans pour vous inscrire (conformité RGPD).'
-            })
-        
-        return attrs
-    
-    def create(self, validated_data):
-        validated_data.pop('password_confirm')
-        password = validated_data.pop('password')
-        user = User(**validated_data)
-        user.set_password(password)
-        user.save()
-        return user
+        fields = ['id', 'username', 'email', 'age', 'can_be_contacted', 'can_data_be_shared']
+        read_only_fields = ['id']
 
 
 class UserSummarySerializer(serializers.ModelSerializer):
-    """Serializer pour afficher un résumé des utilisateurs"""
+    """Serializer minimal pour afficher un résumé utilisateur"""
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'can_be_contacted', 'can_data_be_shared']
-        read_only_fields = ['id', 'username', 'email', 'can_be_contacted', 'can_data_be_shared']
-        read_only_fields = ['id', 'username', 'email', 'can_be_contacted', 'can_data_be_shared']
+
+
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    """Serializer pour l'inscription d'un nouvel utilisateur"""
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password_confirm = serializers.CharField(write_only=True, required=True)
+    
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password', 'password_confirm', 'age', 
+                  'can_be_contacted', 'can_data_be_shared']
+    
+    def validate_age(self, value):
+        """Valider que l'utilisateur a au moins 15 ans"""
+        if value < 15:
+            raise serializers.ValidationError("L'utilisateur doit avoir au moins 15 ans.")
+        return value
+    
+    def validate(self, attrs):
+        """Valider que les mots de passe correspondent"""
+        if attrs['password'] != attrs['password_confirm']:
+            raise serializers.ValidationError("Les mots de passe ne correspondent pas.")
+        return attrs
+    
+    def create(self, validated_data):
+        """Créer un nouvel utilisateur"""
+        validated_data.pop('password_confirm')
+        password = validated_data.pop('password')
+        
+        user = User.objects.create_user(**validated_data)
+        user.set_password(password)
+        user.save()
+        
+        return user
+
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    """Serializer pour la mise à jour du profil utilisateur"""
+    class Meta:
+        model = User
+        fields = ['email', 'age', 'can_be_contacted', 'can_data_be_shared']
+        
+    def validate_age(self, value):
+        """Valider que l'utilisateur a au moins 15 ans"""
+        if value < 15:
+            raise serializers.ValidationError("L'utilisateur doit avoir au moins 15 ans.")
+        return value
 
 
 class UserCreateSerializer(serializers.ModelSerializer):

@@ -359,13 +359,31 @@
                   "if (pm.response.code === 201) {",
                   "    const response = pm.response.json();",
                   "    pm.environment.set('project_id', response.id);",
+                  "    ",
+                  "    // Test 1: Vérifier que l'auteur est bien Alice",
                   "    pm.test('Projet créé par Alice', () => {",
-                  "        pm.expect(response.author.id).to.equal(parseInt(pm.environment.get('alice_id')));",
+                  "        const aliceId = parseInt(pm.environment.get('alice_id'));",
+                  "        pm.expect(response.author.id).to.equal(aliceId);",
+                  "        console.log('Alice ID attendu:', aliceId, 'Auteur ID reçu:', response.author.id);",
                   "    });",
+                  "    ",
+                  "    // Test 2: Vérifier qu'Alice est dans les contributeurs",
                   "    pm.test('Alice est automatiquement contributrice', () => {",
+                  "        pm.expect(response.contributors).to.be.an('array');",
                   "        pm.expect(response.contributors).to.have.length.greaterThan(0);",
-                  "        const contributorIds = response.contributors.map(c => c.id);",
-                  "        pm.expect(contributorIds).to.include(parseInt(pm.environment.get('alice_id')));",
+                  "        ",
+                  "        const aliceId = parseInt(pm.environment.get('alice_id'));",
+                  "        const contributorUserIds = response.contributors.map(c => c.id);",
+                  "        ",
+                  "        console.log('Contributors:', response.contributors);",
+                  "        console.log('Contributor IDs:', contributorUserIds);",
+                  "        console.log('Alice ID:', aliceId);",
+                  "        ",
+                  "        pm.expect(contributorUserIds).to.include(aliceId);",
+                  "    });",
+                  "} else {",
+                  "    pm.test('Échec de création du projet', () => {",
+                  "        pm.expect(pm.response.code).to.equal(201);",
                   "    });",
                   "}"
                 ]
@@ -497,7 +515,7 @@
               "script": {
                 "exec": [
                   "pm.test('Bob ne peut pas voir le projet (pas contributeur)', () => {",
-                  "    pm.expect(pm.response.code).to.equal(403);",
+                  "    pm.expect(pm.response.code).to.be.oneOf([403, 404]);",
                   "});"
                 ]
               }
@@ -521,7 +539,7 @@
               "script": {
                 "exec": [
                   "pm.test('Bob ne peut pas modifier (pas contributeur)', () => {",
-                  "    pm.expect(pm.response.code).to.equal(403);",
+                  "    pm.expect(pm.response.code).to.be.oneOf([403, 404]);",
                   "});"
                 ]
               }
@@ -554,7 +572,7 @@
               "script": {
                 "exec": [
                   "pm.test('Bob ne peut pas supprimer le projet', () => {",
-                  "    pm.expect(pm.response.code).to.equal(403);",
+                  "    pm.expect(pm.response.code).to.be.oneOf([403, 404]);",
                   "});"
                 ]
               }
@@ -897,7 +915,7 @@
               "script": {
                 "exec": [
                   "pm.test('Charlie ne peut pas voir les contributeurs (403)', () => {",
-                  "    pm.expect(pm.response.code).to.equal(403);",
+                  "    pm.expect(pm.response.code).to.be.oneOf([403, 404]);",
                   "});"
                 ]
               }

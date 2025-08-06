@@ -1,23 +1,9 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from users.serializers import UserSerializer, UserSummarySerializer
 from .models import Project, Contributor, Issue, Comment
 
 User = get_user_model()
-
-
-class UserSerializer(serializers.ModelSerializer):
-    """Serializer pour le modèle User"""
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'email', 'age', 'can_be_contacted', 'can_data_be_shared']
-        read_only_fields = ['id']
-
-
-class UserSummarySerializer(serializers.ModelSerializer):
-    """Serializer minimal pour afficher un résumé utilisateur"""
-    class Meta:
-        model = User
-        fields = ['id', 'username']
 
 
 class ContributorSerializer(serializers.ModelSerializer):
