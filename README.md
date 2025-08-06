@@ -142,7 +142,7 @@ curl -H "Authorization: Bearer YOUR_TOKEN" \
 **"No module named 'softdesk_support'"**
 ```bash
 # Utiliser Poetry au lieu de Python directement
-poetry run python manage.py check
+poetry run python (etc)
 ```
 
 **Erreurs de migration**
@@ -151,12 +151,6 @@ poetry run python manage.py check
 rm db.sqlite3  # Linux/Mac
 del db.sqlite3  # Windows
 poetry run python manage.py migrate
-```
-
-**Problème d'encodage (Windows)**
-```bash
-# Configurer l'encodage UTF-8
-set PYTHONIOENCODING=utf-8
 ```
 
 ### Diagnostic complet
@@ -169,7 +163,7 @@ poetry run python manage.py check
 ### Structure du projet
 ```
 project-10-django-REST/
-├── manage.py                 # Gestionnaire Django
+├── manage.py                # Gestionnaire Django
 ├── pyproject.toml           # Configuration Poetry
 ├── users/                   # App utilisateurs (auth, profils)
 ├── issues/                  # App projets (projects, issues, comments)
