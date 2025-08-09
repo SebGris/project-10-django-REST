@@ -21,20 +21,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-2+z_gyabx*n$+o=n^iqvc51wnz=(=v1kcsc@i+^(2&7^1rm-c7')
+SECRET_KEY = os.getenv(
+    'SECRET_KEY',
+    'django-insecure-2+z_gyabx*n$+o=n^iqvc51wnz=(=v1kcsc@i+^(2&7^1rm-c7'
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',') if os.getenv('ALLOWED_HOSTS') else []
-
-# OWASP A05 - Security Misconfiguration: Sécurisations supplémentaires
-# Uncomment the following lines for production security hardening
-# SECURE_CONTENT_TYPE_NOSNIFF = True        # A03 - Anti content-type sniffing (MIME type protection)
-# X_FRAME_OPTIONS = 'DENY'                  # A04 - Protection Clickjacking (iframe interdits)
-# SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'  # A01 - Contrôle des référents
-# SESSION_COOKIE_SECURE = not DEBUG         # A05 - Cookie session sécurisé en production
-
+ALLOWED_HOSTS = (
+    os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+    if os.getenv('ALLOWED_HOSTS')
+    else []
+)
 
 # Application definition
 
@@ -57,11 +56,11 @@ AUTH_USER_MODEL = 'users.User'
 # Configuration JWT optimisée pour OpenClassrooms
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # 1 heure - Idéal pour évaluation (5 minutes en production)
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # 1 heure (5 minutes en production)
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': True,                   # Génère un nouveau refresh token à chaque utilisation
-    'BLACKLIST_AFTER_ROTATION': True,                # Invalider anciens tokens
-    'ALGORITHM': 'HS256',                            # Algorithme standard sécurisé
+    'ROTATE_REFRESH_TOKENS': True,     # Nouveau refresh token à chaque utilisation
+    'BLACKLIST_AFTER_ROTATION': True,  # Invalider anciens tokens
+    'ALGORITHM': 'HS256',              # Algorithme standard sécurisé
 }
 
 REST_FRAMEWORK = {
@@ -138,7 +137,10 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': (
+            'django.contrib.auth.password_validation.'
+            'UserAttributeSimilarityValidator'
+        ),
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',

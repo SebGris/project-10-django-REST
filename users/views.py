@@ -4,7 +4,11 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.contrib.auth import get_user_model
 from .permissions import IsOwnerOrReadOnly
-from .serializers import UserSerializer, UserRegistrationSerializer, UserSummarySerializer
+from .serializers import (
+    UserSerializer,
+    UserRegistrationSerializer,
+    UserSummarySerializer,
+)
 
 User = get_user_model()
 
@@ -57,9 +61,17 @@ class UserViewSet(viewsets.ModelViewSet):
         # Retourner la réponse avec le UserSerializer standard
         response_serializer = UserSerializer(user)
         headers = self.get_success_headers(response_serializer.data)
-        return Response(response_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(
+            response_serializer.data,
+            status=status.HTTP_201_CREATED,
+            headers=headers
+        )
     
-    @action(detail=False, methods=['get', 'patch'], permission_classes=[IsAuthenticated])
+    @action(
+        detail=False,
+        methods=['get', 'patch'],
+        permission_classes=[IsAuthenticated]
+    )
     def profile(self, request):
         """Consulter ou modifier son propre profil"""
         if request.method == 'GET':

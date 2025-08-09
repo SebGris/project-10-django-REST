@@ -27,8 +27,13 @@ class ContributorSerializer(serializers.ModelSerializer):
         
         if user and project:
             # Pour la création uniquement (pas la mise à jour)
-            if not self.instance and Contributor.objects.filter(user=user, project=project).exists():
-                raise serializers.ValidationError("Cet utilisateur est déjà contributeur de ce projet.")
+            if (
+                not self.instance and
+                Contributor.objects.filter(user=user, project=project).exists()
+            ):
+                raise serializers.ValidationError(
+                    "Cet utilisateur est déjà contributeur de ce projet."
+                )
         
         return attrs
 
@@ -50,8 +55,16 @@ class AddContributorSerializer(serializers.Serializer):
         user_id = attrs.get('user_id')
         project = self.context.get('project')
         
-        if project and Contributor.objects.filter(user_id=user_id, project=project).exists():
-            raise serializers.ValidationError("Cet utilisateur est déjà contributeur de ce projet.")
+        if (
+            project
+            and Contributor.objects.filter(
+                user_id=user_id,
+                project=project
+            ).exists()
+        ):
+            raise serializers.ValidationError(
+                "Cet utilisateur est déjà contributeur de ce projet."
+            )
         
         return attrs
     
@@ -94,7 +107,10 @@ class ProjectListSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Project
-        fields = ['id', 'name', 'type', 'author_username', 'contributors_count', 'contributors_names', 'created_time']
+        fields = [
+            'id', 'name', 'type', 'author_username',
+            'contributors_count', 'contributors_names', 'created_time'
+        ]
         read_only_fields = ['id', 'created_time']
     
     def get_contributors_count(self, obj):
@@ -110,14 +126,16 @@ class ProjectCreateUpdateSerializer(serializers.ModelSerializer):
     """Serializer simplifié pour la création/modification de projets"""
     class Meta:
         model = Project
-        fields = ['id', 'name', 'description', 'type']  # Ajout de 'id' pour s'assurer qu'il est retourné
-        read_only_fields = ['id']  # L'ID est en lecture seule
+        fields = ['id', 'name', 'description', 'type']
+        read_only_fields = ['id']
         
     def validate_type(self, value):
         """Valider le type de projet"""
         valid_types = ['back-end', 'front-end', 'iOS', 'Android']
         if value not in valid_types:
-            raise serializers.ValidationError(f"Type invalide. Choisir parmi: {valid_types}")
+            raise serializers.ValidationError(
+                f"Type invalide. Choisir parmi: {valid_types}"
+            )
         return value
 
 

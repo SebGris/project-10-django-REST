@@ -11,7 +11,7 @@ class IsProjectAuthorOrContributor(permissions.BasePermission):
     """
     
     def has_object_permission(self, request, view, obj):
-        # Vérifie que l'utilisateur fait partie des contributeurs du projet (relation contributors__user)
+        # Vérifie que l'utilisateur fait partie des contributeurs du projet
         if not obj.contributors.filter(user=request.user).exists():
             return False
             
@@ -49,13 +49,16 @@ class IsProjectContributorOrObjectAuthorOrReadOnly(permissions.BasePermission):
         return project.contributors.filter(user=request.user).exists()
 
     def has_object_permission(self, request, view, obj):
-        # On suppose que tous les objets ont un attribut project (direct ou via @property)
+        # On suppose que tous les objets ont un attribut project (ou via @property)
         project = obj.project
         if not project:
             return False
 
         # Vérifier que l'utilisateur est contributeur ou auteur du projet
-        if not (project.author == request.user or project.contributors.filter(user=request.user).exists()):
+        if not (
+            project.author == request.user or
+            project.contributors.filter(user=request.user).exists()
+        ):
             return False
 
         # Lecture/création pour tous les contributeurs

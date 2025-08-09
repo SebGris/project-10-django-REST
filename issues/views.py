@@ -49,13 +49,22 @@ class ProjectViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
         
         # Récupérer l'instance créée avec toutes les relations préchargées
-        project = Project.objects.select_related('author').prefetch_related('contributors__user').get(pk=serializer.instance.pk)
+        project = (
+            Project.objects
+            .select_related('author')
+            .prefetch_related('contributors__user')
+            .get(pk=serializer.instance.pk)
+        )
         
         # Utiliser ProjectSerializer pour la réponse avec toutes les données
         output_serializer = ProjectSerializer(project)
         
         headers = self.get_success_headers(output_serializer.data)
-        return Response(output_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(
+            output_serializer.data,
+            status=status.HTTP_201_CREATED,
+            headers=headers
+        )
     
     def perform_create(self, serializer):
         """Créer un projet avec l'utilisateur actuel comme auteur et contributeur"""
@@ -102,7 +111,12 @@ class ContributorViewSet(viewsets.ModelViewSet):
         project_id = self.kwargs.get('project_pk')
         
         try:
-            project = Project.objects.select_related('author').prefetch_related('contributors__user').get(pk=project_id)
+            project = (
+                Project.objects
+                .select_related('author')
+                .prefetch_related('contributors__user')
+                .get(pk=project_id)
+            )
         except Project.DoesNotExist:
             raise NotFound("Projet non trouvé")
         
@@ -121,7 +135,9 @@ class ContributorViewSet(viewsets.ModelViewSet):
         
         # Vérifie que l'utilisateur actuel est l'auteur du projet
         if project.author != self.request.user:
-            raise PermissionDenied("Seul l'auteur du projet peut ajouter des contributeurs")
+            raise PermissionDenied(
+                "Seul l'auteur du projet peut ajouter des contributeurs"
+            )
         
         serializer.save(project=project)
 
@@ -147,7 +163,6 @@ class IssueViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Créer une issue avec l'auteur et le projet depuis l'URL"""
         project_id = self.kwargs.get('project_pk')
-        # Optimisation Green Code : select_related pour charger les contributeurs en une seule requête
         project = get_object_or_404(
             Project.objects.select_related('author').prefetch_related('contributors__user'),
             pk=project_id
@@ -167,7 +182,9 @@ class IssueViewSet(viewsets.ModelViewSet):
                 raise ValidationError("L'utilisateur assigné n'existe pas")
             # Vérifier que l'assigned_to est contributeur du projet
             if not project.contributors.filter(user=assigned_user).exists():
-                raise ValidationError("L'utilisateur assigné doit être un contributeur du projet")
+                raise ValidationError(
+                    "L'utilisateur assigné doit être un contributeur du projet"
+                )
             
         # Sauvegarde avec l'utilisateur actuel comme auteur
         serializer.save(author=self.request.user, project=project)
@@ -210,15 +227,25 @@ class CommentViewSet(viewsets.ModelViewSet):
         project = issue.project
         if not (project.author == self.request.user or 
                 project.contributors.filter(user=self.request.user).exists()):
-            raise PermissionDenied("Vous devez être contributeur du projet pour commenter")
+            raise PermissionDenied(
+                "Vous devez être contributeur du projet pour commenter"
+            )
         
         serializer.save(author=self.request.user, issue=issue)
     
     def check_comment_permission(self, comment, for_deletion=False):
         """Méthode utilitaire pour vérifier les permissions sur un commentaire"""
         if for_deletion:
-            if comment.author != self.request.user and comment.issue.project.author != self.request.user:
-                raise PermissionDenied("Seul l'auteur du commentaire ou l'auteur du projet peut supprimer ce commentaire.")
+            if (
+                comment.author != self.request.user
+                and comment.issue.project.author != self.request.user
+            ):
+                raise PermissionDenied(
+                    (
+                        "Seul l'auteur du commentaire ou l'auteur du projet "
+                        "peut supprimer ce commentaire."
+                    )
+                )
         else:
             if comment.author != self.request.user:
                 raise PermissionDenied("Seul l'auteur du commentaire peut le modifier.")

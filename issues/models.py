@@ -30,7 +30,8 @@ class Project(models.Model):
         """
         Surcharge de save pour créer automatiquement l'auteur comme contributeur
         """
-        is_new = self.pk is None  # True si c'est une création, False si c'est une mise à jour
+        # True si c'est une création, False si c'est une mise à jour
+        is_new = self.pk is None
         super().save(*args, **kwargs)
         
         # Si c'est un nouveau projet, ajouter l'auteur comme contributeur
@@ -55,16 +56,22 @@ class Contributor(models.Model):
     Modèle pour les contributeurs d'un projet spécifique
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='contributors')
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name='contributors'
+    )
     created_time = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        # Un utilisateur ne peut être contributeur qu'une fois par projet,
+        # évite les doublons dans la table
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'project'], 
                 name='unique_user_project_contributor'
             )
-        ]  # Un utilisateur ne peut être contributeur qu'une fois par projet, évite les doublons dans la table
+        ]
 
     def __str__(self):
         return f"{self.user.username} - {self.project.name}"
@@ -97,7 +104,11 @@ class Issue(models.Model):
     priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='LOW')
     tag = models.CharField(max_length=10, choices=TAG_CHOICES)
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='To Do')
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='issues')
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name='issues'
+    )
     author = models.ForeignKey(
         User, 
         on_delete=models.CASCADE, 

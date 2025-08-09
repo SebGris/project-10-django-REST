@@ -9,7 +9,10 @@ class UserSerializer(serializers.ModelSerializer):
     """Serializer pour le modèle User"""
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'age', 'can_be_contacted', 'can_data_be_shared']
+        fields = [
+            'id', 'username', 'email', 'age',
+            'can_be_contacted', 'can_data_be_shared'
+        ]
         read_only_fields = ['id']
 
 
@@ -29,7 +32,11 @@ class UserMiniSerializer(serializers.ModelSerializer):
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     """Serializer pour l'inscription d'un nouvel utilisateur"""
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password = serializers.CharField(
+        write_only=True,
+        required=True,
+        validators=[validate_password]
+    )
     password_confirm = serializers.CharField(write_only=True, required=True)
     
     class Meta:
@@ -40,7 +47,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def validate_age(self, value):
         """Valider que l'utilisateur a au moins 15 ans"""
         if value < 15:
-            raise serializers.ValidationError("L'utilisateur doit avoir au moins 15 ans.")
+            raise serializers.ValidationError(
+                "L'utilisateur doit avoir au moins 15 ans."
+            )
         return value
     
     def validate(self, attrs):
@@ -70,22 +79,35 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     def validate_age(self, value):
         """Valider que l'utilisateur a au moins 15 ans"""
         if value < 15:
-            raise serializers.ValidationError("L'utilisateur doit avoir au moins 15 ans.")
+            raise serializers.ValidationError(
+                "L'utilisateur doit avoir au moins 15 ans."
+            )
         return value
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
     """Serializer pour la création d'utilisateur avec validation RGPD"""
-    password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
-    password_confirm = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
+    password = serializers.CharField(
+        write_only=True,
+        required=True,
+        style={'input_type': 'password'}
+    )
+    password_confirm = serializers.CharField(
+        write_only=True,
+        required=True,
+        style={'input_type': 'password'}
+    )
     age = serializers.IntegerField(min_value=15, error_messages={
         'min_value': 'L\'âge minimum requis est de 15 ans (conformité RGPD).'
     })
     
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 
-                 'age', 'can_be_contacted', 'can_data_be_shared', 'password', 'password_confirm']
+        fields = [
+            'username', 'email', 'first_name', 'last_name',
+            'age', 'can_be_contacted', 'can_data_be_shared',
+            'password', 'password_confirm'
+        ]
         extra_kwargs = {
             'email': {'required': True},
             'age': {'required': True},

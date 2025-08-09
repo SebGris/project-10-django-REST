@@ -22,7 +22,10 @@ class ContributorAdmin(admin.ModelAdmin):
 @admin.register(Issue)
 class IssueAdmin(admin.ModelAdmin):
     """Administration pour les issues"""
-    list_display = ('id', 'name', 'project', 'priority', 'tag', 'status', 'author', 'assigned_to', 'created_time')
+    list_display = (
+        'id', 'name', 'project', 'priority', 'tag',
+        'status', 'author', 'assigned_to', 'created_time'
+    )
     list_filter = ('priority', 'tag', 'status', 'created_time')
     search_fields = ('name', 'description', 'project__name')
     readonly_fields = ('created_time',)
