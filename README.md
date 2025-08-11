@@ -223,6 +223,11 @@ poetry run ruff check . --output-format=full  # Format détaillé
 | 405 | Method Not Allowed | Méthode HTTP non supportée |
 | 500 | Internal Server Error | Erreurs serveur |
 
----
+## ⚠️ Licence et utilisation
+```
+Copyright (c) 2025 Sébastien Grison  
+Tous droits réservés.
 
-**Projet réalisé dans le cadre de la formation OpenClassrooms "Développeur d'application Python"**
+Ce code est fourni uniquement à titre éducatif dans le cadre d’un projet de la formation OpenClassrooms « Développeur d'application Python ».  
+Toute reproduction, modification, redistribution ou utilisation de ce code, totale ou partielle, à des fins autres que personnelles et éducatives, est strictement interdite sans autorisation écrite préalable de l’auteur.
+```
