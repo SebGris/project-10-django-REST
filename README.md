@@ -1,4 +1,4 @@
-# 🌐 SoftDesk API - Projet 10 OpenClassrooms
+# 🌐 Projet SoftDesk API
 
 ## 📋 Présentation
 
