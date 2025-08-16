@@ -1,3 +1,4 @@
+from django.db.models import Prefetch, Count, Q
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -29,13 +30,11 @@ class ProjectViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """Retourne uniquement les projets où l'utilisateur est contributeur"""
-        # Utiliser contributors__user au lieu de contributors directement
         return Project.objects.filter(
             contributors__user=self.request.user
-            ).select_related('author').prefetch_related('contributors__user').distinct()
-    
+        ).select_related('author').prefetch_related('contributors__user').distinct().order_by('id')  # Ajouter order_by
+
     def get_serializer_class(self):
-        """Retourne le serializer approprié selon l'action"""
         if self.action == 'list':
             return ProjectListSerializer
         if self.action in ['create', 'update', 'partial_update']:
@@ -66,21 +65,18 @@ class ProjectViewSet(viewsets.ModelViewSet):
             headers=headers
         )
     
+    @transaction.atomic
     def perform_create(self, serializer):
-        """Créer un projet avec l'utilisateur actuel comme auteur et contributeur"""
+        """Création atomique du projet et du contributeur"""
         project = serializer.save(author=self.request.user)
-        # Ajouter automatiquement l'auteur comme contributeur s'il n'existe pas déjà
-        Contributor.objects.get_or_create(
-            user=self.request.user, 
-            project=project
-        )
+        # Le contributeur est créé automatiquement dans Project.save()
     
+    @transaction.atomic
     @action(detail=True, methods=['post'])
     def add_contributor(self, request, pk=None):
-        """Ajouter un contributeur au projet"""
+        """Ajout atomique d'un contributeur"""
         project = self.get_object()
         
-        # Utiliser le serializer pour valider les données
         serializer = AddContributorSerializer(
             data=request.data,
             context={'project': project, 'request': request}
@@ -88,7 +84,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
         
         if serializer.is_valid():
             contributor = serializer.save()
-            # Retourner les données du contributeur créé
             contributor_serializer = ContributorSerializer(contributor)
             return Response(
                 {
@@ -147,7 +142,6 @@ class IssueViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsProjectContributorOrObjectAuthorOrReadOnly]
     
     def get_serializer_class(self):
-        """Retourne le serializer approprié selon l'action"""
         if self.action == 'list':
             return IssueListSerializer
         return IssueSerializer
@@ -155,38 +149,40 @@ class IssueViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Retourne les issues du projet spécifié dans l'URL"""
         project_id = self.kwargs.get('project_pk')
-        # Correction: utiliser 'assigned_to' au lieu de 'assignee'
         return Issue.objects.filter(project_id=project_id).select_related(
             'author', 'project', 'assigned_to'
-        ).prefetch_related('comments')
+        ).prefetch_related('comments').order_by('id')  # Ajouter order_by
     
+    @transaction.atomic
     def perform_create(self, serializer):
-        """Créer une issue avec l'auteur et le projet depuis l'URL"""
+        """Création atomique avec vérifications optimisées"""
         project_id = self.kwargs.get('project_pk')
+        
+        # Une seule requête pour vérifier le projet et les permissions
         project = get_object_or_404(
-            Project.objects.select_related('author').prefetch_related('contributors__user'),
+            Project.objects.prefetch_related(
+                Prefetch(
+                    'contributors',
+                    queryset=Contributor.objects.filter(user=self.request.user),
+                    to_attr='user_contribution'
+                )
+            ),
             pk=project_id
         )
         
-        # Vérification optimisée en utilisant les données préchargées
-        if not (project.author == self.request.user or 
-                project.contributors.filter(user=self.request.user).exists()):
+        # Vérification optimisée des permissions
+        if not project.user_contribution and project.author != self.request.user:
             raise PermissionDenied("Vous n'êtes pas contributeur de ce projet")
         
-        # Valider l'assignee si fourni (utiliser assigned_to au lieu d'assignee)
+        # Validation de l'assignee si fourni
         assigned_to_id = self.request.data.get('assigned_to')
         if assigned_to_id:
-            try:
-                assigned_user = User.objects.get(id=assigned_to_id)
-            except User.DoesNotExist:
-                raise ValidationError("L'utilisateur assigné n'existe pas")
-            # Vérifier que l'assigned_to est contributeur du projet
-            if not project.contributors.filter(user=assigned_user).exists():
+            # Vérifier en une seule requête
+            if not project.contributors.filter(user_id=assigned_to_id).exists():
                 raise ValidationError(
                     "L'utilisateur assigné doit être un contributeur du projet"
                 )
-            
-        # Sauvegarde avec l'utilisateur actuel comme auteur
+        
         serializer.save(author=self.request.user, project=project)
 
 
@@ -209,24 +205,29 @@ class CommentViewSet(viewsets.ModelViewSet):
         return Comment.objects.filter(
             issue_id=issue_id, 
             issue__project_id=project_id
-        ).select_related('author', 'issue__project__author')
+        ).select_related('author', 'issue__project__author').order_by('id')  # Ajouter order_by
     
+    @transaction.atomic
     def perform_create(self, serializer):
-        """Créer un commentaire avec l'auteur et l'issue depuis l'URL"""
+        """Création atomique avec vérifications optimisées"""
         issue_id = self.kwargs.get('issue_pk')
         project_id = self.kwargs.get('project_pk')
         
-        # Vérifier la cohérence entre issue et project
+        # Une seule requête pour tout vérifier
         issue = get_object_or_404(
-            Issue.objects.select_related('project').prefetch_related('project__contributors__user'),
+            Issue.objects.select_related('project').only(
+                'id', 'project_id', 'project__author_id'
+            ),
             pk=issue_id,
             project_id=project_id
         )
         
-        # Vérifier que l'utilisateur est contributeur du projet
-        project = issue.project
-        if not (project.author == self.request.user or 
-                project.contributors.filter(user=self.request.user).exists()):
+        # Vérification optimisée
+        is_contributor = issue.project.contributors.filter(
+            user=self.request.user
+        ).exists() if issue.project.author_id != self.request.user.id else True
+        
+        if not is_contributor:
             raise PermissionDenied(
                 "Vous devez être contributeur du projet pour commenter"
             )
@@ -234,36 +235,29 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user, issue=issue)
     
     def check_comment_permission(self, comment, for_deletion=False):
-        """Méthode utilitaire pour vérifier les permissions sur un commentaire"""
+        """Vérification optimisée des permissions"""
         if for_deletion:
-            if (
-                comment.author != self.request.user
-                and comment.issue.project.author != self.request.user
-            ):
+            # Pour la suppression, on vérifie avec les données préchargées
+            if (comment.author_id != self.request.user.id and 
+                comment.issue.project.author_id != self.request.user.id):
                 raise PermissionDenied(
-                    (
-                        "Seul l'auteur du commentaire ou l'auteur du projet "
-                        "peut supprimer ce commentaire."
-                    )
+                    "Seul l'auteur du commentaire ou du projet peut supprimer"
                 )
         else:
-            if comment.author != self.request.user:
-                raise PermissionDenied("Seul l'auteur du commentaire peut le modifier.")
+            if comment.author_id != self.request.user.id:
+                raise PermissionDenied("Seul l'auteur peut modifier ce commentaire")
     
     def update(self, request, *args, **kwargs):
-        """Override update pour vérifier les permissions"""
         comment = self.get_object()
         self.check_comment_permission(comment)
         return super().update(request, *args, **kwargs)
     
     def partial_update(self, request, *args, **kwargs):
-        """Override partial_update pour vérifier les permissions"""
         comment = self.get_object()
         self.check_comment_permission(comment)
         return super().partial_update(request, *args, **kwargs)
     
     def destroy(self, request, *args, **kwargs):
-        """Override destroy pour permettre à l'auteur du projet de supprimer"""
         comment = self.get_object()
         self.check_comment_permission(comment, for_deletion=True)
         return super().destroy(request, *args, **kwargs)

@@ -58,9 +58,10 @@ AUTH_USER_MODEL = 'users.User'
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # 1 heure (5 minutes en production)
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': True,     # Nouveau refresh token à chaque utilisation
-    'BLACKLIST_AFTER_ROTATION': True,  # Invalider anciens tokens
-    'ALGORITHM': 'HS256',              # Algorithme standard sécurisé
+    # l'app rest_framework_simplejwt.token_blacklist n'est pas installée donc False
+    'ROTATE_REFRESH_TOKENS': False,     # Nouveau refresh token à chaque utilisation
+    'BLACKLIST_AFTER_ROTATION': False,  # Invalider anciens tokens
+    'ALGORITHM': 'HS256',               # Algorithme standard sécurisé
 }
 
 REST_FRAMEWORK = {

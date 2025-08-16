@@ -45,9 +45,9 @@ class UserViewSet(viewsets.ModelViewSet):
         return UserSerializer
     
     def get_queryset(self):
-        """Tous les utilisateurs sont visibles"""
+        """Tous les utilisateurs sont visibles, ordonnés par ID"""
         if self.request.user.is_authenticated:
-            return User.objects.all()
+            return User.objects.all().order_by('id')  # Ajouter order_by
         return User.objects.none()
     
     def create(self, request, *args, **kwargs):

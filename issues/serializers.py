@@ -47,24 +47,20 @@ class AddContributorSerializer(serializers.Serializer):
         try:
             User.objects.get(id=value)
         except User.DoesNotExist:
-            raise serializers.ValidationError("L'utilisateur avec cet ID n'existe pas.")
+            raise serializers.ValidationError(
+                f"L'utilisateur avec l'ID {value} n'existe pas."
+            )
         return value
     
     def validate(self, attrs):
-        """Validation additionnelle"""
+        """Validation : vérifier que l'utilisateur n'est pas déjà contributeur"""
         user_id = attrs.get('user_id')
         project = self.context.get('project')
         
-        if (
-            project
-            and Contributor.objects.filter(
-                user_id=user_id,
-                project=project
-            ).exists()
-        ):
-            raise serializers.ValidationError(
-                "Cet utilisateur est déjà contributeur de ce projet."
-            )
+        if project and Contributor.objects.filter(user_id=user_id, project=project).exists():
+            raise serializers.ValidationError({
+                'user_id': "Cet utilisateur est déjà contributeur de ce projet."
+            })
         
         return attrs
     
