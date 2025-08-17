@@ -20,9 +20,10 @@ class UserViewSet(viewsets.ModelViewSet):
     - Consultation des profils par ID
     - Modification de son propre profil uniquement
     """
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    
+
     def get_permissions(self):
         """
         Permissions spécifiques selon l'action :
@@ -30,26 +31,26 @@ class UserViewSet(viewsets.ModelViewSet):
         - Lecture : authentification requise
         - Modification/Suppression : propriétaire uniquement
         """
-        if self.action == 'create':
+        if self.action == "create":
             return [permissions.AllowAny()]
-        elif self.action in ['update', 'partial_update', 'destroy']:
+        elif self.action in ["update", "partial_update", "destroy"]:
             return [IsAuthenticated(), IsOwnerOrReadOnly()]
         return [IsAuthenticated()]
-    
+
     def get_serializer_class(self):
         """Serializer spécifique selon l'action"""
-        if self.action == 'create':
+        if self.action == "create":
             return UserRegistrationSerializer
-        elif self.action == 'list':
+        elif self.action == "list":
             return UserSummarySerializer
         return UserSerializer
-    
+
     def get_queryset(self):
         """Tous les utilisateurs sont visibles, ordonnés par ID"""
         if self.request.user.is_authenticated:
-            return User.objects.all().order_by('id')  # Ajouter order_by
+            return User.objects.all().order_by("id")  # Ajouter order_by
         return User.objects.none()
-    
+
     def create(self, request, *args, **kwargs):
         """
         Créer un utilisateur et retourner la réponse avec les données créées
@@ -57,27 +58,23 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        
+
         # Retourner la réponse avec le UserSerializer standard
         response_serializer = UserSerializer(user)
         headers = self.get_success_headers(response_serializer.data)
         return Response(
-            response_serializer.data,
-            status=status.HTTP_201_CREATED,
-            headers=headers
+            response_serializer.data, status=status.HTTP_201_CREATED, headers=headers
         )
-    
+
     @action(
-        detail=False,
-        methods=['get', 'patch'],
-        permission_classes=[IsAuthenticated]
+        detail=False, methods=["get", "patch"], permission_classes=[IsAuthenticated]
     )
     def profile(self, request):
         """Consulter ou modifier son propre profil"""
-        if request.method == 'GET':
+        if request.method == "GET":
             serializer = self.get_serializer(request.user)
             return Response(serializer.data)
-        
+
         serializer = self.get_serializer(request.user, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()

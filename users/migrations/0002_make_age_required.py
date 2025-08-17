@@ -5,15 +5,17 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('users', '0001_initial'),
+        ("users", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='user',
-            name='age',
-            field=models.PositiveIntegerField(help_text="L'utilisateur doit avoir au moins 15 ans (RGPD)", validators=[django.core.validators.MinValueValidator(15)]),
+            model_name="user",
+            name="age",
+            field=models.PositiveIntegerField(
+                help_text="L'utilisateur doit avoir au moins 15 ans (RGPD)",
+                validators=[django.core.validators.MinValueValidator(15)],
+            ),
         ),
     ]

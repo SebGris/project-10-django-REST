@@ -9,20 +9,19 @@ class Project(models.Model):
     """
     Modèle pour les projets d'applications clientes
     """
+
     PROJECT_TYPES = [
-        ('back-end', 'Back-end'),
-        ('front-end', 'Front-end'),
-        ('iOS', 'iOS'),
-        ('Android', 'Android'),
+        ("back-end", "Back-end"),
+        ("front-end", "Front-end"),
+        ("iOS", "iOS"),
+        ("Android", "Android"),
     ]
 
     name = models.CharField(max_length=200)
     description = models.TextField()
     type = models.CharField(max_length=20, choices=PROJECT_TYPES)
     author = models.ForeignKey(
-        User, 
-        on_delete=models.CASCADE, 
-        related_name='authored_projects'
+        User, on_delete=models.CASCADE, related_name="authored_projects"
     )
     created_time = models.DateTimeField(auto_now_add=True)
 
@@ -33,14 +32,11 @@ class Project(models.Model):
         # True si c'est une création, False si c'est une mise à jour
         is_new = self.pk is None
         super().save(*args, **kwargs)
-        
+
         # Si c'est un nouveau projet, ajouter l'auteur comme contributeur
         if is_new:
-            Contributor.objects.get_or_create(
-                user=self.author,
-                project=self
-            )
-    
+            Contributor.objects.get_or_create(user=self.author, project=self)
+
     def is_user_contributor(self, user):
         """
         Vérifie si un utilisateur est contributeur de ce projet
@@ -55,11 +51,10 @@ class Contributor(models.Model):
     """
     Modèle pour les contributeurs d'un projet spécifique
     """
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     project = models.ForeignKey(
-        Project,
-        on_delete=models.CASCADE,
-        related_name='contributors'
+        Project, on_delete=models.CASCADE, related_name="contributors"
     )
     created_time = models.DateTimeField(auto_now_add=True)
 
@@ -68,8 +63,7 @@ class Contributor(models.Model):
         # évite les doublons dans la table
         constraints = [
             models.UniqueConstraint(
-                fields=['user', 'project'], 
-                name='unique_user_project_contributor'
+                fields=["user", "project"], name="unique_user_project_contributor"
             )
         ]
 
@@ -81,46 +75,43 @@ class Issue(models.Model):
     """
     Modèle pour les problèmes/tâches d'un projet
     """
+
     PRIORITY_CHOICES = [
-        ('LOW', 'Low'),
-        ('MEDIUM', 'Medium'),
-        ('HIGH', 'High'),
+        ("LOW", "Low"),
+        ("MEDIUM", "Medium"),
+        ("HIGH", "High"),
     ]
 
     TAG_CHOICES = [
-        ('BUG', 'Bug'),
-        ('FEATURE', 'Feature'),
-        ('TASK', 'Task'),
+        ("BUG", "Bug"),
+        ("FEATURE", "Feature"),
+        ("TASK", "Task"),
     ]
 
     STATUS_CHOICES = [
-        ('To Do', 'To Do'),
-        ('In Progress', 'In Progress'),
-        ('Finished', 'Finished'),
+        ("To Do", "To Do"),
+        ("In Progress", "In Progress"),
+        ("Finished", "Finished"),
     ]
 
     name = models.CharField(max_length=200)
     description = models.TextField()
-    priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='LOW')
+    priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default="LOW")
     tag = models.CharField(max_length=10, choices=TAG_CHOICES)
-    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='To Do')
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default="To Do")
     project = models.ForeignKey(
-        Project,
-        on_delete=models.CASCADE,
-        related_name='issues'
+        Project, on_delete=models.CASCADE, related_name="issues"
     )
     author = models.ForeignKey(
-        User, 
-        on_delete=models.CASCADE, 
-        related_name='authored_issues'
+        User, on_delete=models.CASCADE, related_name="authored_issues"
     )
     assigned_to = models.ForeignKey(
-        User, 
-        on_delete=models.SET_NULL, 
-        null=True, 
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
         blank=True,
-        related_name='assigned_issues',
-        help_text="Contributeur à qui l'issue est assignée"
+        related_name="assigned_issues",
+        help_text="Contributeur à qui l'issue est assignée",
     )
     created_time = models.DateTimeField(auto_now_add=True)
 
@@ -132,17 +123,16 @@ class Comment(models.Model):
     """
     Modèle pour les commentaires d'une issue
     """
+
     @property
     def project(self):
         return self.issue.project
-    
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     description = models.TextField()
-    issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='comments')
+    issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name="comments")
     author = models.ForeignKey(
-        User, 
-        on_delete=models.CASCADE, 
-        related_name='authored_comments'
+        User, on_delete=models.CASCADE, related_name="authored_comments"
     )
     created_time = models.DateTimeField(auto_now_add=True)
 
