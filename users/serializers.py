@@ -35,9 +35,14 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         write_only=True,
         required=True,
-        validators=[validate_password]
+        validators=[validate_password],
+        style={'input_type': 'password'}  # Amélioration pour l'interface DRF
     )
-    password_confirm = serializers.CharField(write_only=True, required=True)
+    password_confirm = serializers.CharField(
+        write_only=True,
+        required=True,
+        style={'input_type': 'password'}
+    )
     
     class Meta:
         model = User
@@ -54,19 +59,17 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     
     def validate(self, attrs):
         """Valider que les mots de passe correspondent"""
-        if attrs['password'] != attrs['password_confirm']:
-            raise serializers.ValidationError("Les mots de passe ne correspondent pas.")
+        if attrs.get('password') != attrs.get('password_confirm'):
+            raise serializers.ValidationError({
+                'password_confirm': "Les mots de passe ne correspondent pas."
+            })
         return attrs
     
     def create(self, validated_data):
         """Créer un nouvel utilisateur"""
         validated_data.pop('password_confirm')
-        password = validated_data.pop('password')
-        
+        # create_user gère correctement le hachage du password
         user = User.objects.create_user(**validated_data)
-        user.set_password(password)
-        user.save()
-        
         return user
 
 

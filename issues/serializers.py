@@ -27,10 +27,7 @@ class ContributorSerializer(serializers.ModelSerializer):
         
         if user and project:
             # Pour la création uniquement (pas la mise à jour)
-            if (
-                not self.instance and
-                Contributor.objects.filter(user=user, project=project).exists()
-            ):
+            if not self.instance and Contributor.objects.filter(user=user, project=project).exists():
                 raise serializers.ValidationError(
                     "Cet utilisateur est déjà contributeur de ce projet."
                 )
@@ -44,9 +41,7 @@ class AddContributorSerializer(serializers.Serializer):
     
     def validate_user_id(self, value):
         """Valide que l'utilisateur existe"""
-        try:
-            User.objects.get(id=value)
-        except User.DoesNotExist:
+        if not User.objects.filter(id=value).exists():
             raise serializers.ValidationError(
                 f"L'utilisateur avec l'ID {value} n'existe pas."
             )
@@ -81,11 +76,14 @@ class ProjectSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Project
-        fields = ['id', 'name', 'description', 'type', 'author', 'contributors', 
-                  'created_time', 'issues_count']
+        fields = [
+            'id', 'name', 'description', 'type', 'author', 
+            'contributors', 'created_time', 'issues_count'
+        ]
         read_only_fields = ['id', 'created_time']
     
     def get_issues_count(self, obj):
+        """Nombre d'issues du projet"""
         return obj.issues.count()
     
     def get_contributors(self, obj):
@@ -115,7 +113,8 @@ class ProjectListSerializer(serializers.ModelSerializer):
     
     def get_contributors_names(self, obj):
         """Retourne la liste des noms des contributeurs"""
-        return [contributor.user.username for contributor in obj.contributors.all()]
+        # Optimisation : utiliser values_list pour éviter de charger tout l'objet
+        return list(obj.contributors.values_list('user__username', flat=True))
     
 
 class ProjectCreateUpdateSerializer(serializers.ModelSerializer):
@@ -125,6 +124,22 @@ class ProjectCreateUpdateSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'description', 'type']
         read_only_fields = ['id']
         
+    def validate_name(self, value):
+        """Validation du nom"""
+        if len(value.strip()) < 3:
+            raise serializers.ValidationError(
+                "Le nom du projet doit contenir au moins 3 caractères."
+            )
+        return value.strip()
+    
+    def validate_description(self, value):
+        """Validation de la description"""
+        if len(value.strip()) < 10:
+            raise serializers.ValidationError(
+                "La description doit contenir au moins 10 caractères."
+            )
+        return value.strip()
+    
     def validate_type(self, value):
         """Valider le type de projet"""
         valid_types = ['back-end', 'front-end', 'iOS', 'Android']
@@ -152,26 +167,57 @@ class IssueSerializer(serializers.ModelSerializer):
         required=False,
         allow_null=True
     )
+    assigned_to_details = UserMiniSerializer(source='assigned_to', read_only=True)
     project = serializers.PrimaryKeyRelatedField(read_only=True)
     
     class Meta:
         model = Issue
-        fields = ['id', 'name', 'description', 'priority', 'tag', 'status', 
-                 'project', 'author', 'assigned_to', 'created_time']
+        fields = [
+            'id', 'name', 'description', 'priority', 'tag', 'status', 
+            'project', 'author', 'assigned_to', 'assigned_to_details', 'created_time'
+        ]
         read_only_fields = ['id', 'author', 'project', 'created_time']
+
+    def validate_assigned_to(self, value):
+        """Valider que l'utilisateur assigné est contributeur du projet"""
+        if value:
+            request = self.context.get('request')
+            view = self.context.get('view')
+            
+            if view and hasattr(view, 'kwargs'):
+                project_id = view.kwargs.get('project_pk')
+                if project_id:
+                    # Vérifier que l'assigné est contributeur
+                    if not Contributor.objects.filter(user=value, project_id=project_id).exists():
+                        raise serializers.ValidationError(
+                            "L'utilisateur assigné doit être contributeur du projet."
+                        )
+        return value
 
 
 class CommentSerializer(serializers.ModelSerializer):
     """Serializer pour le modèle Comment"""
     author = UserMiniSerializer(read_only=True)
     issue = serializers.PrimaryKeyRelatedField(read_only=True)
-    project = serializers.SerializerMethodField()
+    issue_name = serializers.CharField(source='issue.name', read_only=True)
+    project_id = serializers.IntegerField(source='issue.project.id', read_only=True)
     
     class Meta:
         model = Comment
-        fields = ['id', 'description', 'project', 'issue', 'author', 'created_time']
-        read_only_fields = ['id', 'author', 'project', 'issue', 'created_time']
+        fields = [
+            'id', 'description', 'project_id', 'issue', 
+            'issue_name', 'author', 'created_time'
+        ]
+        read_only_fields = ['id', 'author', 'project_id', 'issue', 'issue_name', 'created_time']
     
-    def get_project(self, obj):
-        """Retourne l'ID du projet associé à l'issue"""
-        return obj.issue.project.id
+    def validate_description(self, value):
+        """Validation de la description"""
+        if not value or not value.strip():
+            raise serializers.ValidationError(
+                "Le commentaire ne peut pas être vide."
+            )
+        if len(value.strip()) > 2000:
+            raise serializers.ValidationError(
+                "Le commentaire ne peut pas dépasser 2000 caractères."
+            )
+        return value.strip()

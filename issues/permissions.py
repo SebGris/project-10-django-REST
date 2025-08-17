@@ -11,15 +11,25 @@ class IsProjectAuthorOrContributor(permissions.BasePermission):
     """
     
     def has_object_permission(self, request, view, obj):
-        # Vérifie que l'utilisateur fait partie des contributeurs du projet
-        if not obj.contributors.filter(user=request.user).exists():
+        # Optimisation : vérifier d'abord si c'est l'auteur (plus rapide)
+        is_author = obj.author == request.user
+        
+        # Si c'est l'auteur, il a tous les droits
+        if is_author:
+            return True
+        
+        # Sinon, vérifier s'il est contributeur
+        is_contributor = obj.contributors.filter(user=request.user).exists()
+        
+        # Si pas contributeur du tout, refuser
+        if not is_contributor:
             return False
-            
-        # Pour les actions de modification, suppression et ajout de contributeurs
+        
+        # Pour les actions de modification, seul l'auteur
         if view.action in ['update', 'partial_update', 'destroy', 'add_contributor']:
-            return obj.author == request.user
-            
-        # Pour la lecture (tous les contributeurs)
+            return False  # Déjà vérifié que ce n'est pas l'auteur
+        
+        # Pour la lecture, les contributeurs peuvent accéder
         return True
 
 
@@ -32,40 +42,51 @@ class IsProjectContributorOrObjectAuthorOrReadOnly(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
+        """Vérifie l'accès au niveau de la vue (liste/création)"""
         project_id = view.kwargs.get('project_pk')
         if not project_id:
             return False
 
         try:
-            project = Project.objects.get(pk=project_id)
+            # Optimisation : ne charger que les champs nécessaires
+            project = Project.objects.only('author_id').get(pk=project_id)
         except Project.DoesNotExist:
             return False
 
         # L'auteur du projet a toujours accès
-        if project.author == request.user:
+        if project.author_id == request.user.id:
             return True
 
-        # Sinon, vérifier si l'utilisateur est dans la liste des contributeurs
+        # Sinon, vérifier si l'utilisateur est contributeur
+        # Optimisation : utiliser exists() qui s'arrête dès qu'il trouve
         return project.contributors.filter(user=request.user).exists()
 
     def has_object_permission(self, request, view, obj):
-        # On suppose que tous les objets ont un attribut project (ou via @property)
-        project = obj.project
+        """Vérifie l'accès au niveau de l'objet spécifique"""
+        # Récupérer le projet associé
+        project = getattr(obj, 'project', None)
         if not project:
             return False
 
-        # Vérifier que l'utilisateur est contributeur ou auteur du projet
-        if not (
-            project.author == request.user or
-            project.contributors.filter(user=request.user).exists()
-        ):
+        # Optimisation : vérifier d'abord si c'est l'auteur du projet
+        is_project_author = project.author == request.user
+        
+        # L'auteur du projet a tous les droits
+        if is_project_author:
+            return True
+        
+        # Vérifier que l'utilisateur est contributeur
+        is_contributor = project.contributors.filter(user=request.user).exists()
+        if not is_contributor:
             return False
 
-        # Lecture/création pour tous les contributeurs
-        if request.method in permissions.SAFE_METHODS or request.method == 'POST':
+        # Lecture : tous les contributeurs
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        
+        # Création : tous les contributeurs (POST n'arrive pas ici normalement)
+        if request.method == 'POST':
             return True
 
-        # Modification : auteur de l'objet ou auteur du projet
-        is_author = obj.author == request.user
-        is_project_author = project.author == request.user
-        return is_author or is_project_author
+        # Modification/Suppression : seulement l'auteur de l'objet
+        return obj.author == request.user

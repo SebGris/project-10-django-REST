@@ -9,9 +9,9 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
     """
     
     def has_object_permission(self, request, view, obj):
-        # Pour la modification, seulement le propriétaire
-        if request.method in ['PUT', 'PATCH', 'DELETE']:
-            return obj == request.user
+        # Lecture : tous les utilisateurs authentifiés
+        if request.method in permissions.SAFE_METHODS:
+            return request.user.is_authenticated
         
-        # Pour la lecture, tous les utilisateurs authentifiés
-        return request.user.is_authenticated
+        # Modification/Suppression : seulement le propriétaire
+        return obj == request.user

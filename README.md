@@ -168,7 +168,7 @@ project-10-django-REST/
 ├── users/                   # App utilisateurs (auth, profils)
 ├── issues/                  # App projets (projects, issues, comments)
 ├── softdesk_support/        # Configuration Django
-└── tests/                   # non utilisé
+└── tests/                   # Avec Pytest
 ```
 
 ### Commandes utiles
@@ -188,6 +188,9 @@ make install              # Installation complète
 poetry run python manage.py runserver
 poetry run python manage.py migrate
 poetry run python manage.py makemigrations
+
+# Lancer les tests
+poetry run pytest -vv
 
 # Linting et formatage avec Ruff
 poetry run ruff check .           # Vérifier le code
