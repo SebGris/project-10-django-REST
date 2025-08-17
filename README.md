@@ -189,14 +189,26 @@ poetry run python manage.py runserver
 poetry run python manage.py migrate
 poetry run python manage.py makemigrations
 
-# Lancer les tests
-poetry run pytest -vv
-
 # Linting et formatage avec Ruff
 poetry run ruff check .           # Vérifier le code
 poetry run ruff check . --fix     # Corriger automatiquement
 poetry run ruff format .          # Formater le code
 poetry run ruff check . --output-format=full  # Format détaillé
+```
+
+#### 🧪 Lancer les tests
+
+```bash
+# Lancer tous les tests
+poetry run pytest
+# ou pour afficher un résultat plus détaillé
+poetry run pytest -vv
+
+# Avec couverture de code
+poetry run pytest --cov=. --cov-report=html
+
+# Ouvrir le rapport de couverture
+# Le rapport se trouve dans htmlcov/index.html
 ```
 
 ## 📄 Ressources

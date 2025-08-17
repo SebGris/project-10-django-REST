@@ -20,7 +20,7 @@ import pytest
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
-from issues.models import Project, Contributor, Issue, Comment
+from issues.models import Project, Issue
 
 User = get_user_model()
 

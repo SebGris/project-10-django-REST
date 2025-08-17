@@ -1,4 +1,4 @@
-from django.db.models import Prefetch, Count, Q
+from django.db.models import Prefetch
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -68,7 +68,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     @transaction.atomic
     def perform_create(self, serializer):
         """Création atomique du projet et du contributeur"""
-        project = serializer.save(author=self.request.user)
+        serializer.save(author=self.request.user)
         # Le contributeur est créé automatiquement dans Project.save()
     
     @transaction.atomic

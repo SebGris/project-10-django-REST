@@ -77,7 +77,7 @@ class TestAuthentication:
     def test_jwt_token_obtain(self, api_client, create_user):
         """Test d'obtention du token JWT"""
         # Créer un utilisateur avec un mot de passe connu
-        user = create_user(username='jwtuser', password='JWTPass123!')
+        _ = create_user(username='jwtuser', password='JWTPass123!')
         
         url = reverse('token_obtain_pair')
         data = {
@@ -93,7 +93,7 @@ class TestAuthentication:
     
     def test_jwt_token_invalid_credentials(self, api_client, create_user):
         """Test avec des identifiants invalides"""
-        user = create_user(username='testuser', password='GoodPassword123!')
+        _ = create_user(username='testuser', password='GoodPassword123!')
         
         url = reverse('token_obtain_pair')
         data = {

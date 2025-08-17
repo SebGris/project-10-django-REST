@@ -5,7 +5,7 @@ import pytest
 from django.urls import reverse
 from rest_framework import status
 from django.contrib.auth import get_user_model
-from issues.models import Project, Contributor, Issue, Comment
+from issues.models import Project, Contributor, Comment
 
 User = get_user_model()
 
@@ -291,7 +291,7 @@ class TestIssues:
         """Test qu'un non-contributeur ne peut pas voir les issues"""
         other_user = create_user(username='otheruser')
         project = create_project(author=other_user)
-        issue = create_issue(project=project, author=other_user)
+        _ = create_issue(project=project, author=other_user)
         
         url = reverse('project-issues-list', kwargs={'project_pk': project.id})
         response = authenticated_client.get(url)

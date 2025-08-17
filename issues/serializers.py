@@ -181,7 +181,6 @@ class IssueSerializer(serializers.ModelSerializer):
     def validate_assigned_to(self, value):
         """Valider que l'utilisateur assigné est contributeur du projet"""
         if value:
-            request = self.context.get('request')
             view = self.context.get('view')
             
             if view and hasattr(view, 'kwargs'):

@@ -1,9 +1,10 @@
 # Configuration pour ignorer certaines règles dans les scripts de test Django
+[lint]
 extend-ignore = [
     "E402",  # Module level import not at top of file (nécessaire pour Django setup)
 ]
 
 # Appliquer uniquement aux fichiers de test
-[per-file-ignores]
+[lint.per-file-ignores]
 "test_*.py" = ["E402"]
 "**/test_*.py" = ["E402"]
