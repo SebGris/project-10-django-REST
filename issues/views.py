@@ -31,7 +31,6 @@ User = get_user_model()
 class ProjectViewSet(viewsets.ModelViewSet):
     """ViewSet pour les projets"""
 
-    queryset = Project.objects.all()
     permission_classes = [IsAuthenticated, IsProjectAuthorOrContributor]
 
     def get_queryset(self):
@@ -280,4 +279,5 @@ class CommentViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         comment = self.get_object()
         self.check_comment_permission(comment, for_deletion=True)
+        return super().destroy(request, *args, **kwargs)
         return super().destroy(request, *args, **kwargs)

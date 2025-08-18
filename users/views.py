@@ -21,7 +21,6 @@ class UserViewSet(viewsets.ModelViewSet):
     - Modification de son propre profil uniquement
     """
 
-    queryset = User.objects.all()
     serializer_class = UserSerializer
 
     def get_permissions(self):
